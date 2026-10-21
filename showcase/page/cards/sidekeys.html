@@ -1,0 +1,41 @@
+<article class="mech" data-card="sidekeys" data-preset="tabs">
+  <div class="mech-head">
+    <div class="refs" id="sidekeys-refs"></div>
+    <h2>Side keys: part of the lid</h2>
+    <p class="thesis">Each side button is the lid&rsquo;s own side wall, cut free on three sides; from just before the pad it rises past the parting line into a slot in the tub. The lid prints back face down, so every key stands on the bed and no part of it is ever laid over air. The <span data-only="426">4.26&Prime; has five</span><span data-only="368">3.68&Prime; has three</span>.</p>
+  </div>
+  <figure><div class="dwg-host" id="dw-sidekeys-side"></div><figcaption><span class="sidekeys-sref">SW1</span>&rsquo;s key from the side, cut through the middle of its wall (x = <span class="sidekeys-sx">63.6</span>): the bar in the lid&rsquo;s wall below the parting line, which bends at the hinge notch by its root, and the block that rises into the tub&rsquo;s slot. Its bottom is the lid&rsquo;s round, cut here partway up it.</figcaption></figure>
+  <div class="dwg-pair">
+    <figure><div class="dwg-host" id="dw-sidekeys-plan"></div><figcaption>Plan at plunger height (<span class="sidekeys-pref">SW10</span>, <span class="sidekeys-prole">power</span>): the key&rsquo;s block in the tub&rsquo;s slot, its nub through the sliver&rsquo;s window, and the switch.</figcaption></figure>
+    <figure><div class="dwg-host" id="dw-sidekeys-elev"></div><figcaption>Across <span class="sidekeys-pref">SW10</span>&rsquo;s key at the plunger. It stands on the lid&rsquo;s back face, where the lid prints: its bottom is the lid&rsquo;s round, on a 45&deg; foot. The pad&rsquo;s lower face and the nub&rsquo;s underside are 45&deg;, because in that print they are overhangs.</figcaption></figure>
+  </div>
+  <div class="sidekeys-which" role="group" aria-label="Which side key the 3D view presses">
+    <span class="sidekeys-lab">Press in 3D</span>
+    <span class="seg" id="sidekeys-sel"></span>
+  </div>
+  <div class="scrub">
+    <label for="sidekeys-press">Press</label>
+    <input type="range" id="sidekeys-press" min="0" max="1" step="0.001" value="0">
+    <output id="sidekeys-out" for="sidekeys-press">pad 0.00 mm</output>
+  </div>
+  <p class="state" id="sidekeys-state" aria-live="polite">At rest</p>
+  <div class="body">
+    <p><strong>Why not in the tub.</strong> A key cut out of the tub&rsquo;s wall bends from one end, so it has to be free along both long edges. The tub prints face down, and its edge toward the screen is the first layer of it the printer lays, with nothing under it. Rev G gave that edge a 45&deg; roof and Rev H a flat top over 1.4 mm of air, and both strung; a support can&rsquo;t be got into, or out of, a slot that narrow. Rev I made the key a separate part, which printed without that problem, but a clip small enough for the wall couldn&rsquo;t hold it. Running the key up to the front face would put that edge on the bed, but the front face is the display side: the key would have to be cut free through the bezel&rsquo;s rounded edge, next to the screen, and it would be twice as stiff.</p>
+    <p><strong>Why the lid works.</strong> The lid prints back face down. A key that stands on its back face is laid on the bed along its bottom edge and finishes with its top edge, the last layer, so it is free along both without a layer ever printed over air. Its free end is a straight slot down through the lid&rsquo;s wall, and behind it a slot runs through the back face; both are vertical as it prints, and the wall&rsquo;s edge beyond the end slot is chamfered <span data-k="cards.sidekeys.tab_geom.end_foot" data-d="1"></span> mm at the bed so the squashed first layer can&rsquo;t close it. Its bottom edge is the lid&rsquo;s own <span class="sidekeys-backr">2</span> mm round down to its 45&deg; point, then a 45&deg; to the bed, so from the hinge to the free end it stands on about 0.8 mm of bed, beside a 45&deg; <strong>foot</strong> along its inside; every layer steps out along the round or in along the 45. Behind the foot the lid is cut back at 45&deg; too, <span class="sidekeys-footgap">0.75</span> mm, opening to <span class="sidekeys-footgap2">1.2</span> at the free end, which swings further.</p>
+    <p><strong>The key.</strong> Two parts of one piece. The <strong>bar</strong> is the wall&rsquo;s outer layer below the parting line, flush with the case face, from the lid&rsquo;s back face up to just under the tub&rsquo;s rim, so the rim can&rsquo;t pinch it. It is the flexure: <strong><span data-k="cards.sidekeys.tab_geom.flex_t" data-d="2"></span> mm</strong> thick and <span class="sidekeys-barh">2.8</span> mm tall, rooted in the lid&rsquo;s wall, and it bends from there for <span class="sidekeys-flexlen">6.5&ndash;10</span> mm. For the first <strong><span data-k="cards.sidekeys.tab_geom.hinge" data-d="0"></span> mm</strong> from the root the round and the foot are notched away: there the key is the plain wall section, and that is where most of the bending happens. From just before the pad to its free end the key rises into the tub&rsquo;s slot as the <strong>block</strong>, <span data-k="cards.sidekeys.summary.height" data-d="1"></span> mm tall in all, so it barely bends. The block carries a <strong><span class="sidekeys-padlen">10</span> mm pad, <span data-k="cards.sidekeys.tab_geom.proud" data-d="1"></span> mm proud</strong>, with a <span class="sidekeys-face">7.1 &times; 2.4</span> mm flat face and rounded ends (<span class="sidekeys-powerpad">7 mm on the power key</span>), and a <span class="sidekeys-nub">6.0 &times; 2.3</span> mm nub (<span class="sidekeys-powernub">5.0 wide on the power key</span>) against a <span class="sidekeys-plunger">2.88 &times; 1.50</span> plunger. At the nub it is the full <span data-k="cards.sidekeys.tab_geom.t" data-d="2"></span> mm, and that stretch is the hard stop. Over the flexure, the tub&rsquo;s wall is whole.</p>
+    <p><strong>The feel.</strong> The nub starts <strong><span class="sidekeys-gap">0.25</span> mm</strong> off its plunger. A press at the pad&rsquo;s centre takes <span class="sidekeys-force">2.1&ndash;2.3 N</span>; near a pad&rsquo;s root end it takes more, because the key is a lever about its root. The key bottoms after <strong><span class="sidekeys-stop">0.70</span> mm</strong>, <span class="sidekeys-over">0.2</span> mm past the click, as the switch&rsquo;s own travel runs out, so the case takes an over-press, not the switch. The bar bends to at most <span class="sidekeys-strain">1.1</span> % there, at the hinge. <span class="sidekeys-sweep"></span></p>
+    <p><strong>What it costs.</strong> The keys ride on the lid, so the gap to each plunger depends on how the lid sits. The tongue has <span data-k="cards.joint.joint.clr" data-d="2"></span> mm per face in its groove, so a gap can run from <span class="sidekeys-gaprange">0.10 to 0.40</span> mm, one side opening as the other closes. The stop is the lid&rsquo;s own edge, behind the key, and moves with it, so the switch always reaches its click and never goes past full travel.</p>
+  </div>
+  <div class="tbl-wrap"><table class="forces" id="sidekeys-table"></table></div>
+  <dl class="nums" id="sidekeys-nums"></dl>
+  <div class="btns">
+    <button class="btn show3d" type="button" data-show="tabs">Show in 3D</button>
+    <button class="btn ghost show3d" type="button" data-show="keylid">The lid on its own</button>
+  </div>
+  <style>
+    [data-card="sidekeys"] .sidekeys-which { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+    @media (min-width: 721px) { [data-card="sidekeys"] #dw-sidekeys-plan svg.dwg { width: min(100%, 340px); min-width: 0; margin: 0 auto; } }
+    [data-card="sidekeys"] #sidekeys-table th, [data-card="sidekeys"] #sidekeys-table td { white-space: nowrap; padding-right: 12px; }
+    [data-card="sidekeys"] .sidekeys-lab { font: 500 11px/1.2 var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); }
+  </style>
+</article>

@@ -1,0 +1,63 @@
+<article class="mech" data-card="battery" data-preset="battery">
+  <div class="mech-head">
+    <div class="refs" data-only="426"><span class="ref">503035</span><span class="ref">J5</span><span class="ref">J7 microSD</span><span class="ref">lip + 2 snaps</span></div>
+    <div class="refs" data-only="368"><span class="ref"><span data-k="cards.battery.battery.capacity_mAh"></span> mAh</span><span class="ref">503035</span><span class="ref">in the lid</span><span class="ref">J5</span><span class="ref">lip + tape</span></div>
+    <h2 data-only="426">Battery: a slot it clicks into, and a way out for the card</h2>
+    <h2 data-only="368">Battery: <span data-k="cards.battery.battery.capacity_mAh"></span> mAh in the lid, over the shallow patch of the board</h2>
+    <p class="thesis" data-only="426">The cell sits in a slot on the back of the midplate, which stands up through the board&rsquo;s notch. A lip along its left edge and two snaps on its right hold it down, and spare lead winds on two cleats beside it. The slot&rsquo;s bottom stop is low enough that the microSD card, which ejects straight at the cell, can get out once the cell is swung aside.</p>
+    <p class="thesis" data-only="368">The case is as thin as what sits under the battery. Behind the board five things are deep, and everything else stands <span class="bat-shallow">1.6</span> mm or less, so the cell lies over that shallow middle and costs only its own thickness. It rides in the lid: plug it in with the lid stood up beside the top edge, then fold the lid down like a book.</p>
+  </div>
+
+  <div data-only="426" class="bat-block">
+    <figure><div class="dwg-host" id="dw-battery-lip"></div><figcaption>Across the cell at y = <span class="bat-lip-at">91.5</span>, through a right-hand snap: the lip over its left edge, the snap over its right, both <span data-k="cards.battery.battery.bay.lip.clear_of_back" data-d="1"></span> mm off its back.</figcaption></figure>
+    <figure><div class="dwg-host" id="dw-battery-fence"></div><figcaption>Plan at z = <span class="bat-fence-at">1.5</span> mm, just in front of the board&rsquo;s rear face: rails, the low stop and the cleats cut; the leads and plug (dashed) behind the board, the cleats&rsquo; caps and J7 beyond.</figcaption></figure>
+    <figure><div class="dwg-host" id="dw-battery-card"></div><figcaption>Section down the microSD card&rsquo;s centre line (x = <span class="bat-card-at">18.8</span> mm): J7, the card&rsquo;s way out, the low stop, the cell and the lid&rsquo;s springs.</figcaption></figure>
+    <div class="body">
+      <p><strong>The slot.</strong> The left rail stands off the midplate past the cell&rsquo;s back and turns in over its edge: a <strong>lip</strong> <span data-k="cards.battery.battery.bay.lip.over_cell" data-d="1"></span> mm over the cell, all along, <span data-k="cards.battery.battery.bay.lip.clear_of_back" data-d="1"></span> mm off its back. On the right, the two posts either side of the lead&rsquo;s exit are <strong>snaps</strong>: each ends in a 45&deg; barb <span data-k="cards.battery.battery.bay.snaps.over_cell" data-d="1"></span> mm over the cell&rsquo;s other edge, on a post thin enough to flex out of the way. Tuck the cell&rsquo;s left edge under the lip and press the right side down, and it clicks in; or, with the midplate out of the tub, slide it in from the midplate&rsquo;s top edge, where the lip is flared. Once the midplate is in, the tub&rsquo;s top wall closes the slot above the cell, and the lid&rsquo;s two springs press it lightly forward. Every lip&rsquo;s and barb&rsquo;s underside is 45&deg;, so the midplate still prints screen side down with no supports.</p>
+      <p><strong>The cleats.</strong> The first and last right-hand posts stand past the cell&rsquo;s back with caps along their length. A real pack&rsquo;s lead is longer than the run from its exit to J5, so wind the spare round the two cleats, <span class="bat-cleat-gap">18.7</span> mm apart, or over the cell&rsquo;s right edge, where the lid&rsquo;s springs don&rsquo;t reach. They are on the midplate, not the lid, so the lead stays put when the lid comes off.</p>
+      <p><strong>The microSD card.</strong> J7 is a push-push socket on the back of the board whose mouth faces the cell&rsquo;s bottom edge from <span class="bat-mouth">3.4</span> mm away, so the cell has to move before a card can come out. The bottom stop is only <span data-k="cards.battery.battery.bay_p.stop_h" data-d="0"></span> mm tall and sits in front of the board&rsquo;s rear face, clear of where the card travels. With the lid off, unwind the lead from the cleats, lift the cell&rsquo;s right side past its two snaps and swing it out from under the lip (it stays on its lead), push the card, and it ejects and pulls free.</p>
+      <p>The pack is the site&rsquo;s 503035 model (cell, wrap and protection board), <span class="bat-dims">37.20 &times; 31.10 &times; 5.18</span> mm. Measure the real pack before printing: the lip and snaps sit <span data-k="cards.battery.battery.bay.lip.clear_of_back" data-d="1"></span> mm off the model&rsquo;s back face, so a pack much thicker than 5.2 mm will not go under them.</p>
+    </div>
+  </div>
+
+  <div data-only="368" class="bat-block">
+    <figure><div class="map-wrap" id="battery-map"></div>
+      <figcaption><span class="leg" id="battery-map-leg"></span> The board&rsquo;s back as seen from behind the case: the tallest part over each millimetre. Dashed: the battery bay. Red: the lead to J5. Hatched: the ESP32&rsquo;s antenna end.</figcaption></figure>
+    <div class="dwg-pair">
+      <figure><div class="dwg-host" id="dw-battery-bay"></div><figcaption>Down the middle of the cell (x = <span class="bat-bay-at">22.53</span>), through J7: the board&rsquo;s shallow parts, <span data-k="cards.battery.battery.clearance_mm" data-d="1"></span> mm of air, the cell in its pocket and <span data-k="cards.battery.battery.floor_t" data-d="1"></span> mm of floor under it.</figcaption></figure>
+      <figure><div class="dwg-host" id="dw-battery-plan"></div><figcaption>Plan at the cell&rsquo;s mid-thickness (z = <span class="bat-plan-at">-4.2</span>), seen from the front: the lip at the bottom edge, the end stop, and the lead to J5 (dashed: beyond the cut).</figcaption></figure>
+    </div>
+    <div class="body">
+      <p><strong>Why here.</strong> Behind the board only five things are deep: <span class="bat-deep">J5 4.9 mm</span>. Under the bay the deepest part is the microSD socket J7 (<span data-k="cards.battery.battery.deepest_under_mm" data-d="2"></span> mm). The bay runs up past the board&rsquo;s trimmed edge next to J5, so the lead is a short run to the plug. Its bottom-left corner comes within <span data-k="cards.battery.battery.antenna_gap_mm" data-d="2"></span> mm of the antenna end&rsquo;s inner corner (hatched): not over it, but close, so check Wi-Fi range on the first build.</p>
+      <p><strong>Retention.</strong> The pack&rsquo;s bottom edge tucks under a lip that reaches <span data-k="cards.battery.battery.retention.lip_over_mm" data-d="1"></span> mm over it, and the cell is taped down; nothing on the lid presses it (there were two hooks until 2026-10-19: they pressed the cell and its lead). Push the pack to the right, and down only until it stops under the lip. A low wall across the top end stops it sliding out from under the lip, which keeps at least <span data-k="cards.battery.battery.retention.end_stop.lip_engagement_min" data-d="1"></span> mm over it. The pocket takes a cell up to <span data-k="cards.battery.battery.envelope_mm" data-d="2"></span> mm thick (the datasheet&rsquo;s 5.3 mm and two layers of tape on each face) and leaves <span data-k="cards.battery.battery.air_under_j7_mm" data-d="2"></span> mm of air under J7 as printed.</p>
+      <p><strong>Lead.</strong> <span id="battery-lead"></span></p>
+      <p><strong>Service.</strong> For the microSD card or the battery: screws out, lift the lid from the bottom edge and fold it back toward the top, unplug J5. The pack stays in the lid; peel its tape to take it out.</p>
+    </div>
+    <div class="tbl-wrap"><table class="forces" id="battery-cells"><thead><tr><th>Cell and layout</th><th>Capacity</th><th>Case</th><th>Notes</th></tr></thead><tbody></tbody></table></div>
+    <p class="note">The layouts a search over the board&rsquo;s back found, from the project README: <b>only the 503035 fits behind the board</b> with its lead end within reach of J5. It must measure <span data-k="cards.battery.battery.allowance_mm" data-d="1"></span> mm or less, and check its polarity against J5 before connecting: PH2.0 packs are not all wired the same way.</p>
+  </div>
+
+  <dl class="nums" id="battery-nums"></dl>
+  <button class="btn show3d" type="button" data-show="battery">Show in 3D</button>
+  <style>
+    [data-card="battery"] .bat-block { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; min-width: 0; }
+    [data-card="battery"] svg.dmap { display: block; width: 100%; height: auto; max-height: 560px; }
+    @media (min-width: 721px) { [data-card="battery"] svg.dmap { max-width: 420px; margin: 0 auto; } }
+    [data-card="battery"] .dm0 { fill: color-mix(in srgb, var(--copper) 8%, var(--paper)); }
+    [data-card="battery"] .dm1 { fill: color-mix(in srgb, var(--copper) 24%, var(--paper)); }
+    [data-card="battery"] .dm2 { fill: color-mix(in srgb, var(--copper) 46%, var(--paper)); }
+    [data-card="battery"] .dm3 { fill: color-mix(in srgb, var(--copper) 70%, var(--paper)); }
+    [data-card="battery"] .dm4 { fill: color-mix(in srgb, var(--copper) 94%, var(--paper)); }
+    [data-card="battery"] .leg i.dm { height: 10px; width: 12px; vertical-align: -1px; border: 1px solid var(--rule); }
+    [data-card="battery"] svg.dmap .outl { fill: none; stroke: var(--ink-2); stroke-width: 1.2px; vector-effect: non-scaling-stroke; }
+    [data-card="battery"] svg.dmap .bay { fill: none; stroke: var(--ink); stroke-width: 2px; stroke-dasharray: 6 4; vector-effect: non-scaling-stroke; }
+    [data-card="battery"] svg.dmap .lead { fill: none; stroke: var(--d-lead); stroke-width: 3px; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+    [data-card="battery"] svg.dmap .box { fill: none; stroke: var(--ink); stroke-width: 1.4px; vector-effect: non-scaling-stroke; }
+    [data-card="battery"] svg.dmap .ant { fill: url(#battery-hatch); stroke: var(--ink); stroke-width: 1px; vector-effect: non-scaling-stroke; }
+    [data-card="battery"] svg.dmap .hl { stroke: var(--ink); stroke-width: 0.35; }
+    [data-card="battery"] svg.dmap text { font-family: var(--f-mono); fill: var(--ink); paint-order: stroke; stroke: var(--paper); stroke-width: 0.6px; stroke-linejoin: round; }
+    [data-card="battery"] svg.dmap text.dim { fill: var(--ink-2); }
+    [data-card="battery"] #battery-cells tr.pick td { font-weight: 600; color: var(--ink); }
+    [data-card="battery"] #battery-cells td small { display: block; color: var(--ink-2); font-size: 12.5px; font-weight: 400; }
+  </style>
+</article>

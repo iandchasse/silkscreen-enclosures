@@ -1,0 +1,38 @@
+<article class="mech" data-card="assembly" data-preset="assembly">
+  <div class="mech-head">
+    <div class="refs" id="assembly-refs"></div>
+    <h2>Assembly order</h2>
+    <p class="thesis">Everything goes into the face-down tub from behind, in one direction. <span data-not="cl">The bottom keys add a filament rod and a small printed gate that holds it, and</span><span data-only="cl">The chinless build has no bottom keys, so no rod or gate:</span> <span id="assembly-screws">three screws</span> from the back close the case.</p>
+  </div>
+  <dl class="nums" id="assembly-need"></dl>
+  <div class="assembly-print" id="assembly-print"></div>
+  <ol class="steps assembly-steps" id="assembly-steps"></ol>
+  <p class="assembly-hint" id="assembly-hint">Tap a step to see it on the stage. Play runs the parts in from behind, and the step on the stage is marked here as it goes.</p>
+  <p class="note" data-only="426" data-not="cl"><b>Keys before the cranks.</b> At rest height the keys block the cranks&rsquo; way in, so the keys go in first, then the cranks drop in behind them, and the rod slides through from the &minus;X wall; the printed gate then drops into its slot and cams the rod home.</p>
+  <p class="note" data-only="368"><b>Keys before the cranks,</b> as on the 4.26: at rest height the keys block the cranks&rsquo; way in. The cell rides in the lid, so the lid is stood up by the top edge to plug the lead into J5 and then folds down like a book.</p>
+  <div class="btns">
+    <button class="btn show3d" type="button" data-play="1" id="assembly-play">Play it in 3D</button>
+    <button class="btn ghost show3d" type="button" data-show="assembly">Show the order in 3D</button>
+  </div>
+  <style>
+    [data-card="assembly"] .assembly-steps li { cursor: pointer; }
+    [data-card="assembly"] .assembly-steps li:hover { background: var(--mask-soft); }
+    [data-card="assembly"] .assembly-steps li:focus-visible { outline: 2px solid var(--mask); outline-offset: -2px; }
+    [data-card="assembly"] .assembly-steps li.done::before { color: var(--ink-3); }
+    [data-card="assembly"] .assembly-steps li.prep::before { color: var(--copper); }
+    [data-card="assembly"] .assembly-steps li.now { box-shadow: inset 3px 0 0 var(--mask); }
+    [data-card="assembly"] .assembly-steps li > div { display: grid; gap: 3px; min-width: 0; }
+    [data-card="assembly"] .assembly-steps .as-text { font-size: 14.5px; }
+    [data-card="assembly"] .assembly-steps .as-meta { display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; font: 500 10.5px/1.3 var(--f-mono); color: var(--ink-3); letter-spacing: 0.03em; }
+    [data-card="assembly"] .assembly-steps .as-meta span { border: 1px solid var(--rule); border-radius: 2px; padding: 1px 5px; }
+    [data-card="assembly"] .assembly-steps .as-meta .as-when { border-color: var(--copper); color: var(--copper); }
+    [data-card="assembly"] .assembly-steps .as-meta .as-3d { border-color: var(--mask); color: var(--mask); }
+    [data-card="assembly"] .assembly-hint { font-size: 13px; color: var(--ink-3); }
+    [data-card="assembly"] .assembly-print table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+    [data-card="assembly"] .assembly-print th, [data-card="assembly"] .assembly-print td { text-align: left; padding: 6px 8px 6px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+    [data-card="assembly"] .assembly-print th { font: 500 10.5px/1.3 var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+    [data-card="assembly"] .assembly-print td.n { white-space: nowrap; font-weight: 600; color: var(--ink); }
+    [data-card="assembly"] .assembly-print code { overflow-wrap: anywhere; color: var(--ink-2); }
+    [data-card="assembly"] .assembly-print small { display: block; color: var(--ink-3); font-size: 12.5px; }
+  </style>
+</article>

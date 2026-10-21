@@ -1,0 +1,9 @@
+cadquery==2.8.0
+trimesh==5.1.0
+ezdxf==1.4.4
+manifold3d
+shapely
+lxml
+networkx
+scipy          # mechanics.py, skin_plate.py
+matplotlib     # logo.py, slice_check.py, strip_sections.py

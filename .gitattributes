@@ -1,0 +1,7 @@
+# The generator writes LF; keep it LF on every checkout so regenerating shows no spurious diffs.
+* text=auto eol=lf
+*.png binary
+*.glb binary
+*.zip binary
+*.pdf binary
+*.stl binary

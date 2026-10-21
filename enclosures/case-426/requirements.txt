@@ -1,0 +1,11 @@
+cadquery==2.8.0
+trimesh==5.1.0
+ezdxf==1.4.4
+manifold3d
+shapely
+lxml
+networkx
+scipy          # build.py, mechanics.py
+matplotlib     # logo.py, slice_check.py, strip_sections.py
+vtk            # optional: render.py, for review.py's renders
+pymupdf        # optional: hardware/reference/extract/, reading the panel drawing

@@ -1,0 +1,130 @@
+<article class="mech" data-card="keys" data-preset="keys" id="keys-card">
+  <style>
+    [data-card="keys"] .keys-pick { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+    [data-card="keys"] .keys-pick .lab { font: 500 11px/1.2 var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); }
+    [data-card="keys"] .keys-pick .grp { display: inline-flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
+    [data-card="keys"] .keys-hint { font-size: 13px; color: var(--ink-3); }
+    [data-card="keys"] .keys-ctl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; }
+    [data-card="keys"] .keys-ctl .btn { min-width: 5.6em; }
+    [data-card="keys"] .keys-track { position: relative; padding-bottom: 20px; min-width: 0; }
+    [data-card="keys"] .keys-track input { display: block; margin: 6px 0 0; }
+    [data-card="keys"] .keys-marks { position: absolute; left: 8px; right: 8px; bottom: 0; height: 18px; font: 500 10.5px/1 var(--f-mono); color: var(--ink-3); }
+    [data-card="keys"] .keys-marks span { position: absolute; top: 4px; transform: translateX(-50%); white-space: nowrap; }
+    [data-card="keys"] .keys-marks span::before { content: ""; position: absolute; left: 50%; top: -6px; width: 1px; height: 5px; background: var(--ink-3); }
+    [data-card="keys"] .keys-marks span:first-child { transform: none; }
+    [data-card="keys"] .keys-marks span:first-child::before { left: 0; }
+    [data-card="keys"] .keys-marks span:last-child { transform: translateX(-100%); }
+    [data-card="keys"] .keys-marks span:last-child::before { left: auto; right: 0; }
+    [data-card="keys"] .keys-marks .click { color: var(--ok); }
+    [data-card="keys"] .keys-read dd.hit { color: var(--ok); }
+    [data-card="keys"] svg.keys-hit path[data-l^="nub_"] { fill: var(--ok); }
+    [data-card="keys"] .keys-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px 18px; }
+    [data-card="keys"] .keys-box { border-top: 2px solid var(--rule); padding-top: 8px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+    [data-card="keys"] .keys-box h3 { font-size: 17px; }
+    [data-card="keys"] .keys-box p { font-size: 13.5px; color: var(--ink-2); }
+    [data-card="keys"] .keys-box .nums { grid-template-columns: minmax(0, 1fr); }
+    [data-card="keys"] .keys-box .nums div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; align-items: baseline; padding: 6px 0; }
+    [data-card="keys"] .keys-box .nums dd { margin: 0; font-size: 15.5px; text-align: right; }
+    [data-card="keys"] .keys-box .nums dd small { text-align: right; }
+    [data-card="keys"] table.forces td.n, [data-card="keys"] table.forces th.n { text-align: right; padding-right: 0; padding-left: 8px; white-space: nowrap; }
+    [data-card="keys"] table.forces tr.now td { background: var(--mask-soft); }
+    [data-card="keys"] table.forces td.ok { color: var(--ok); }
+    [data-card="keys"] table.forces td.bad { color: var(--warn); }
+    [data-card="keys"] details.keys-checks summary { cursor: pointer; font: 600 16px/1.3 var(--f-display); }
+    [data-card="keys"] details.keys-checks summary small { font: 400 13.5px var(--f-body); color: var(--ink-2); margin-left: 6px; }
+    [data-card="keys"] ul.keys-chk { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--rule); }
+    [data-card="keys"] ul.keys-chk li { display: grid; grid-template-columns: 1.4em minmax(0, 1fr); gap: 2px 8px; padding: 6px 0; border-bottom: 1px solid var(--rule); font-size: 13.5px; color: var(--ink); }
+    [data-card="keys"] ul.keys-chk li > b { font: 600 14px/1.3 var(--f-mono); color: var(--ok); }
+    [data-card="keys"] ul.keys-chk li.fail > b { color: var(--warn); }
+    [data-card="keys"] ul.keys-chk li.acc > b, [data-card="keys"] ul.keys-chk li.nr > b { color: var(--copper); }
+    [data-card="keys"] ul.keys-chk li small { grid-column: 2; color: var(--ink-3); font-size: 12.5px; overflow-wrap: anywhere; }
+    @media (max-width: 560px) {
+      [data-card="keys"] .keys-ctl { grid-template-columns: minmax(0, 1fr); }
+    }
+  </style>
+  <div class="mech-head">
+    <div class="refs"><span class="ref">SW9</span><span class="ref">SW8</span><span class="ref">SW3</span><span class="ref">SW2</span><span class="ref" id="keys-ref-part">TS365ZJ</span><span class="ref" id="keys-ref-crank">crank-T</span></div>
+    <h2>Bottom keys: a straight key over a bell crank</h2>
+    <p class="thesis">The four keys under the page work switches that sit on the board&rsquo;s bottom edge and push sideways. Each key slides straight down in the chin onto the crowned pad of a small bell crank; the crank turns on a length of 1.75&nbsp;mm filament, and its crowned nose pushes the switch&rsquo;s plunger in.</p>
+  </div>
+
+  <div class="keys-pick">
+    <div class="grp"><span class="lab">Switch on your board</span><span class="seg" role="group" aria-label="Bottom-key switch and crank" id="keys-var"></span></div>
+    <div class="grp"><span class="lab">Board position</span><span class="seg" role="group" aria-label="Where the board puts the plunger face" id="keys-tol"></span></div>
+  </div>
+  <p class="keys-hint" id="keys-tol-note">The drawing follows the switch you pick. Board position moves the board and its switch by the &plusmn;0.2&nbsp;mm the build allows; the 3D model stays at nominal.</p>
+
+  <figure>
+    <div class="dwg-host" id="keys-dwg"></div>
+    <figcaption id="keys-cap">Cut through SW8&rsquo;s centre.</figcaption>
+  </figure>
+
+  <div class="keys-ctl">
+    <button class="btn" type="button" id="keys-play" aria-pressed="false">Play</button>
+    <div class="keys-track">
+      <input type="range" id="keys-scrub" min="0" max="1000" step="1" value="0" aria-label="Key press, from rest to the switch's bottom">
+      <div class="keys-marks" aria-hidden="true"><span>rest</span><span class="click" id="keys-mark-click" style="left:55%">click</span><span style="left:100%">bottom</span></div>
+    </div>
+  </div>
+  <dl class="nums keys-read" id="keys-read" aria-live="off">
+    <div><dt>Crank</dt><dd id="keys-r-th">0.0&deg;</dd></div>
+    <div><dt>Key down</dt><dd id="keys-r-key">0.00 mm</dd></div>
+    <div><dt>Plunger in</dt><dd id="keys-r-pl">0.00 mm</dd></div>
+    <div><dt>Switch</dt><dd id="keys-r-st">open</dd></div>
+    <div><dt>Key proud</dt><dd id="keys-r-proud">1.50 mm</dd></div>
+  </dl>
+
+  <div class="body">
+    <p><strong>The lever.</strong> Your press lands on the crank&rsquo;s pad <span data-k="keys.forces.lever.input_arm" data-u="mm"></span> from the rod, and the nose meets the plunger <span data-k="keys.forces.lever.output_arm" data-u="mm"></span> from it, so without friction the key needs <span id="keys-ideal">0.6</span> times the switch&rsquo;s force. With friction in the key&rsquo;s guide and at the two crowns it is still less than the switch alone. <span id="keys-rocker"></span></p>
+    <p><strong>The rod.</strong> The cranks turn on <span data-k="keys.rod.cut" data-u="mm"></span> of <span data-k="keys.rod.d" data-u="mm"></span> PLA filament, cut from the spool. It runs in a rail that hangs from the tub&rsquo;s skin: <span data-k="cards.keys.rings"></span> closed rings, one each side of every crank, and <span data-k="cards.keys.seats"></span> open seats under the switches. It slides in through a <span data-k="cards.keys.rod_hole_d" data-u="mm"></span> hole in the side wall, and a small printed gate dropped into a slot in that wall stops its end, leaving <span data-k="cards.keys.end_play" data-join="&ndash;" data-u="mm"></span> of end play.</p>
+    <p><strong>The hooks.</strong> Nothing on the key flexes or rubs. Two rigid hooks stand on its chin side, one at each end, and run in two slots in the chin wall, open to the rim. Face up, or held to read, the key rests on its crank and the crank on its switch, so it sits where the switch puts it, with no free travel before the click. Face down it drops <span data-k="keys.hooks.W_OUT_mm" data-u="mm"></span> onto both hooks, level, and the first press there travels <span data-k="keys.hooks.face_down_free_travel_mm" data-join="&ndash;" data-u="mm"></span> before the click.</p>
+    <p><strong>Retention and the chin.</strong> To unhook, a key would have to move away from the chin, and its other face already rides the rod rail, so a key cannot fall out; keys go in, and come out, from the inside. Keep the tub face down from the keys until the board is in: before that nothing stops a key sinking. The chin wall moved <span data-k="cards.keys.chin_deeper_mm" data-u="mm"></span> outward on the tub and the lid to make room.</p>
+    <p><strong>Two noses.</strong> The crank comes in two versions that differ only at the nose, by <span id="keys-nose-diff">0.28</span>&nbsp;mm: crank-T for the SHOU HAN TS365ZJ, which JLC fits on every board it assembles, and crank-M for the APEM MJTP1117. Print the one that matches your board&rsquo;s switch: <span id="keys-wrong"></span></p>
+    <p data-only="368">On the 3.68&Prime; the keys differ per build, because the light-strip build&rsquo;s face sits higher: <code data-k="cards.keys.key_names.std"></code> for the standard build and <code data-k="cards.keys.key_names.ls"></code> for the light strip. The cranks, the rod and the rail are the same in both.</p>
+    <p data-only="426">On the 4.26&Prime; the keys, the cranks, the rod and the rail are the same in both builds.</p>
+  </div>
+
+  <div class="keys-info">
+    <div class="keys-box">
+      <h3>How hard</h3>
+      <p id="keys-f-lead">Force at the key, friction 0.3, across the switch&rsquo;s rated range.</p>
+      <div class="tbl-wrap"><table class="forces" id="keys-f-tab"></table></div>
+      <dl class="nums" id="keys-f-nums"></dl>
+    </div>
+    <div class="keys-box">
+      <h3>How far</h3>
+      <dl class="nums" id="keys-t-nums"></dl>
+    </div>
+    <div class="keys-box">
+      <h3>How proud</h3>
+      <dl class="nums" id="keys-p-nums"></dl>
+    </div>
+    <div class="keys-box">
+      <h3>The rod</h3>
+      <p>At an over-press of <span data-k="keys.rod_check.press_N" data-u="N"></span> on one key, the worst case the checks load it with.</p>
+      <dl class="nums" id="keys-r-nums"></dl>
+    </div>
+    <div class="keys-box">
+      <h3>The hooks</h3>
+      <p>Two per key, in two slots in the chin wall.</p>
+      <dl class="nums" id="keys-h-nums"></dl>
+    </div>
+  </div>
+
+  <div class="keys-box">
+    <h3>Board tolerance</h3>
+    <p>The plunger face moves with the board and the switch&rsquo;s placement. Each row is worked out here from the crank&rsquo;s geometry; the last column compares its rest angle and key height with the case project&rsquo;s own solver (<span id="keys-tol-src">its output</span>).</p>
+    <div class="tbl-wrap"><table class="forces" id="keys-tol-tab"></table></div>
+  </div>
+
+  <details class="keys-checks" id="keys-checks">
+    <summary>Checks <small id="keys-chk-sum"></small></summary>
+    <ul class="keys-chk" id="keys-chk"></ul>
+  </details>
+
+  <p class="note">These are design numbers. The parts are still going through independent checks, so details may change before they are printed.</p>
+  <div class="btns">
+    <button class="btn show3d" type="button" data-show="keys">Show in 3D</button>
+    <span class="keys-hint">The stage cuts through SW8 and follows this drawing while the card is open.</span>
+  </div>
+</article>

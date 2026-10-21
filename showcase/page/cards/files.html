@@ -1,0 +1,32 @@
+<article class="mech" data-card="files" data-preset="dummy">
+  <div class="mech-head">
+    <div class="refs" id="files-refs"></div>
+    <h2>Model files</h2>
+    <p class="thesis">One zip for this size holds <span data-only="368">both builds</span><span data-only="426">every build</span>: the shared parts once, <span data-only="368">both tubs, both key sets</span><span data-only="426">the four tubs and the chinless lid</span>, the chin and gate coupons, the rod notes and a printable stand-in for the board.</p>
+  </div>
+  <div class="btns">
+    <button class="btn" type="button" id="files-all" disabled>Download everything (.zip)</button>
+    <button class="btn ghost" type="button" id="files-build" disabled>Only this build (.zip)</button>
+  </div>
+  <p class="dl-status" id="files-status" role="status" aria-live="polite">Checking whether this view can save files&hellip;</p>
+  <div class="dl-list" id="files-list"></div>
+  <div class="body">
+    <p id="files-orient"></p>
+    <p id="files-print" hidden></p>
+    <p id="files-dummy"></p>
+    <p id="files-usb"></p>
+  </div>
+  <p class="files-other" id="files-other"></p>
+  <div class="btns">
+    <button class="btn ghost show3d" type="button" data-show="dummy">Show the PCBA dummy in 3D</button>
+  </div>
+  <style>
+    [data-card="files"] .dl-row .tag { display: inline-block; font: 500 10px/1.2 var(--f-mono); letter-spacing: 0.04em; text-transform: uppercase; border: 1px solid var(--mask); color: var(--mask); border-radius: 2px; padding: 1px 4px; margin-left: 6px; vertical-align: 2px; }
+    [data-card="files"] .dl-row .tag.other { border-color: var(--rule); color: var(--ink-3); }
+    [data-card="files"] .dl-row.other b { color: var(--ink-2); }
+    [data-card="files"] .dl-row .files span.other { opacity: 0.7; }
+    [data-card="files"] .dl-row .sum { font: 500 11.5px var(--f-mono); color: var(--ink-3); }
+    [data-card="files"] .files-other { font-size: 14px; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+    @media (max-width: 480px) { [data-card="files"] .dl-row { grid-template-columns: minmax(0, 1fr); } [data-card="files"] .dl-row .btn { justify-self: start; } }
+  </style>
+</article>

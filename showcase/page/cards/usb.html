@@ -1,0 +1,26 @@
+<article class="mech" data-card="usb" data-preset="usb">
+  <div class="mech-head">
+    <div class="refs"><span class="ref" data-k="cards.usb.ref"></span><span class="ref">USB-C</span></div>
+    <h2>USB-C: the divot, floored by the tub</h2>
+    <p class="thesis">A recess for the plug&rsquo;s overmold, whose floor is the tub itself: a <span data-k="cards.usb.usb.floor_t" data-d="1"></span> mm wall round the port, with a hole that only shows the port. There is no separate bezel part.</p>
+  </div>
+  <div class="dwg-pair">
+    <figure><div class="dwg-host" id="dw-usb-sec"></div><figcaption>Section through <span data-k="cards.usb.ref"></span>&rsquo;s centre line, with a typical plug (<span data-k="cards.usb.usb.typical" data-join=" &times; " data-d="1"></span> mm overmold). Tub above the parting line, lid below; the lid&rsquo;s block rises into the floor&rsquo;s notch under the hole.</figcaption></figure>
+    <figure><div class="dwg-host" id="dw-usb-plan"></div><figcaption>Plan at the port&rsquo;s centre height: the floor across <span data-k="cards.usb.ref"></span>&rsquo;s mouth, and <span class="usb-skey">SW1</span>&rsquo;s key root beside the divot.</figcaption></figure>
+  </div>
+  <div class="scrub">
+    <label for="usb-plug">Plug, typical overmold</label>
+    <input type="range" id="usb-plug" min="0" max="1" step="0.001" value="0.6">
+    <output id="usb-out" for="usb-plug">out 3.6 mm</output>
+  </div>
+  <div class="body">
+    <p>A mated plug&rsquo;s overmold sits <span data-k="cards.usb.usb.spare" data-d="2"></span> mm in front of the receptacle, so whatever surrounds the port can stand only that far in front of <span data-k="cards.usb.ref"></span>&rsquo;s mouth before it starts to hold a plug back. The case face is <span class="usb-depth">2.9</span> mm out, so the port is a recess &mdash; the divot &mdash; sized for typical cables (<strong><span data-k="cards.usb.usb.recess" data-join=" &times; " data-d="1"></span> mm</strong>), with a 45&deg; lead-in at the case face.</p>
+    <p><strong>Its floor is the tub.</strong> Rev F&ndash;H had a printed bezel that had to stay put on the connector by itself during assembly, and it would not stay on the dummy&rsquo;s J1. The catch is where the floor can go. The connector&rsquo;s mouth sits right at the panel&rsquo;s edge, and the panel passes there on its way in, so the tub can reach no closer than the panel&rsquo;s corridor, <span class="usb-corr">0.115</span> mm in front of the mouth. A <span data-k="cards.usb.usb.floor_t" data-d="1"></span> mm floor &mdash; about the thinnest wall a 0.4 mm nozzle lays as one line &mdash; puts its face <strong><span class="usb-face">0.61</span> mm</strong> in front of the mouth. A typical plug therefore seats to within about <strong><span class="usb-short">0.16</span> mm</strong> of full depth. Try your cables on the dummy.</p>
+    <p>The hole in the floor is the connector&rsquo;s opening plus 0.1 mm a side, so the plug passes and nothing else of the board shows. Below the hole the floor is open to the parting line &mdash; a notch &mdash; because the tub prints face down and the hole&rsquo;s lower edge would otherwise be a bridge. A block on the lid rises into the notch and closes it, just in front of the connector&rsquo;s shell.</p>
+  </div>
+  <dl class="nums" id="usb-nums"></dl>
+  <button class="btn show3d" type="button" data-show="usb">Show in 3D</button>
+  <style>
+    @media (min-width: 721px) { [data-card="usb"] #dw-usb-plan svg.dwg { width: min(100%, 380px); min-width: 0; margin: 0 auto; } }
+  </style>
+</article>

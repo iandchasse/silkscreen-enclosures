@@ -1,0 +1,19 @@
+<article class="mech" data-card="detent" data-preset="detent">
+  <div class="mech-head">
+    <div class="refs"><span class="ref">midplate</span><span class="ref">detent &times;<span data-k="cards.detent.detents.count"></span></span><span class="ref">tub wall</span></div>
+    <h2>The stack clicks in</h2>
+    <p class="thesis">Put the display, the midplate and the PCBA together and push them into the tub as one: the midplate clicks home at <span data-k="cards.detent.detents.count"></span> detents, and the stack stays there until the lid goes on.</p>
+  </div>
+  <figure><div class="dwg-host" id="dw-detent-plan"></div><figcaption>Plan at the midplate&rsquo;s mid-thickness, the <span class="detent-which">right-hand bottom</span> detent: the strip, cut free by a slot behind it and across its tip, and its bump in the pocket in the tub&rsquo;s wall.</figcaption></figure>
+  <figure><div class="dwg-host" id="dw-detent-sec"></div><figcaption>Across the bump. The pocket&rsquo;s roof is 45&deg; because in the face-down tub it is a roof; the bump&rsquo;s front edge is 45&deg; so it cams in past the tongue on the way.</figcaption></figure>
+  <div class="body">
+    <p><strong>Why.</strong> Until the lid was on, nothing held the stack: it slid in the tub, and nothing told you it was home.<span data-only="426"> The two bottom screws go through the board beside the ribbons&rsquo; fold, so a stack sitting anywhere but home is the one way a screw could reach the glass or a ribbon.</span></p>
+    <p><strong>How.</strong> At <span class="detent-where">four places</span>, the midplate&rsquo;s edge is a <strong>spring strip</strong>: a <span class="detent-strip">0.7</span> mm strip of the <span class="detent-plate">1</span> mm plate, cut free by a <span data-k="cards.detent.detents.p.slot" data-d="1"></span> mm slot behind it and across its tip, so it bends in the plate&rsquo;s own plane. Near its tip a <strong>bump</strong> stands <span data-k="cards.detent.detents.p.bump" data-d="2"></span> mm past the plate&rsquo;s edge. The wall is only <span data-k="cards.detent.detents.edge_clr" data-d="1"></span> mm away, so on the way in the bump rides <span data-k="cards.detent.detents.ride_mm" data-d="2"></span> mm into it and the strip bends; then the bump snaps into a <strong>pocket</strong> cut <span data-k="cards.detent.detents.p.depth" data-d="2"></span> mm into the wall, and that is the click. It prints like the rest of the midplate: flat, screen side down.</p>
+    <p><strong>Where it stops.</strong> The pocket&rsquo;s roof catches the bump when the plate is <span class="detent-short">0.15&ndash;0.55</span> mm short of home (thicker panels sit closer), so the stack is held within that, and a firm pull still takes it out. The pocket runs on toward the front, from z <span class="detent-pz0">1.40</span> to <span class="detent-pz1">3.35</span>, enough for the panel&rsquo;s tolerance, so once the lid and screws pull everything home the bumps sit free in their pockets and fight nothing: the springs, not the detents, still set where the panel sits.<span class="detent-screws"></span></p>
+  </div>
+  <dl class="nums" id="detent-nums"></dl>
+  <button class="btn show3d" type="button" data-show="detent">Show in 3D</button>
+  <style>
+    @media (min-width: 721px) { [data-card="detent"] #dw-detent-plan svg.dwg, [data-card="detent"] #dw-detent-sec svg.dwg { width: min(100%, 400px); min-width: 0; margin: 0 auto; } }
+  </style>
+</article>

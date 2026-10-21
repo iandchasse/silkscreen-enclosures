@@ -1,0 +1,42 @@
+Silkscreen enclosures — the 3D-printed cases for the Silkscreen e-reader (4.26" and 3.68")
+
+Copyright © 2026 idc LLC.
+
+This source describes Open Hardware and is licensed under the CERN-OHL-S v2.
+
+You may redistribute and modify this source and make products using it under the
+terms of the CERN Open Hardware Licence Version 2 - Strongly Reciprocal
+(CERN-OHL-S v2, https://ohwr.org/cern_ohl_s_v2.txt; full text in ./LICENSE).
+
+This source is distributed WITHOUT ANY EXPRESS OR IMPLIED WARRANTY, INCLUDING OF
+MERCHANTABILITY, SATISFACTORY QUALITY AND FITNESS FOR A PARTICULAR PURPOSE.
+Please see the CERN-OHL-S v2 for applicable conditions.
+
+Companion to https://github.com/iandchasse/silkscreen-pcb
+
+SPDX-License-Identifier: CERN-OHL-S-2.0
+
+-------------------------------------------------------------------------------
+
+Copied from other Silkscreen projects (idc LLC, CERN-OHL-S v2):
+
+- enclosures/case-*/hardware/board-2026-09-21/ is a copy of the main board's
+  KiCad layout from silkscreen-pcb (2026-09-21), with that project's own LICENSE
+  and NOTICE beside it. hardware/board.step, footprints.json and outline.json
+  are derived from it by src/prepare_hardware.py. The board STEP carries the
+  component 3D models that silkscreen-pcb ships under their vendors' terms.
+- enclosures/case-*/hardware/reference/light-strip/strip-geometry.json is a copy
+  of the light strip's build/geometry.json (silkscreen-light-strip,
+  tools/export_geometry.py), as of 2026-09-28, sha256
+  9822e473633de14f608fc0812d98e34227f9af1dc9a55af421dcab55822739de.
+- docs/images/optics_heatmaps.png is a copy of the light strip's optics model
+  output (silkscreen-light-strip, tools/optics_sim.py), used by the showcase.
+
+Not covered by the license above:
+
+- The Silkscreen name and the logo artwork in enclosures/case-*/hardware/logo/
+  are used to emboss the cases. The license covers the case design; it does not
+  grant rights to the Silkscreen name or logo.
+- Vendor reference files (the panel manufacturer's drawings and the switch
+  datasheets) are not distributed with this source; each case's
+  hardware/reference/SOURCES.md says where to get them.

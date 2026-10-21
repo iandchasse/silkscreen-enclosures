@@ -1,0 +1,28 @@
+<article class="mech" data-card="boardprep" data-preset="boardprep">
+  <div class="mech-head">
+    <div class="refs"><span class="ref">cut at KiCad y <span data-k="cards.boardprep.trim_kicad_y" data-d="2"></span></span><span class="ref">fit <span data-k="cards.boardprep.fit" data-join=" + "></span></span><span class="ref">remove <span data-k="cards.boardprep.remove" data-join=" + "></span></span><span class="ref">leave off <span data-k="cards.boardprep.leave_off"></span></span></div>
+    <h2>Board prep: one cut, four resistors, one switch left off</h2>
+    <p class="thesis">The 3.68&Prime; case is shorter than the board. Before anything goes in, the board&rsquo;s upper extension is cut off, power moves to <span data-k="cards.boardprep.power_key"></span>, and <span data-k="cards.boardprep.leave_off"></span> is left off so a post can stand in its place.</p>
+  </div>
+  <figure><div class="map-wrap" id="boardprep-plan"></div>
+    <figcaption>The board from the front, as it goes into the case. Solid: what stays; hatched: the upper extension that is cut off, with the parts that go with it.</figcaption></figure>
+  <ol class="bp-steps" id="boardprep-steps"></ol>
+  <dl class="nums" id="boardprep-nums"></dl>
+  <p class="note"><b>Check before you cut.</b> The cut crosses copper only where the project&rsquo;s copper audit says it may (<code>hardware/reference/board-trim.md</code> in the case project). <span data-k="cards.boardprep.remove.1"></span> must be gone once <span data-k="cards.boardprep.fit.1"></span> is in, or 3V3 is shorted to ground.</p>
+  <button class="btn show3d" type="button" data-show="boardprep">Show the board in 3D</button>
+  <style>
+    [data-card="boardprep"] svg.bprep { display: block; width: 100%; height: auto; max-height: 560px; }
+    @media (min-width: 721px) { [data-card="boardprep"] svg.bprep { max-width: 440px; margin: 0 auto; } }
+    [data-card="boardprep"] svg.bprep .brd { fill: var(--d-pcb); fill-opacity: 0.22; stroke: var(--d-pcb); stroke-width: 1.4px; vector-effect: non-scaling-stroke; }
+    [data-card="boardprep"] svg.bprep .gone { fill: url(#boardprep-hatch); stroke: var(--ink-3); stroke-width: 1px; stroke-dasharray: 4 3; vector-effect: non-scaling-stroke; }
+    [data-card="boardprep"] svg.bprep .hl { stroke: var(--ink-3); stroke-width: 0.3; }
+    [data-card="boardprep"] svg.bprep .cut { stroke: var(--copper); stroke-width: 2px; stroke-dasharray: 7 4; vector-effect: non-scaling-stroke; }
+    [data-card="boardprep"] svg.bprep .post { fill: var(--d-plate); stroke: var(--ink); stroke-width: 1px; vector-effect: non-scaling-stroke; }
+    [data-card="boardprep"] svg.bprep .part { fill: var(--d-part); fill-opacity: 0.55; stroke: var(--ink); stroke-width: 1px; vector-effect: non-scaling-stroke; }
+    [data-card="boardprep"] svg.bprep .off { fill: none; stroke: var(--warn); stroke-width: 1.6px; vector-effect: non-scaling-stroke; }
+    [data-card="boardprep"] svg.bprep text { font-family: var(--f-mono); fill: var(--ink); paint-order: stroke; stroke: var(--paper); stroke-width: 0.6px; stroke-linejoin: round; }
+    [data-card="boardprep"] svg.bprep text.hot { fill: var(--copper); }
+    [data-card="boardprep"] ol.bp-steps { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; color: var(--ink-2); max-width: 66ch; }
+    [data-card="boardprep"] ol.bp-steps b { color: var(--ink); }
+  </style>
+</article>

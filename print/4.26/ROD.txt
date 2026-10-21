@@ -1,0 +1,37 @@
+Bottom keys: the crank rod (not printed) and its gate (printed, gate.stl)
+
+Rod: 1.75 mm PLA filament, cut to 63.25 +- 0.2 mm. One per case.
+  - Make it in the rod jig (print/rod-jig.stl, also on plate 3 of print/silkscreen-426-plates.3mf). Cut
+    about 80 mm of filament and warm it until it goes limp: about 10 s in hot water (a kettle left to stand
+    a minute), or lay it in the jig's groove and set the jig on the bed at 60 C for 5 minutes. Press it
+    into the groove and let it cool there for half a minute. While it is still warm, cut it at both slots
+    with your scraper's razor blade: it comes out straight, 63.25 long and square at both ends. Lift
+    it out at the window in the middle.
+  - Taper one end (the one that goes in first) in a pencil sharpener, stopping while the tip still has a
+    flat about 0.8 mm across (about half the rod's width). Not a needle point. The other end
+    stays square: it bears on the gate.
+  - It goes in from the case's left side (-X): along the channel in the slot beside the chin, through
+    the rings and the four cranks (don't hold them; the taper picks them up), until its tail is flush
+    with the case side or just inside.
+Gate: print two (inner face on the bed); one is a spare. Right after the rod, drop it into the slot from
+  the open back, bevel down, small hole outward, and press it level with the rim: it pushes the rod the
+  last 1.75 mm. If it stops proud, lift it, push the tail a little further in, press again.
+  End play is then 0.3-0.7 mm. No screw.
+  To take it out: a straightened paperclip in its small hole, lift. Then push the rod's right end
+  toward -X with a small screwdriver until it stops; 2.7-3.1 mm stands out of the slot.
+Cranks: crank-T for TS365ZJ boards (every JLC board), crank-M for APEM MJTP1117.
+  Each cheek holds the rod in a closed hole: feed the rod through; its taper finds the holes.
+  Ream each crank's two bores with a 1.9 mm drill; the rod must slide and turn freely.
+  Print the cranks with elephant-foot compensation 0 and Arachne walls, and the keys (standing on
+  their -X end) and the gate with elephant-foot compensation 0 (OrcaSlicer, per object; the plate
+  file has them), no brim, no supports.
+Keys (key-426, test 2): each has two hooks that run up two slots in the chin wall. Keep the tub
+  face-down from the keys until the board is in, supported so the caps can hang out 2.4 mm: on a
+  soft cloth, on a spacer about 3 mm thick under the screen area, or with the chin over the table's
+  edge. Not flat on a bare table: that pushes the keys flush, and the board then cannot go in
+  without forcing all four switches. Drop each key in from inside, hooks in the slots, and let it
+  slide out until both hooks stop (2.4 proud, level); then the cranks, the rod, the gate and the
+  board. Turned face-up before the board, the keys sink; face-down again puts them back.
+Before the first full print: the gate coupon (fit, cam, and the 5.5 kg push). coupon-chin with one
+  key-426 is an optional fit check for the hooks (about 15 minutes; nothing is chosen from it).
+  See enclosures/case-426/README.md, "Bottom keys".

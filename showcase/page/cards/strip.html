@@ -1,0 +1,155 @@
+<article class="mech" data-card="strip" data-preset="strip">
+  <style>
+    [data-card="strip"] .strip-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    [data-card="strip"] .strip-tags span { font: 500 11.5px/1.3 var(--f-mono); padding: 3px 8px; border-radius: 99px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink-2); }
+    [data-card="strip"] .strip-tags span.warn { border-color: var(--warn); color: var(--warn); }
+    [data-card="strip"] .strip-sec > h3 { font-size: 19px; font-weight: 600; margin-top: 6px; }
+    [data-card="strip"] .strip-sec { display: grid; gap: 10px; min-width: 0; }
+    [data-card="strip"] ol.strip-steps li { cursor: pointer; }
+    [data-card="strip"] ol.strip-steps li:focus-visible { outline: 2px solid var(--mask); outline-offset: -2px; }
+    [data-card="strip"] ol.strip-steps .strip-b { display: none; gap: 6px; margin-top: 4px; font-size: 15px; }
+    [data-card="strip"] ol.strip-steps li.now .strip-b { display: grid; }
+    [data-card="strip"] ol.strip-steps .strip-b p { margin: 0; }
+    [data-card="strip"] .tag { display: inline-block; font: 500 11.5px/1.5 var(--f-mono); padding: 0 6px; border-radius: 3px; margin-right: 4px; vertical-align: 1px; }
+    [data-card="strip"] .tag.tape { background: var(--tape-soft); color: var(--tape); }
+    [data-card="strip"] .tag.kapton { background: var(--kapton-soft); color: var(--kapton); }
+    [data-card="strip"] .tag.free { background: var(--paper); color: var(--ink-3); border: 1px solid var(--rule); }
+    [data-card="strip"] .tag.warm { background: var(--warm-soft); color: var(--warm); }
+    [data-card="strip"] .strip-flat { overflow-x: auto; background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 8px 4px; }
+    [data-card="strip"] .strip-flat svg { display: block; min-width: 760px; width: 100%; height: auto; }
+    [data-card="strip"] .strip-flat text { font-family: var(--f-body); }
+    [data-card="strip"] .leg .sw { width: 12px; height: 12px; }
+    [data-card="strip"] table.forces td { vertical-align: top; }
+    [data-card="strip"] table.forces td.num { font-family: var(--f-mono); font-size: 13px; white-space: nowrap; }
+    [data-card="strip"] .strip-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+    [data-card="strip"] .strip-box { border: 1px solid var(--rule); border-radius: 4px; padding: 12px; display: grid; gap: 8px; align-content: start; background: var(--paper); min-width: 0; }
+    [data-card="strip"] .strip-box h4 { margin: 0; font: 600 16px/1.2 var(--f-display); }
+    [data-card="strip"] .strip-box ul { margin: 0; padding-left: 18px; display: grid; gap: 5px; color: var(--ink-2); font-size: 14.5px; }
+    [data-card="strip"] dl.strip-kv { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; margin: 0; font-size: 14px; }
+    [data-card="strip"] dl.strip-kv dt { color: var(--ink-3); }
+    [data-card="strip"] dl.strip-kv dd { margin: 0; font-family: var(--f-mono); font-size: 13px; overflow-wrap: anywhere; }
+    [data-card="strip"] .strip-img { background: #fff; border: 1px solid var(--rule); border-radius: 4px; display: block; width: 100%; height: auto; }
+    [data-card="strip"] .strip-same { color: var(--ink-3); }
+    [data-card="strip"] .strip-ok { color: var(--ok); font-weight: 600; }
+    [data-card="strip"] .strip-bad { color: var(--warn); font-weight: 600; }
+    [data-card="strip"] .strip-own { color: var(--copper); font-weight: 600; }
+    [data-card="strip"] details > summary { cursor: pointer; font: 500 12.5px var(--f-mono); color: var(--ink-2); }
+    [data-card="strip"] details[open] > summary { margin-bottom: 8px; }
+  </style>
+  <div class="mech-head">
+    <div class="refs"><span class="ref">J3</span><span class="ref">D1&ndash;D12</span><span class="ref">D13 D14</span></div>
+    <h2>Light strip</h2>
+    <p class="thesis">A flex circuit puts six warm/cool pairs of side-view LEDs along the panel&rsquo;s left edge and plugs into the board&rsquo;s frontlight connector, J3. The light grazes the page from under the bezel. One strip fits both readers; each case size has a light-strip build that makes room for it.</p>
+  </div>
+  <div class="strip-tags">
+    <span>12 &times; XL-4008 &middot; 6 warm 3000 K / 6 cool 6000&ndash;6500 K</span>
+    <span>0.11 mm 2-layer flex &middot; black coverlay</span>
+    <span>plugs into J3 &middot; no firmware change</span>
+    <span class="warn">not built yet</span>
+  </div>
+
+  <section class="strip-sec" aria-labelledby="strip-fit-h">
+    <h3 id="strip-fit-h">How it goes in, step by step</h3>
+    <div class="body"><p>Step through and the model folds the strip the way the flex is drawn: the same outline, stiffeners, LED positions and fold paths as the KiCad board. While this card is open, the <b>Fold</b> slider and the <b>Case</b>, <b>Cut</b>, <b>Tape</b> and <b>Light</b> switches sit under the model.</p></div>
+    <ol class="steps strip-steps" id="strip-steps"></ol>
+    <div class="btns">
+      <button class="btn show3d" type="button" id="strip-show">Show in 3D</button>
+      <button class="btn ghost" type="button" id="strip-prev">Previous</button>
+      <button class="btn ghost" type="button" id="strip-next">Next step</button>
+    </div>
+  </section>
+
+  <section class="strip-sec" aria-labelledby="strip-cut-h">
+    <h3 id="strip-cut-h">Cut through the case</h3>
+    <div class="body"><p>Sections through the light-strip build&rsquo;s own meshes. The LED tops sit at Z&nbsp;<span data-k="cards.strip.geometry.led_top" data-d="2"></span>, under a ceiling at <span data-k="cards.strip.geometry.ceiling" data-d="2"></span>; the flex top is at <span data-k="cards.strip.geometry.flex_top" data-d="3" data-u="mm"></span>.</p></div>
+    <div class="dwg-pair" id="strip-dwgs"></div>
+  </section>
+
+  <section class="strip-sec" aria-labelledby="strip-tape-h">
+    <h3 id="strip-tape-h">What sticks where</h3>
+    <div class="body"><p>The strip arrives with its own tape: JLC laminates 3M 9077 onto the back of the two front stiffener pieces. You add a few pieces of Kapton in the reader. Two places must stay free of tape and stiffener, because that is where the flex bends.</p></div>
+    <div class="strip-flat"><svg id="strip-flat" viewBox="0 0 1300 250" role="img" aria-label="Flat pattern of the strip with its tape, stiffener and fold zones"></svg></div>
+    <div class="leg">
+      <span><i class="sw" style="background:var(--pi)"></i>PI stiffener 0.225 mm (back)</span>
+      <span><i class="sw" style="background:var(--tape)"></i>3M 9077 tape, factory-applied (back)</span>
+      <span><i class="sw" style="background:repeating-linear-gradient(45deg,var(--ink-3) 0 2px,transparent 2px 5px)"></i>keep free: bends here</span>
+      <span><i class="sw" style="background:var(--warm)"></i>warm LED</span>
+      <span><i class="sw" style="background:var(--cool)"></i>cool LED</span>
+      <span><i class="sw" style="background:var(--gold)"></i>gold contacts / pads</span>
+    </div>
+    <div class="tbl-wrap">
+      <table class="forces">
+        <thead><tr><th>Tape</th><th>Where</th><th>Why</th></tr></thead>
+        <tbody id="strip-tape"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="strip-sec" aria-labelledby="strip-light-h">
+    <h3 id="strip-light-h">What the page sees</h3>
+    <div class="body"><p>Grazing light falls off steeply: the model puts the page 2 mm from the lit edge at about 230 times the far edge on the 4.26&Prime;, and the pairs smooth out along the edge within about 10 mm. A real e-paper film scatters, so the far side looks brighter than this geometry predicts.</p></div>
+    <figure>
+      <img class="strip-img" id="strip-optics" alt="Modelled irradiance on the 4.26 inch and 3.68 inch pages with one string lit" loading="lazy" width="1200" height="600">
+      <figcaption>Warm string only, log scale. Left: 4.26&Prime;, six pairs. Right: 3.68&Prime;, five pairs lit (the sixth is folded under). From <code>tools/optics_sim.py</code>.</figcaption>
+    </figure>
+    <div class="btns"><button class="btn ghost" type="button" id="strip-light">Paint it on the model</button></div>
+  </section>
+
+  <section class="strip-sec" aria-labelledby="strip-case-h">
+    <h3 id="strip-case-h">What changes in the case</h3>
+    <div class="strip-box" id="strip-casecard"></div>
+    <div class="tbl-wrap">
+      <table class="forces" id="strip-diff">
+        <thead><tr><th>Part</th><th>Standard vs light strip</th><th>What differs</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="note" id="strip-diff-note"></p>
+  </section>
+
+  <section class="strip-sec" aria-labelledby="strip-parts-h">
+    <h3 id="strip-parts-h">What&rsquo;s on it</h3>
+    <div class="strip-cols">
+      <div class="strip-box">
+        <h4>Bill of materials</h4>
+        <div class="tbl-wrap"><table class="forces">
+          <thead><tr><th>Qty</th><th>Part</th><th>LCSC</th></tr></thead>
+          <tbody>
+            <tr><td class="num">6</td><td>XINGLIGHT XL-4008WWC, warm 3000 K (D1&ndash;D6)</td><td class="num">C5440667</td></tr>
+            <tr><td class="num">6</td><td>XINGLIGHT XL-4008UWC, cool 6000&ndash;6500 K (D7&ndash;D12)</td><td class="num">C2843774</td></tr>
+            <tr><td class="num">2</td><td>Nexperia BAV70W,115 flip protection (D13, D14)</td><td class="num">C28064</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div class="strip-box">
+        <h4>Electrical</h4>
+        <dl class="strip-kv">
+          <dt>Strings</dt><dd>2 &times; 6 LEDs + BAV70W, one lit at a time</dd>
+          <dt>Current</dt><dd>13.3 mA nominal, 13.9 mA max (R37 = 15 &Omega;)</dd>
+          <dt>LED_SW</dt><dd>18.4 V typ &middot; 21.7 V worst (&minus;10 &deg;C, top bin)</dd>
+          <dt>Ceiling</dt><dd>22 V design &middot; 24.25 V OVP min</dd>
+          <dt>LED_MONIT</dt><dd>lit 1.4&ndash;2.4 V &middot; open &ge; 2.49 V (first second)</dd>
+          <dt>Connector</dt><dd>J3 FH34SRJ: 1 SW &middot; 2 C&minus; &middot; 5 SW &middot; 6 W&minus;</dd>
+        </dl>
+      </div>
+      <div class="strip-box">
+        <h4>The flex</h4>
+        <dl class="strip-kv">
+          <dt>Size</dt><dd>15.1 &times; 127.6 mm</dd>
+          <dt>Build</dt><dd>2L 0.11 mm, 25 &micro;m PI, ENIG, black coverlay</dd>
+          <dt>Stiffener</dt><dd>PI 0.225 mm, 3 pieces</dd>
+          <dt>Tape</dt><dd>3M 9077 on the 2 front pieces</dd>
+          <dt>Hinge</dt><dd>3.6 mm bare, between the top two pairs</dd>
+          <dt>Tail</dt><dd>23.65 mm from the 4.26&Prime; glass edge</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="strip-sec" aria-labelledby="strip-checks-h">
+    <h3 id="strip-checks-h">Checked for this case</h3>
+    <div class="tbl-wrap"><table class="forces" id="strip-checks"><thead><tr><th>Check</th><th>Result</th></tr></thead><tbody></tbody></table></div>
+    <div id="strip-tables"></div>
+    <p class="note">Rev A of the strip is not built yet. These are the design&rsquo;s own checks against the case meshes; details may change after the first one is fitted.</p>
+  </section>
+</article>

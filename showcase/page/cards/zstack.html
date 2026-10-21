@@ -1,0 +1,32 @@
+<article class="mech" data-card="zstack" data-preset="zstack">
+  <div class="mech-head">
+    <div class="refs"><span class="ref"><span class="zs-thick">12.7</span> mm</span><span class="ref">board&rsquo;s rear = z 0</span><span class="ref">to scale in Z</span></div>
+    <h2>Front to back: where the <span class="zs-thick">12.7</span> mm goes</h2>
+    <p class="thesis" data-only="426">In front of the board: skin, panel, midplate and a little air. Behind it, the deepest part on the board&rsquo;s back sets the depth, and the battery sits beside the parts, not behind them, in the midplate&rsquo;s slot through the board&rsquo;s notch.</p>
+    <p class="thesis" data-only="368">The depth is set by what is under the battery, not by the battery alone. The cell lies over the board&rsquo;s shallow middle, so everything but the battery fits in <span data-k="cards.zstack.without_battery" data-d="1"></span> mm and the cell is the other <span class="zs-cell">5.2</span>.</p>
+  </div>
+  <figure><div class="map-wrap" id="zstack-svg"></div>
+    <figcaption>Bars are to scale in Z, the board&rsquo;s rear face at z 0. <span class="zs-cap"></span></figcaption></figure>
+  <div class="btns"><button class="btn ghost" type="button" id="zstack-other" aria-pressed="false">Put the other size beside it</button><span class="state" id="zstack-state"></span></div>
+  <dl class="nums" id="zstack-nums"></dl>
+  <div class="body" data-only="426">
+    <p><strong>Behind the board.</strong> The board&rsquo;s rear-side parts are the biggest single item: <strong>J6&rsquo;s header</strong> reaches <span class="zs-rear">5.17</span> mm below the board, with J5 and the side switches close behind. Lowering J6 alone would save little; a real cut needs lower parts for all three, or a board with the battery connector and header beside the cell.</p>
+    <p><strong>The battery</strong> does not add to the stack: its slot on the midplate stands up through the board&rsquo;s notch, so the cell sits level with the parts behind the board (the bar drawn beside the stack).</p>
+  </div>
+  <div class="body" data-only="368">
+    <p><strong>In front of the board</strong>: a <span data-k="cards.zstack.budget.0.1" data-d="1"></span> mm skin, the <span data-k="cards.zstack.budget.1.1" data-d="2"></span> mm panel and the <span data-k="cards.zstack.budget.2.1" data-d="1"></span> mm midplate, whose springs take up the panel&rsquo;s tolerance, then <span data-k="cards.zstack.budget.3.1" data-d="1"></span> mm of spring gap and the 1.6 mm board. <strong>Behind it</strong>: the parts under the cell (<span data-k="cards.zstack.budget.5.1" data-d="2"></span> mm at most, the microSD socket), <span data-k="cards.zstack.budget.6.1" data-d="1"></span> mm of air, the cell at its <span class="zs-cell">5.2</span> mm allowance, and <span data-k="cards.zstack.budget.8.1" data-d="1"></span> mm of floor under it. The rest of the back is thicker; the cell&rsquo;s pocket is sunk into it.</p>
+    <p><strong>The squeeze.</strong> This trades margin for thickness: half the air over the parts, a 5.2 mm allowance for a 5.18 mm pack, a two-layer floor under the cell and a smaller spring gap. The pack has <span data-k="cards.battery.battery.swell_mm" data-d="2"></span> mm to swell before it touches the microSD socket. The only thinner layout with this pack stands it beside the board, as the 4.26&Prime; does: 10.3 mm, but 123 mm tall. Over the bottom keys the case is <span data-k="cards.zstack.with_keys" data-d="1"></span> mm.</p>
+  </div>
+  <p class="note" data-only="ls">On the light-strip build the front is raised over the strip, which lies beside the panel under the skin (the narrow bar beside the stack).</p>
+  <button class="btn show3d" type="button" data-show="zstack">Cut it open in 3D</button>
+  <style>
+    [data-card="zstack"] #zstack-svg { padding: 6px; }
+    [data-card="zstack"] #zstack-svg svg { display: block; width: 100%; height: auto; }
+    [data-card="zstack"] #zstack-svg text { font-family: var(--f-mono); font-size: 11px; fill: var(--ink-2); }
+    [data-card="zstack"] #zstack-svg text.hd { fill: var(--ink); font-weight: 600; }
+    [data-card="zstack"] #zstack-svg .bar { stroke: var(--ink-2); stroke-width: 0.8; }
+    [data-card="zstack"] #zstack-svg .ld { stroke: var(--ink-3); stroke-width: 0.8; fill: none; }
+    [data-card="zstack"] #zstack-svg .z0 { stroke: var(--ink-3); stroke-dasharray: 3 3; }
+    [data-card="zstack"] #zstack-svg g[data-other] .bar { opacity: 0.55; }
+  </style>
+</article>
