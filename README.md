@@ -193,7 +193,7 @@ copies, or CC2 versions of them (`--printer cc2`), run `make_plates.py configs` 
 | [`enclosures/OPEN-WORK.md`](enclosures/OPEN-WORK.md) | Open design work |
 | [`print/`](print/) | Files to print (above) |
 | [`showcase/`](showcase/) | Source of an interactive 3D page of both cases (see [`showcase/API.md`](showcase/API.md)); its data is generated from each project's `out/` |
-| [`docs/showcase/`](docs/showcase/) | The built page, `index.html` with its data files. Open it over http (for example `python -m http.server` in that folder), not from a file, so its downloads work |
+| [`docs/showcase/`](docs/showcase/) | The built page. Only `index.html` and `manifest.json` are in git; the data files it loads (about 50 MB) are build outputs, so a fresh clone needs a showcase build first (`showcase/gen/adapt_368.py`, `adapt_426.py`, then `bundle.py --strict-page`). Open the result over http (for example `python -m http.server` in that folder), not from a file, so its downloads work |
 | [`docs/images/`](docs/images/) | Figures used by the READMEs |
 
 [`enclosures/README.md`](enclosures/README.md) covers the two projects, what they share, the scripts and the rebuild
