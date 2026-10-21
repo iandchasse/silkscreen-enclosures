@@ -1,7 +1,7 @@
 // Model files: one zip per size (models-S.js, loaded on the first download), everything / this build / one group.
 // Names come from data.downloads.zip, sizes from the manifest (sizes.S.zip_bytes, files[models-S.js].bytes) and the
-// groups' own file bytes. Saving goes through the host's downloads capability (SC.dl.api()); outside claude.ai the
-// buttons stay off and say why.
+// groups' own file bytes. Saving goes through the host's downloads capability when there is one, and otherwise
+// through a plain browser download (SC.dl.api()); if neither is possible the buttons stay off and say why.
 SC.card({
   id: 'files', title: 'Model files', order: 140, preset: 'dummy',
   needs: ['downloads.zip', 'downloads.groups', 'downloads.readme', 'cards.files.dummy'],
@@ -164,8 +164,9 @@ SC.card({
       api = a;
       if (api) {
         buttons.forEach(function (b) { b.disabled = false; });
-        setStatus('Each download asks you to confirm before it saves. The first one loads the ' + SC.esc(sizeL) + ' model file (' + mb(jsBytes) + ') once.');
-      } else setStatus('Downloads work when this page is open on claude.ai.');
+        setStatus((api.plain ? 'Each download is saved by your browser. ' : 'Each download asks you to confirm before it saves. ')
+          + 'The first one loads the ' + SC.esc(sizeL) + ' model file (' + mb(jsBytes) + ') once.');
+      } else setStatus('Downloads are not available in this view. The part files are in the repository&rsquo;s print/ folder.');
     });
     self._info = { zip: dl.zip, zipBytes: zipBytes, jsName: jsName, jsBytes: jsBytes, buildPaths: buildPaths, groups: dl.groups.map(function (g) { return g.id; }) };
   },

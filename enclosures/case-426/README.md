@@ -1,5 +1,9 @@
 # Silkscreen enclosure
 
+> [!IMPORTANT]
+> AI-assisted, not the official Silkscreen enclosure: see the notice at the top of the
+> [main README](../../README.md) and https://silkscreenreader.com/ai.
+
 A 3D-printed case for Silkscreen, Ian Chasse's ESP32-S3 e-paper reader board, with its
 GDEQ0426T82-FT01C touch and front-light panel and a 503035 LiPo. This file is the single reference
 for the design:

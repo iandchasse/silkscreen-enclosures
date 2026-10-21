@@ -336,6 +336,7 @@ footer code { font-size: 12.5px; }
     <p class="eyebrow"><span class="pill">Silkscreen</span><span>ESP32-S3 e-paper reader</span><span id="mast-which">4.26&Prime; &middot; Standard build</span></p>
     <h1>The case, built around the board</h1>
     <p class="lede">One printed case in two sizes, 4.26&Prime; and 3.68&Prime;, each as a standard build and a light-strip build; the 4.26&Prime; also comes chinless, without the bottom keys, with either panel. Pick a size and a build above the model: the 3D view is the CadQuery model&rsquo;s own mesh, every drawing in the tour is a section cut through that mesh, and the downloads are its print files.</p>
+    <p class="note" id="mast-ai"><b>AI-assisted work, not the official Silkscreen enclosure.</b> These cases are a baseline printable enclosure for the early days of the board, designed with substantial AI assistance; community efforts toward a human-built case are ongoing. See Silkscreen&rsquo;s <a href="https://silkscreenreader.com/ai" target="_blank" rel="noopener">AI disclosure</a>. The light-strip builds are in development and not released.</p>
   </div>
   <dl class="facts" id="facts" aria-live="polite"></dl>
 </header>
@@ -962,7 +963,8 @@ footer code { font-size: 12.5px; }
   // ---------------- masthead, stage bar ----------------
   function fillMast() {
     var D = SC.data, M = D.meta;
-    $('mast-which').innerHTML = SC.esc(MF.sizes[state.size].label) + ' &middot; ' + SC.esc(MF.builds[state.build].label) + ' build';
+    $('mast-which').innerHTML = SC.esc(MF.sizes[state.size].label) + ' &middot; ' + SC.esc(MF.builds[state.build].label) + ' build'
+      + (/in development/.test(MF.builds[state.build].note || '') ? ' &middot; in development, not released' : '');
     $('facts').innerHTML = (D.facts || []).map(function (f) {
       // typeset the plain-ASCII data: 68.2 x 125.0 -> 68.2 &times; 125.0, cm3 -> cm&sup3;
       var ty = function (t) { return String(t).replace(/(\d) x (\d)/g, '$1 &times; $2').replace(/\bcm3\b/g, 'cm&sup3;').replace(/\bmm3\b/g, 'mm&sup3;'); };
@@ -1153,13 +1155,25 @@ footer code { font-size: 12.5px; }
       ev.setUint32(12, centrals.reduce(function (s, c) { return s + c.length; }, 0), true); ev.setUint32(16, off, true);
       return new Blob(locals.concat(centrals, [end]), { type: 'application/zip' });
     },
-    // the host's downloads capability, or null outside claude.ai
+    // the host's downloads capability when the page runs inside a host that offers one; otherwise a plain browser
+    // download of the zip (a blob link), which needs the page to be served over http like its data files
     api: function () {
       if (SC.dl._api) return SC.dl._api;
       SC.dl._api = Promise.resolve().then(function () {
         return window.claude && window.claude.use ? window.claude.use('downloads') : null;
-      }).catch(function () { return null; });
+      }).catch(function () { return null; }).then(function (a) { return a || SC.dl.plain(); });
       return SC.dl._api;
+    },
+    plain: function () {
+      if (!(window.URL && URL.createObjectURL && document.body)) return null;
+      return { plain: true, save: function (o) {
+        return new Promise(function (resolve) {
+          var u = URL.createObjectURL(o.data), a = document.createElement('a');
+          a.href = u; a.download = o.filename; document.body.appendChild(a); a.click(); a.remove();
+          setTimeout(function () { URL.revokeObjectURL(u); }, 60000);
+          resolve({ status: 'saved' });
+        });
+      } };
     },
   };
 

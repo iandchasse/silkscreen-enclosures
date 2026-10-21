@@ -52,7 +52,8 @@ VARIANTS = ('T', 'M')                                       # crank-T + TS365ZJ 
 DEFAULTS = {'size': '426', 'build': 'std', 'variant': 'T'}
 SIZE_LABELS = {'426': '4.26"', '368': '3.68"'}
 BUILD_LABELS = {'std': 'Standard', 'ls': 'Light strip', 'cl': 'Chinless', 'lc': 'Light-strip chinless'}
-BUILD_NOTES = {'cl': 'touch, no bottom keys', 'lc': 'no touch, no bottom keys'}   # the stage bar's small print
+BUILD_NOTES = {'ls': 'in development, not released', 'cl': 'touch, no bottom keys',
+               'lc': 'in development, not released; no touch, no bottom keys'}   # the stage bar's small print
 
 
 def builds_of(size):

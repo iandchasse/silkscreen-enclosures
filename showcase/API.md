@@ -508,8 +508,9 @@ A card is `cards/<id>.html` (one `<article class="mech" data-card="<id>" data-pr
 ### Downloads (`SC.dl`, for the files card)
 `SC.dl.zip(S?)` loads `models-S.js` once (a script tag; it clears `window.SC_MODELS` after decoding) and resolves
 to the zip bytes. `SC.dl.subset(bytes, Set of paths)` returns a Blob holding only those entries (Rev K's copy of the
-local records). `SC.dl.api()` resolves to `window.claude.use('downloads')` or null outside claude.ai; the page must
-declare the `downloads` capability when it is published. Zip and file names come from `data.downloads` and the
+local records). `SC.dl.api()` resolves to `window.claude.use('downloads')` when the host offers it (a page published there must
+declare the `downloads` capability), and otherwise to `SC.dl.plain()`, a plain browser download of the zip (a blob link),
+which needs the page served over http like its data files. Zip and file names come from `data.downloads` and the
 manifest; sizes from `manifest.files[f].bytes`.
 
 ### Page rules
@@ -1294,8 +1295,9 @@ page copy; skips `mech-b-*` unless `--with-b`, since those were half-written dur
   `downloads.js_bytes`), file sizes from the groups. Rows tag "this build" / "other build" (3.68) or name the build per file
   (4.26 tubs). Text from `cards.files` (`plate`, `print` on 3.68, `dummy`: counts, size, mass at 1.24 g/cm3, open switch
   sites, the dummy's contacts, USB mock).
-- Outside claude.ai the buttons stay off: "Downloads work when this page is open on claude.ai." **Publish with the
-  `downloads` capability** (the main session's job).
+- With no host downloads capability the buttons save through the browser (`SC.dl.plain()`); they stay off only when
+  even that is missing: "Downloads are not available in this view." A host that offers the capability (a published
+  copy) should be given the `downloads` capability.
 - Test hooks: `SC.cards().files.pack(which)` -> `{name, blob, paths}` without saving; `.paths(D, which, B)`; `.info()`.
 
 ### Checked (headless, cdpplan2; 1400x900 light, 1400x3000 light and dark, 390x4200 light, 390x4200 dark without the
@@ -1310,7 +1312,7 @@ downloads mock; all four size / build combinations each)
 - Downloads with a mocked `window.claude.use('downloads')`: every button in every combination (10 zips on 4.26, 7 on
   3.68): the saved zip parses (central directory, every local header and name), its entries are exactly the expected
   paths, `README.txt` inflates to its size, the whole zip is `zip_bytes`, names match `silkscreen-*.zip`, and no
-  `silkscreen-rev-k-` anywhere in the page. Without the mock the buttons are disabled with the claude.ai note.
+  `silkscreen-rev-k-` anywhere in the page. Without the mock the buttons use the plain browser download.
 - Screenshots of all three cards in every run and the stage after a tap, looked at.
 
 ### API wishes (worked around in the cards)

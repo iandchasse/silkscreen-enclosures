@@ -1,5 +1,9 @@
 # Silkscreen x3 enclosure
 
+> [!IMPORTANT]
+> AI-assisted, not the official Silkscreen enclosure: see the notice at the top of the
+> [main README](../../README.md) and https://silkscreenreader.com/ai.
+
 **This folder is `enclosures/case-368`.** What it makes to print is
 in the repo's [`print/`](../../print/) folder: `print/silkscreen-368-plates.3mf` and `print/3.68/`. The generic OrcaSlicer
 project the website serves for the 3.68 is described in the [top-level README](../../README.md#the-368-1-file). The
