@@ -119,7 +119,7 @@ based solely on assuming which physical side should carry which function.
 | UP1 | SW4 | right edge, Y = 75.5 | Page up |
 | DWN1 | SW1 | right edge, Y = 61.5 | Page down |
 
-The two-populate/two-depopulate provision in this local board is:
+The two-populate/three-depopulate provision in this local board is:
 
 | Change | Reference and board value | Local board status | Electrical connection |
 |---|---|---|---|
