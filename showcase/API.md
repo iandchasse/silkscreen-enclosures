@@ -289,7 +289,7 @@ Make them with `sc_lib.drawing()`, which cuts the same meshes the model files ca
 - `glance.bullets [html]`
 - `zstack.bars [{name, z [z0,z1]}]`: both sizes (the 4.26 adapter needs its own stack too)
 - `battery.depth_map {x0, y0, res, nx, ny, depth[ny][nx], on[ny][nx], outline}`: 3.68, from x3 `depth_map()`
-- `boardprep {trim_y 86.25, trim_kicad_y 62.00, fit [R72 R74], remove [R36 R73], leave_off [SW5]}`: 3.68
+- `boardprep {trim_y 86.25, trim_kicad_y 62.00, fit [R72 R74], remove [R36 R73 R62], leave_off [SW5]}`: 3.68
 - `compare.attribution`: must name Zorian22
 - `checks {count, failed, measure [html]}`: `measure` is Rev K's "Measure before printing", per size and build (battery, panel thickness and switch travel, ribbon / FPC bend radius, USB-C overmold and short seat, plunger tape vs the side keys' gap, lid seating, the microSD socket, a real TS365ZJ before crank-T, the chin coupon (the hook keys' optional fit check; was the drag / tuning coupon), the gate coupon, the rod with its taper and square tail; `ls` adds the strip's stack). Required; the checks card shows it under "Measure before printing".
 - `strip.steps [{t, cam [[cam],[tgt]], f, tape?, kapton?, cutX?, cutY?, caseOn?, cut?, b (html)}]`: required on `ls`. Also `strip.case_cards` (the per-size bullets) and `strip.diff` (the build-diff rows).
@@ -763,7 +763,7 @@ PNG and the page.
   | block | 3.68 content |
   |---|---|
   | `battery` | `battery {in_lid, capacity_mAh, ref, box, allowance_mm, clearance_mm, swell_mm, pocket_mm, bay, hooks, lead, plug, lead_xy, deep_parts, antenna, antenna_gap_mm, module, j5, j7, cell_bbox}` and `depth_map` (x3's board-rear map, 1 mm cells, 63 x 96) |
-  | `boardprep` | `{trim_y 86.25, trim_kicad_y 62.0, fit [R72 R74], fit_values, remove [R36 R73], leave_off [SW5], power_key SW7, gone_with_cut [...], lead_trim_mm, support_post, snap_posts}` |
+  | `boardprep` | `{trim_y 86.25, trim_kicad_y 62.0, fit [R72 R74], fit_values, remove [R36 R73 R62], leave_off [SW5], power_key SW7, gone_with_cut [...], lead_trim_mm, support_post, snap_posts}` |
   | `zstack` | x3's 9 bars. On ls a `beside: true` row for the strip (LIP to the LED tops). `thickness`, `with_keys`, `without_battery`. |
   | `screen` | `strip_stack` on ls: the tape, PI, flex and LED heights, the ceiling, `front_raise` (x3's 1.2) and `over_std` (the light-strip face over the standard's: 0.8). `window` (below) |
   | `edges` | `edges.window_bevel_deg` and `edges.window_corner_r` (below) |

@@ -33,7 +33,7 @@ allowance for a particular cutting tool or kerf.
 The battery connector J5 model reaches Y = 84.70, leaving 1.55 mm to this datum.
 Its footprint courtyard reaches Y = 85.20, leaving 1.05 mm. The upper battery pad
 centre is (50.6100, 82.7500), a 0.75 mm plated hole with 1.20 x 1.75 mm pad size.
-The retained R62 footprint is around Y = 81.85. The first removed component
+R62's footprint, which stays on the board but is removed for the power rework (below), is around Y = 81.85. The first removed component
 bodies start at Y = 88.00 (CR2) and 88.10 (D3).
 
 An initially considered Y = 85.50 edge leaves only 0.80 mm above the connector
@@ -95,8 +95,8 @@ trimmed board.
 ## Specific power-button and power-path impact
 
 SW10 pad 2 is on 3V3. SW10 pad 1 joins R62 pad 1 through
-`Net-(R62-Pad1)`, which is severed by the cut. R62 is a retained 10 kOhm resistor;
-its pad 2 is `PWR_BUTTON`. That signal also reaches the retained ESP32-S3 U4
+`Net-(R62-Pad1)`, which is severed by the cut. R62 is a 10 kOhm resistor, still on the board
+on a sawn stub; its pad 2 is `PWR_BUTTON`. That signal also reaches the retained ESP32-S3 U4
 pad 11 and R76 (100 kOhm to GND), plus C29 and the DNP R72 alternative network.
 Consequently **the existing physical SW10 power/wake button is removed**, and
 its normal 3V3 assertion through R62 is lost. An enclosure must not retain an
@@ -127,12 +127,18 @@ The two-populate/two-depopulate provision in this local board is:
 | Populate | R74, 0 Ohm | DNP | 3V3 to SW7 pad 1 (`Net-(R73-Pad2)`) |
 | Depopulate | R36, 68 kOhm | Populated | Disconnects SW7 pad 2 from `BUTTON_ADC_2` |
 | Depopulate | R73, 0 Ohm | Populated | Disconnects SW7 pad 1 from GND |
+| Depopulate | R62, 10 kOhm | Populated | SW10's old series resistor; left in, it loads `PWR_BUTTON` (below) |
 
 After those population changes, pressing SW7 provides the intended path
 `3V3 -> R74 -> SW7 -> R72 -> PWR_BUTTON`, while the retained R76 supplies its
 100 kOhm ground pull-down. R73 must be absent in that configuration: keeping it
 while fitting R74 directly connects 3V3 to GND through the two zero-ohm links.
 R72 is a **10 kOhm resistor in the source board**, not a zero-ohm jumper.
+
+**R62 is removed for the rework** (Ian, 2026-10-22). It is SW10's series resistor and, after the cut, sits on a sawn
+stub. Left in place, a saw burr bridging the stub to GND would make it a divider with R72 and hold `PWR_BUTTON` at
+about 1.57 V, below what the ESP32-S3 reads as high. The case needs no R62; its footprint stays in the geometry facts
+above and the CAD model keeps its body.
 
 This verifies that the local PCB contains the exact selectable network needed
 for the user's plan. It does not certify a completed rework, the user's actual

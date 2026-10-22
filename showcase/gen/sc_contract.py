@@ -1169,7 +1169,7 @@ def sample(size='426', build='std'):
                                          'depth': [[0.0, 1.2], [0.4, 0.0]], 'on': [[True, True], [True, False]],
                                          'outline': [[0, 0], [1, 0], [1, 1]]}
         cards['boardprep'].update({'trim_y': 86.25, 'trim_kicad_y': 62.0, 'fit': ['R72', 'R74'],
-                                   'remove': ['R36', 'R73'], 'leave_off': ['SW5']})
+                                   'remove': ['R36', 'R73', 'R62'], 'leave_off': ['SW5']})
     return {
         'schema': SCHEMA, 'size': size, 'build': build,
         'meta': {'title': 'Silkscreen case', 'size_label': SIZE_LABELS[size],

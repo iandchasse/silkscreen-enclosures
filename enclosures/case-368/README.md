@@ -17,7 +17,7 @@ SW2 are the bottom-row buttons, left to right (Back, OK, Left, Right). J1 is the
 connectors, J5 the battery connector and J7 the microSD socket; J6, the expansion header, goes with the cut. U1 and U9 are
 the microSD ESD arrays, U3 is the 3.3 V regulator and L1 the display's boost inductor (all named where the lid and bay
 clearances are measured); Q2 is the charger's enable switch. H1-H6 are
-the mounting holes (H1 goes with the cut; H3 and H4 are the bottom two). The power rework (R36, R72, R73, R74) and the
+the mounting holes (H1 goes with the cut; H3 and H4 are the bottom two). The power rework (R36, R62, R72, R73, R74) and the
 two fixes of a pre-Rev 1.01 board (the charge-enable wire to Q2 and R81; the ground wire
 from C6, the 3.3 V regulator's output capacitor, to C21; R40 is a 3V3 point for the first) name the parts they solder;
 silkscreen-pcb's README ("Cutting the board down") and docs/HARDWARE.md describe them.
@@ -1864,8 +1864,9 @@ New in x3:
 1. **Board.** Check each point before closing the lid:
    - Cut the upper extension at KiCad Y 62.00 and dress the edge. Leave nothing above Y 62: the lid's backstops start
      3.45 mm above it.
-   - Power rework (the left upper page key becomes the power key): fit R72 (10 kΩ) and R74 (0 Ω). Remove R36 and R73 (R73 must be gone when R74 is in, or 3V3 is shorted to
-     ground).
+   - Power rework (the left upper page key becomes the power key): remove R36, R73 and R62, then fit R72 (10 kΩ) and R74 (0 Ω). R73 must be gone when R74 is in, or 3V3 is shorted to
+     ground. R62 is the old power button's series resistor: on the cut-down board it sits on a sawn stub, and if a saw burr
+     bridges the stub to ground it would pull the power line to about 1.6 V with R72, too low to count as pressed.
    - Leave the left lower page key (SW5) off: the lid has a post in its site.
    - **Trim the battery connector's (J5's) through-hole leads and the switches' pins to 0.65 mm proud of the front.**
    - Seat the three side switches (SW1, SW4, SW7) flat on the board, within 0.2 mm.

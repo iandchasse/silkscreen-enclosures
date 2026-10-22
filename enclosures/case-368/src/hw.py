@@ -3,7 +3,7 @@
 x3 changes to the board (hardware/reference/board-trim.md has the copper audit):
   - the narrow upper extension is cut off at Y = PCB_CUT_Y (KiCad Y 62.00), just above J5; J6, H1,
     SW10 and the protection parts beside them go with it
-  - power moves to SW7 (UP2): R72 and R74 fitted, R36 and R73 removed; SW5 (DWN2) is left off
+  - power moves to SW7 (UP2): R72 and R74 fitted, R36, R73 and R62 removed; SW5 (DWN2) is left off
   - the 3.68-inch 528 x 792 panel replaces the GDEQ0426T82 (hardware/reference/panel-3p68.png)
 
 CAD frame: mm, X = KiCad X - 44.24, Y = 148.25 - KiCad Y, Z = 0 at the PCB rear face,
@@ -30,7 +30,8 @@ PCB_FRONT = PCB_T              # rebuilds it at 1.6 from its rear face
 PCB_CUT_Y = 86.25              # x3: the board is trimmed here (KiCad Y 62.00), 1.55 above J5's body and clear
                                # of the ground via at (53.11, 85.55); the cut crosses only the narrow extension
 FITTED = ('R72', 'R74')        # x3 power rework: fitted (the export has no solid for them, see solids())
-REMOVED = ('R36', 'R73', 'SW5')  # removed, or left off
+REMOVED = ('R36', 'R73', 'SW5')  # removed, or left off (the CAD keeps R62's body: conservative)
+REWORK_REMOVE = ('R36', 'R73', 'R62')  # the power rework's removals as written up; R62 is SW10's old series resistor
 
 # ---- display: 3.68-inch 528 x 792 bare EPD, from the supplied drawing ------------------------
 # Outline 56.24 x 86.54 (+-0.2 each), 0.87 +-0.1 thick; active area 51.84 x 77.76, 2.20 in from the top

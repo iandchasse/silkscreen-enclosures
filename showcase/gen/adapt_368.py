@@ -685,7 +685,7 @@ def assembly_block(B):
                  'and stops level, 2.5 mm proud; nothing is chosen from it.'},
         {'id': 'prep', 'title': 'Before you start', 'groups': ['pcba'], 'preset': 'boardprep',
          'text': f'Cut the board at the upper extension (y {hw.PCB_CUT_Y:g} in the CAD frame, KiCad y 62.00). Do the power '
-                 'rework: fit R72 (10 k&Omega;) and R74 (0 &Omega;), remove R36 and R73 (the left upper key&rsquo;s ladder resistor and ground jumper). Leave the left lower page key (SW5) off. Trim the battery connector&rsquo;s (J5) '
+                 'rework: remove R36, R73 and R62 (the left upper key&rsquo;s ladder resistor and ground jumper, and the old power button&rsquo;s series resistor, which would pull the power line to about 1.6 V with R72), then fit R72 (10 k&Omega;) and R74 (0 &Omega;). Leave the left lower page key (SW5) off. Trim the battery connector&rsquo;s (J5) '
                  f'through-hole leads and the switches&rsquo; pins to 0.65 mm proud. Measure the cell: at most '
                  f'{P.BATT_T_MAX:g} mm thick and 31.7 &times; 37.9 mm.'},
         {'id': 'rodprep', 'title': 'Rod and cranks', 'groups': ['rod'],
@@ -1092,7 +1092,7 @@ def cards_block(B, M, K):
     # ---- board prep (3.68 only)
     feet = json.loads((hw.HW / 'footprints.json').read_text())['footprints']
     G['boardprep'] = {'trim_y': hw.PCB_CUT_Y, 'trim_kicad_y': 62.0, 'fit': list(hw.FITTED),
-                      'remove': [r for r in hw.REMOVED if r != 'SW5'], 'leave_off': ['SW5'],
+                      'remove': list(hw.REWORK_REMOVE), 'leave_off': ['SW5'],
                       'fit_values': {'R72': '10 k&Omega;', 'R74': '0 &Omega;'}, 'power_key': 'SW7',
                       'gone_with_cut': sorted(f['ref'] for f in feet if f['cad'][1] >= hw.PCB_CUT_Y),
                       'lead_trim_mm': 0.65, 'lead_tip_z': P.LEAD_TIP, 'support_post': list(P.SUPPORT_POSTS[0]),

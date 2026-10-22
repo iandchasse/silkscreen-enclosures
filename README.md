@@ -154,7 +154,7 @@ than 0.55 mm, supports only inside the lid's enforcers, side keys standing on a 
 | Case | 68.2 × 108.0 × 12.9 mm (14.4 mm over the keys) |
 | Plate 1 | tub, lid (3 side keys, 3 enforcers), midplate, 4 `key-x3std`, 4 `crank-T`, 2 gates (one is a spare), rod jig: 14 objects, 35.50 g, 3 h 14 min |
 | Plate 2 | 4 `crank-M`, for APEM MJTP1117 boards only: 0.84 g, 7 min |
-| Board | the trimmed x3 board (cut at KiCad y 62; see [silkscreen-pcb](https://github.com/iandchasse/silkscreen-pcb); boards made before its Rev 1.01 need two bodge wires). **No left lower page key** (leave SW5 off: a post stands where its key would be). The top key on the left edge (SW7) is the power key: fit R72 and R74, leave off R36 and R73. Side keys: the upper key on the left (SW7), and the upper and lower keys on the right (SW4, SW1). |
+| Board | the trimmed x3 board (cut at KiCad y 62; see [silkscreen-pcb](https://github.com/iandchasse/silkscreen-pcb); boards made before its Rev 1.01 need two bodge wires). **No left lower page key** (leave SW5 off: a post stands where its key would be). The top key on the left edge (SW7) is the power key: remove R36, R73 and R62 (R62 is the old power button's series resistor), then fit R72 and R74. Side keys: the upper key on the left (SW7), and the upper and lower keys on the right (SW4, SW1). |
 | Screws | 4 × M2 × 8 socket head cap (ISO 4762); a pan head also fits; never M2 × 10 |
 | Battery | 503035 up to 5.3 mm thick with up to two layers of tape on each face. Push it right, then down until it stops under the lip; tape it. Check where its lead leaves the cell, and its polarity at the board's battery connector (J5). The lead route is in [`case-368/README.md`](enclosures/case-368/README.md), "The battery". |
 
