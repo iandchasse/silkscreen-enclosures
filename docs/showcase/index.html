@@ -979,7 +979,7 @@ footer code { font-size: 12.5px; }
 <article class="mech" data-card="boardprep" data-preset="boardprep">
   <div class="mech-head">
     <div class="refs"><span class="ref">cut at KiCad y <span data-k="cards.boardprep.trim_kicad_y" data-d="2"></span></span><span class="ref">fit <span data-k="cards.boardprep.fit" data-join=" + "></span></span><span class="ref">remove <span data-k="cards.boardprep.remove" data-join=" + "></span></span><span class="ref">leave off <span data-k="cards.boardprep.leave_off" data-as="tag"></span></span></div>
-    <h2>Board prep: one cut, four resistors, one switch left off</h2>
+    <h2>Board prep: one cut, five resistors, one switch left off</h2>
     <p class="thesis">The 3.68&Prime; case is shorter than the board. Before anything goes in, the board&rsquo;s upper extension is cut off, power moves to the left upper page key (<span data-k="cards.boardprep.power_key"></span>), and the left lower page key (<span data-k="cards.boardprep.leave_off"></span>) is left off so a post can stand in its place.</p>
   </div>
   <figure><div class="map-wrap" id="boardprep-plan"></div>
@@ -4220,10 +4220,11 @@ SC.card({
       svg.setAttribute('viewBox', nx0 + ' ' + vy0 + ' ' + (nx1 - nx0) + ' ' + vh);
     }
     var fv = BP.fit_values || {};
+    var list = function (a) { return a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]; };   // R36, R73 and R62
     var steps = [
       '<b>Cut the board</b> across the upper extension at KiCad y ' + f(BP.trim_kicad_y, 2) + ' (y ' + f(ty, 2) + ' in the case frame) and dress the edge. ' +
         (gone.length ? 'Everything above goes with it: ' + goneRest.map(SC.part).join(', ') + (prot.length ? (goneRest.length ? ' and' : '') + ' the parts that protect the header and the frontlight lines (' + prot.map(SC.tag).join(', ') + ').' : '.') : ''),
-      '<b>Power rework.</b> Fit ' + BP.fit.map(function (r) { return r + (fv[r] ? ' (' + fv[r] + ')' : ''); }).join(' and ') + '; remove ' + BP.remove.join(' and ') +
+      '<b>Power rework.</b> Remove ' + list(BP.remove) + ', then fit ' + list(BP.fit.map(function (r) { return r + (fv[r] ? ' (' + fv[r] + ')' : ''); })) +
         '. The power key moves to <b>' + SC.part(BP.power_key || '') + '</b>' + (roles[BP.power_key] ? ', ' + SC.esc(roles[BP.power_key]) : '') + '.',
       '<b>Leave ' + BP.leave_off.map(SC.part).join(', ') + ' off.</b> The lid post at mounting hole H2 would stand in the battery bay, so a post in the empty site carries the board&rsquo;s top-left corner instead; the midplate&rsquo;s snap posts in mounting holes ' + (BP.snap_posts || []).join(' and ') + ' still clip the board.',
       '<b>Trim</b> the battery connector&rsquo;s (J5&rsquo;s) through-hole leads and the switches&rsquo; pins to ' + f(BP.lead_trim_mm, 2) + ' mm proud of the front, so the midplate&rsquo;s springs keep their room.',
