@@ -28,7 +28,11 @@ on the printer. Open design work is in `enclosures/OPEN-WORK.md`. Machine paths 
 - **Simple:** few parts. Bought hardware is screws only: M2 socket head caps (ISO 4762) are what he uses, and a pan
   head must also fit. The 3.68 takes four M2 x 8, the 4.26 three M2 x 10.
 - **Slicers:** OrcaSlicer only. Other slicers are not supported. Ian prints on an Elegoo Centauri Carbon 2 (CC2) and
-  slices `print/*-plates.3mf` in ElegooSlicer. The site gets generic Orca projects (`make_plates.py configs`).
+  slices `print/cc2-local/*-plates.3mf` (git-ignored; `make_plates.py --printer cc2`, every build) in ElegooSlicer.
+  The public `print/*-plates.3mf` and the site's projects (`make_plates.py configs`) are OrcaSlicer generic projects,
+  the released builds only. Every public 3MF must open in a current OrcaSlicer: `project_settings()` writes the whole key
+  set (`orca-project-defaults.json`) and asserts `filament_colour`; 2.3.2 and later crash without it. Don't launch a
+  slicer GUI to check; use the OrcaSlicer CLI.
 - **Pictures first.** Show him pictures before building anything he would see on the outside.
 - **Verification in proportion.** Geometry and print files deserve proof from the G-code. Tooling tweaks get one check.
   One verifier, at most one fix round; don't loop auditors. Keep agent waves small, and have agents write their
@@ -40,7 +44,7 @@ Every 3.68 failure in October 2026 passed in CAD and failed on the printer: latc
 with no first layer, the crank rubbing the slot roof, bottom screws with 2 mm of thread, a slit in SW7's nub,
 backstops 0.065 mm too tall. The method that caught each one:
 
-1. **Judge the part as printed, not as drawn.** Slice with the plate file's own CC2 presets (OrcaSlicer 2.4 CLI; the
+1. **Judge the part as printed, not as drawn.** Slice with the CC2 plate file's presets (OrcaSlicer 2.4 CLI; the
    ElegooSlicer CLI refuses the plate files) and read the G-code back. Count only what the slicer lays.
 2. **Use Ian's real G-code when it exists.** It records what he actually printed, including deleted objects and the
    order of the job. `CLAUDE.local.md` says where ElegooSlicer leaves an uploaded job; copy it at once, into
@@ -98,7 +102,8 @@ The 3.68 chain, from `enclosures/case-368`:
 2. Then, for `SILKSCREEN_VARIANT` = `standard` and `light-strip`, run `src/mechanics.py`, `src/dummy.py`,
    `src/plates.py`, `src/slice_check.py` and `src/lid_close.py`.
 3. From `enclosures/`, run `make_plates.py` and `make_plates.py configs --size 368`, adding `--printer cc2` for Ian's
-   own files.
+   own files (`make_plates.py --printer cc2` writes his CC2 plate files, light strip included, into
+   `print/cc2-local/`).
 4. From `enclosures/case-426`, run `src/configs_slice.py --size 368`, with `--printer cc2` for Ian's files.
 5. Afterwards, restore `print/3.68/key-x3*` from HEAD if only OCC byte noise changed them.
 
@@ -107,7 +112,8 @@ The 4.26:
    alone. `--unshared --verify` runs the full audit. The step cache is keyed on the project's absolute path: after the
    folder moves, the first run is a cold one (about an hour for all 32); OrcaSlicer's slices are memoised by content
    and survive a move.
-2. From `enclosures/`, run `make_plates.py`, then `make_plates.py configs` and `make_plates.py configs --printer cc2`.
+2. From `enclosures/`, run `make_plates.py`, then `make_plates.py configs` and `make_plates.py configs --printer cc2`
+   (and `make_plates.py --printer cc2` for his CC2 plate files).
 3. From `enclosures/case-426`, run `src/configs_slice.py`, and again with `--printer cc2`.
 
 After a merge:

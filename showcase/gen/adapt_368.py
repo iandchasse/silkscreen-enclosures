@@ -678,7 +678,7 @@ def assembly_block(B):
     kn = KEYS_NAME[B.b]
     st = [
         {'id': 'coupon', 'title': 'Gate coupon, and the optional chin coupon', 'groups': ['keys'], 'preset': 'keys',
-         'text': f'Print <code>coupon-gate-{kn.split("-", 1)[1]}</code> with a gate (plate 3 of the plate file has them): '
+         'text': f'Print <code>coupon-gate-{kn.split("-", 1)[1]}</code> with a gate (the test-prints plate, 3, of the plate file has them): '
                  'the gate slides in, cams a 20 mm piece of rod home and lifts out with a paperclip. Optional, a '
                  f'15-minute fit check of the hook keys: <code>coupon-strip-{kn.split("-", 1)[1]}</code> (the chin round one '
                  f'key opening, with its two hook slots) and one <code>{kn}</code>. The key slides up its slots from inside '
@@ -1139,8 +1139,9 @@ def cards_block(B, M, K):
     G['assembly'] = {'readme': 'README.md "Assembly (tub face down)" and "Bottom keys: Assembly"'}
     G['checks'] = {}                                        # count / failed: filled in by worker_data
     G['files'] = {'dummy': B.json['pcba-dummy'],
-                  'plate': 'The OrcaSlicer plate file, every part on three plates (the rod jig and the coupons on plate 3), '
-                           'is print/silkscreen-368-plates.3mf in the repo; it is not in the zip.',
+                  'plate': 'The OrcaSlicer plate file (generic presets, a 220 x 210 mm bed; the standard build on three plates: the case '
+                           'and the rod jig on plate 1, the coupons on plate 3) is print/silkscreen-368-plates.3mf in the '
+                           'repo; it is not in the zip.',
                   'print': 'PLA, 0.2 mm layers, three or more perimeters, no supports and no brim (a brim would tie the '
                            'side keys to the lid). Elephant-foot compensation 0 for the keys, the cranks and the gate; '
                            'the keys and the cranks on a 2-layer raft (contact Z distance 0.2).'}
@@ -1536,7 +1537,7 @@ def readme_txt(groups, zname):
              'Standard build: shared/ + standard/.  Light-strip build: shared/ + light-strip/.',
              'Also needed: the rod (ROD.txt) and four M2 x 8 socket head cap screws (ISO 4762; a pan head,',
              'ISO 7045, also fits).',
-             'Every part laid out on three plates for OrcaSlicer: print/silkscreen-368-plates.3mf in the repo.', '']
+             'The standard build laid out on three plates for OrcaSlicer: print/silkscreen-368-plates.3mf in the repo.', '']
     for g in groups:
         lines.append(f"{g['label']}: {g['what']}")
         for f in g['files']:

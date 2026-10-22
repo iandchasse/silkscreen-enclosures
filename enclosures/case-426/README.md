@@ -58,12 +58,12 @@ sides := leftkeys | rightkeys | upperkeys          (none: all four side keys)
 
 The four bases:
 
-| Base | Panel | Board | Outside (x × y × z) | Front wordmark | In `print/` (plate of `print/silkscreen-426-plates.3mf`) |
+| Base | Panel | Board | Outside (x × y × z) | Front wordmark | In `print/` (plate of `print/silkscreen-426-plates.3mf`; the CC2 file `print/cc2-local/` has all four builds) |
 |---|---|---|---|---|---|
-| `standard` | GDEQ0426T82-FT01C, touch and frontlight | as assembled | 68.2 × 125.0 × 12.7 | `LOGO` y 6.29, above the keys | plate 1: `tub-standard` and the shared parts |
-| `light-strip` | plain GDEY0426T82 with the Silkscreen light strip | as assembled | 68.2 × 125.0 × 12.7 | y 6.29 | plate 2: `tub-light-strip` and the shared parts |
-| `chinless` (touch-centric) | GDEQ0426T82-FT01C; touch does OK/Back | **without SW9, SW8, SW3, SW2** | **68.2 × 117.4 × 12.7** | **y 6.605, centred** on the face below the window (y 0.0-13.215) | plate 4: `tub-chinless`, `lid-chinless`, the shared `midplate` |
-| `light-strip-chinless` (2026-10-07) | plain GDEY0426T82 with the Silkscreen light strip; no touch | **without SW9, SW8, SW3, SW2** | 68.2 × 117.4 × 12.7 | y 6.95, centred | plate 5: `tub-light-strip-chinless`, the chinless lid (`lid-chinless`), the shared `midplate` |
+| `standard` | GDEQ0426T82-FT01C, touch and frontlight | as assembled | 68.2 × 125.0 × 12.7 | `LOGO` y 6.29, above the keys | plate 1 (CC2 file: 1): `tub-standard` and the shared parts |
+| `light-strip` | plain GDEY0426T82 with the Silkscreen light strip | as assembled | 68.2 × 125.0 × 12.7 | y 6.29 | CC2 file only, plate 2: `tub-light-strip` and the shared parts |
+| `chinless` (touch-centric) | GDEQ0426T82-FT01C; touch does OK/Back | **without SW9, SW8, SW3, SW2** | **68.2 × 117.4 × 12.7** | **y 6.605, centred** on the face below the window (y 0.0-13.215) | plate 3 (CC2 file: 4): `tub-chinless`, `lid-chinless`, the shared `midplate` |
+| `light-strip-chinless` (2026-10-07) | plain GDEY0426T82 with the Silkscreen light strip; no touch | **without SW9, SW8, SW3, SW2** | 68.2 × 117.4 × 12.7 | y 6.95, centred | CC2 file only, plate 5: `tub-light-strip-chinless`, the chinless lid (`lid-chinless`), the shared `midplate` |
 
 These four, with all four side keys and J6, are the *print builds*: their files are in the repo's `print/4.26/` and
 the plate file. Every configuration, the print builds included, also gets its own OrcaSlicer project,
@@ -555,14 +555,17 @@ gate's STEP is in its print pose, like its STL):
   **Board without SW9/SW8/SW3/SW2** (above).
 - `ROD.txt`: the bottom keys' rod (63.25 mm of 1.75 filament, tapered tip) and its printed gate. No
   screw but the lid's three.
-- `print/silkscreen-426-plates.3mf` (one level up, beside the 3.68's): an OrcaSlicer project with everything laid out, set up for the Centauri
-  Carbon 2 (0.4 nozzle, 0.20 mm Standard, Elegoo PLA, no brim, a one-loop skirt since 2026-10-13; keys, cranks and gates already at
-  elephant-foot compensation 0, the cranks with Arachne walls, and every key and crank on a 2-layer raft). Plate 1 is the standard case, plate 2 the
-  light-strip case (each: tub, lid, midplate, 4 keys, 4 crank-T, 2 gates); plate 3 holds the test prints (the chin
-  coupon with a key, the gate coupon with a gate, the PCBA dummy), the rod jig and 4 crank-M for APEM MJTP1117 boards;
-  plate 4 is the chinless case (its tub and lid, and the midplate); plate 5 the light-strip chinless case (its tub,
-  the chinless lid, the midplate). Print the gate coupon first (the chin coupon is an optional fit check for the hook
-  keys), then the plate for your panel; the chinless cases need no coupon.
+- `print/silkscreen-426-plates.3mf` (one level up, beside the 3.68's): a generic OrcaSlicer project with the released builds
+  laid out (since 2026-10-21; Generic Marlin Printer 0.4 nozzle, 0.20mm Standard, Generic PLA, a 220 x 210 mm bed, no brim, a
+  one-loop skirt; keys, cranks and gates at elephant-foot compensation 0, the cranks with Arachne walls, and every key and
+  crank on a 2-layer raft; it holds OrcaSlicer's whole key set, because OrcaSlicer 2.3.2 and later crash on a project without
+  `filament_colour`). Plate 1 is the standard case (tub, lid, midplate, 4 keys, 4 crank-T, 2 gates, the rod jig); plate 2 holds
+  4 crank-M for APEM MJTP1117 boards; plate 3 is the chinless case (its tub and lid, and the midplate); plate 4 the test prints
+  (the chin coupon with a key, the gate coupon with a gate, the PCBA dummy). Print the gate coupon first (the chin coupon is
+  an optional fit check for the hook keys), then the plate for your panel; the chinless case needs no coupon. These are the
+  plates of the `standard` and `chinless` per-configuration projects, one after the other. The light-strip builds are not
+  in it: the author's Elegoo CC2 file, `make_plates.py --printer cc2` into `print/cc2-local/` (git-ignored), has all four
+  builds (plate 1 standard, 2 light-strip, 3 test prints and extras, 4 chinless, 5 light-strip chinless).
   Regenerate with `enclosures/make_plates.py` after `plates.py` has run for all four print builds.
 
 **One OrcaSlicer project per configuration** (2026-10-07; `enclosures/make_plates.py configs`): each of the 32

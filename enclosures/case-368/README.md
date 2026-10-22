@@ -57,8 +57,8 @@ python -B src/build.py        # both builds -> out/standard/, out/light-strip/, 
   it from `SILKSCREEN_VARIANT`, which defaults to `light-strip`. `strip_sections.py` runs for the light-strip build
   only. See *Rebuilding*. The showcase is built from this project by the repo's `showcase/gen/adapt_368.py`.
 
-**Print files:** the repo's `print/3.68/` holds every part to print, and `print/silkscreen-368-plates.3mf` all of them
-laid out on three plates (below).
+**Print files:** the repo's `print/3.68/` holds every part to print, and `print/silkscreen-368-plates.3mf` the standard
+build laid out on three plates (below; the light-strip build is in the author's CC2 file only).
 
 - `lid` and `midplate`, once each.
 - `tub-standard` and `tub-light-strip`: print the one for your build.
@@ -74,13 +74,16 @@ Each part comes as `<name>.stl`, oriented as it prints, and `<name>.step`, in th
 in its print pose, as its STL). Not printed: the rod (63.25 mm of 1.75 mm PLA filament; `print/3.68/ROD.txt`). No screw
 closes the rod's hole any more: the gate does.
 
-`print/silkscreen-368-plates.3mf` is an OrcaSlicer project with everything laid out, set up for the Centauri Carbon 2 (0.4
-nozzle, 0.20 mm Standard, Elegoo PLA, no brim, a one-loop skirt; keys, cranks and gates already at elephant-foot compensation 0, the
-cranks with Arachne walls, and every key and crank on a 2-layer raft). Plate 1
-is the standard case, plate 2 the light-strip case (each: tub, lid, midplate, its 4 keys, 4 crank-T, 2 gates); plate 3
-holds the test prints (both builds' chin fit checks, each with one key, and gate coupons, the PCBA dummy), the rod jig and 4 crank-M for APEM MJTP1117 boards.
-Print your build's gate coupon first (the chin fit check is optional), then the plate for your panel. Regenerate with
-`enclosures/make_plates.py` after `plates.py` has run for both variants.
+`print/silkscreen-368-plates.3mf` is a generic OrcaSlicer project with the standard build laid out (Generic Marlin Printer
+0.4 nozzle, 0.20mm Standard, Generic PLA, a 220 x 210 mm bed, no brim, a one-loop skirt; keys, cranks and gates at
+elephant-foot compensation 0, the cranks with Arachne walls, and every key and crank on a 2-layer raft; since
+2026-10-21; it holds OrcaSlicer's whole key set, because OrcaSlicer 2.3.2 and later crash on a project without
+`filament_colour`). Plate 1 is the case (tub, lid, midplate, 4 `key-x3std`, 4 crank-T, 2 gates, the rod jig); plate 2 holds
+4 crank-M for APEM MJTP1117 boards; plate 3 the test prints (the coupon strip with a key, the gate coupon with a gate, the
+PCBA dummy). Print the gate coupon first (the chin fit check is optional), then plate 1. Regenerate with
+`enclosures/make_plates.py` after `plates.py` has run for both variants. The author's Elegoo Centauri Carbon 2 version, with
+the light-strip build too (plate 1 standard, plate 2 light-strip, plate 3 test prints and extras), is
+`make_plates.py --printer cc2`, into `print/cc2-local/` (git-ignored).
 
 **The standard build's own OrcaSlicer project, any printer** (2026-10-11; what the website serves for the 3.68): the
 3.68 has one released configuration, the standard build (the light-strip build is not released and has no project),

@@ -885,7 +885,7 @@ def child(b, out):
             '<b>The board needs SW9, SW8, SW3 and SW2 left off.</b> Fitted, they hang 1.92 mm past its bottom edge, into '
             'the chin wall. Touch and the five side keys are the controls.',
             'Three printed parts: <code>tub-chinless</code>, <code>lid-chinless</code> (the side keys are part of it) and '
-            'the shared midplate. No keys, cranks, rod or gate; plate 4 of the plate file has all three.',
+            'the shared midplate. No keys, cranks, rod or gate; plate 3 of the plate file has all three.',
             'The wordmark is centred on the face below the window, the back icon on the shorter back, and the lid&rsquo;s '
             'H3 / H4 bosses run into the chin wall.',
             f'The five side keys, the tongue and its {J["latch_count"]} latches, the USB-C divot, the reset hole and the '
@@ -901,7 +901,7 @@ def child(b, out):
             'the chin wall. The plain panel has no touch, so the four page keys and power are the controls.',
             'Three printed parts: <code>tub-light-strip-chinless</code>, <code>lid-chinless</code> (the chinless '
             'build&rsquo;s lid: the lid does not depend on the panel) and the shared midplate. No keys, cranks, rod or '
-            'gate; plate 5 of the plate file has all three.',
+            'gate; all three are in print/4.26/ (the plate file holds the released builds only).',
             'The light strip goes in as on the light-strip build, with no SW9 lead to trim. <a href="#m=strip" '
             'data-goto="strip">Light strip</a>',
             f'The wordmark, the back, the lid&rsquo;s H3 / H4 bosses, the five side keys and the tongue with its '
@@ -1012,10 +1012,10 @@ def child(b, out):
         # the zip carries the standard build's PCBA dummy only (its own on every build: the 16 MB file limit)
         'files': {'dummy': json.loads(((OB.parent / 'standard') if CL else OB).joinpath('pcba-dummy.json').read_text()),
                   'plate': 'The OrcaSlicer plate file, print/silkscreen-426-plates.3mf in the repo (not in the zip), lays '
-                           'every part out: the standard and light-strip cases on plates 1 and 2, the coupons, the rod jig '
-                           'and crank-M on plate 3, the chinless case (no bottom keys: tub-chinless, lid-chinless and a '
-                           'midplate) on plate 4 and the light-strip chinless case (its own tub, the chinless lid) on plate '
-                           '5. The 4.26 is built in 32 configurations in all (side keys: all four, the left, right or upper '
+                           'out the released builds on four plates: the standard case (with the rod jig) on plate 1, '
+                           'crank-M on plate 2, the chinless case (no bottom keys: tub-chinless, lid-chinless and a '
+                           'midplate) on plate 3 and the test prints (the coupons, the PCBA dummy) on plate 4. The '
+                           'light-strip builds are in development and are not in it. The 4.26 is built in 32 configurations in all (side keys: all four, the left, right or upper '
                            'pair; with or without the dev header J6), and each has its own OrcaSlicer project, made by the '
                            'case project: enclosures/case-426/README.md in the repo, "Builds".'},
     }
@@ -1181,8 +1181,8 @@ def downloads(root, out):
               'STL files are oriented and placed as sliced; STEP files are in the CAD frame.\r\n'
               'The keys and the cranks print on a 2-layer raft (raft contact Z distance 0.2, the raft\'s initial\r\n'
               'layer expansion 1), elephant-foot compensation 0, the cranks with Arachne walls; the plate file sets it.\r\n'
-              'Every part laid out on three plates for OrcaSlicer, the chinless case on a fourth and the\r\n'
-              'light-strip chinless case on a fifth: print/silkscreen-426-plates.3mf in the repo. Every other\r\n'
+              'The standard and chinless cases laid out on four plates for OrcaSlicer (generic presets, a\r\n'
+              '220 x 210 mm bed): print/silkscreen-426-plates.3mf in the repo. Every other\r\n'
               'configuration (side-key layouts, no dev header) has its own OrcaSlicer project: see\r\n'
               'enclosures/case-426/README.md in the repo.\r\n'
               'Rev L was printed twice: the rod, cranks and gate fitted. After test 2 the bottom keys are hook keys\r\n'

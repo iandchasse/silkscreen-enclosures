@@ -1,7 +1,8 @@
 """Print orientation, overhang audit and a one-plate fit check for a 256 x 256 mm bed
 (Elegoo Centauri Carbon 2). Reads out/<variant>/*.stl, writes the oriented STLs and print-report.json to
 out/<variant>/print/ (variant.py: run it once per build). enclosures/make_plates.py reads those STLs for both
-builds and writes the plate file, print/silkscreen-368-plates.3mf at the repo root; the committed print/3.68/
+builds and writes the plate files, print/silkscreen-368-plates.3mf (generic OrcaSlicer project, the standard build) and
+print/cc2-local/ (the author's Elegoo CC2 file, both builds; git-ignored); the committed print/3.68/
 folder is build.py's (build.write_print), oriented the same way.
 
 The fit check (print-report.json, '_plate'): every part of one build, the PCBA dummy included, laid out on one bed,

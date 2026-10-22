@@ -17,16 +17,23 @@ OrcaSlicer. One repo, one folder per size.
 
 **Status.** Both cases are at **Rev L**: bell-crank bottom keys on a 1.75 mm filament rod, held by a printed side
 gate. The author has printed the standard build of each size (the 4.26″ with bottom keys and all four side keys, and
-the 3.68″) from the Elegoo Centauri Carbon 2 plate files in [`print/`](print/). The chinless case, the key-pair
+the 3.68″) from Elegoo Centauri Carbon 2 plate files of the same parts. The chinless case, the key-pair
 layouts and the `-nodev` variants share its parts but have not been printed themselves. The lid and tub changes made
-since 2026-10-19 are not printed yet. The generic OrcaSlicer projects below were written with OrcaSlicer 2.4.0-dev and
-checked by slicing them with OrcaSlicer 2.4's command line and reading the G-code back; they have not been opened in
-the OrcaSlicer GUI, and the generic files themselves have not been printed.
+since 2026-10-19 are not printed yet. The OrcaSlicer projects below (the generic projects and the two plate files in
+[`print/`](print/)) were written with OrcaSlicer 2.4.0-dev, checked by slicing them with OrcaSlicer 2.4's command line and
+reading the G-code back, and opened in the 2.4.0-dev GUI; the generic files themselves have not been printed.
 
-<!-- TODO(Ian): open one generic project (for example standard-rightkeys.3mf) in a released OrcaSlicer GUI, change the
-     printer, and confirm that the per-object settings (rafts, elephant-foot, Arachne) and the lid's support enforcers
-     survive. Then state the minimum OrcaSlicer version here and in "Use OrcaSlicer" below, and drop the "not been
-     opened in the GUI" wording. -->
+**OrcaSlicer versions.** Files written before 2026-10-21 crashed OrcaSlicer 2.3.2 and later (2.4.x, 2.5.0-alpha) as soon
+as they were opened: OrcaSlicer reads the project's `filament_colour` without checking that it is there, and the files
+did not have one (Bambu Studio 02.08 has fixed the same line, so the files opened there). The files now hold every
+setting key OrcaSlicer itself writes, `filament_colour` among them, so they open. If an older copy of a file crashes
+OrcaSlicer for you, take the current one. OrcaSlicer 2.3.1 and older are not tested.
+
+<!-- TODO(Ian): the fixed files open in the OrcaSlicer 2.4.0-dev GUI (checked 2026-10-21) and were not run in a released
+     2.4.2; the source of 2.4.2 loads them the same way. Still to confirm in a released OrcaSlicer GUI: open a generic
+     project (for example standard-rightkeys.3mf), change the printer, and check that the per-object settings (rafts,
+     elephant-foot, Arachne) and the lid's support enforcers survive. Then state the minimum version in "Use
+     OrcaSlicer" below. -->
 
 | To | Go to |
 |---|---|
@@ -51,12 +58,13 @@ yourself: set up the build as in [Building from source](#building-from-source) a
 `out/configs/standard-rightkeys.3mf`; once the case is built, `python -B make_plates.py configs --builds standard-rightkeys`
 from `enclosures/` writes just the project again. For the 3.68″, `python -B make_plates.py configs --size 368` writes
 `enclosures/case-368/out/configs/standard.3mf`. The project lands in that case's `out/configs/`. Or print from the
-author's [plate files](print/README.md), which are sliced for one printer.
+[plate files](print/README.md) in this repo, which are the same generic projects with the standard and chinless builds
+laid out on a few plates.
 
 **Use OrcaSlicer.** Open the project, pick your printer, and keep a **0.4 mm nozzle and 0.2 mm layers** (first layer
 0.2 too). The keys are exactly 50 layers long, and the raft's air gap and the lid supports' gap are one layer each.
 PrusaSlicer, Cura and the others do not read the per-part settings and are not supported. The projects were written with
-OrcaSlicer 2.4.0-dev; the lowest release that opens them correctly is not yet confirmed (see the status above).
+OrcaSlicer 2.4.0-dev and open in 2.3.2 and later (see the status above).
 
 ### What every project contains
 
@@ -157,7 +165,7 @@ than 0.55 mm, supports only inside the lid's enforcers, side keys standing on a 
   jig that is on plate 1. The steps are in [`print/4.26/ROD.txt`](print/4.26/ROD.txt) and
   [`print/3.68/ROD.txt`](print/3.68/ROD.txt).
 - **The gate coupon,** once per printer and filament (bottom-key cases): [`print/4.26/coupon-gate.stl`](print/4.26/coupon-gate.stl)
-  or [`print/3.68/coupon-gate-x3std.stl`](print/3.68/coupon-gate-x3std.stl), or plate 3 of the author's plate file.
+  or [`print/3.68/coupon-gate-x3std.stl`](print/3.68/coupon-gate-x3std.stl), or the "Test prints" plate of the plate file.
 - **A battery:** a 503035 LiPo, 500 mAh, with a protection board and a JST PH 2.0 2-pin connector. The polarity is not
   standard, so meter it against J5's + before the first plug-in. On the 4.26″, wind the spare lead round the midplate's
   cleats.
@@ -169,18 +177,25 @@ than 0.55 mm, supports only inside the lid's enforcers, side keys standing on a 
 [`print/`](print/) holds the author's own files and every part on its own. Start at [`print/README.md`](print/README.md),
 which also lists what to reprint after each design change.
 
-- [`silkscreen-426-plates.3mf`](print/silkscreen-426-plates.3mf) (5.6 MB) and
-  [`silkscreen-368-plates.3mf`](print/silkscreen-368-plates.3mf) (3.6 MB): OrcaSlicer plate files set up for an Elegoo
-  Centauri Carbon 2 (0.4 nozzle, 0.20 mm Standard, Elegoo PLA, textured PEI), sliced in ElegooSlicer by the author.
-  They open in OrcaSlicer too. The 4.26 file has five plates: 1 the standard case, 3 test prints and extras (chin and
-  gate coupons, a PCBA test-fit dummy, the rod jig, 4 `crank-M`), 4 the chinless case, and plates 2 and 5, which are
-  for the light strip (in development). The 3.68 file has three plates, plate 2 being the light-strip one.
+- [`silkscreen-426-plates.3mf`](print/silkscreen-426-plates.3mf) (3.3 MB) and
+  [`silkscreen-368-plates.3mf`](print/silkscreen-368-plates.3mf) (2.1 MB): OrcaSlicer projects with the released builds
+  laid out, in the same generic setup as the generic projects (Generic Marlin Printer 0.4 nozzle, 0.20mm Standard,
+  Generic PLA; every plate fits a 220 × 210 mm bed; open them in OrcaSlicer 2.3.2 or later, and pick your own printer
+  and filament). The 4.26 file has four plates: 1 the standard case (with the rod jig), 2 the 4 `crank-M` only for APEM
+  MJTP1117 boards, 3 the chinless case, 4 test prints (a PCBA test-fit dummy, the chin coupon with a key, the gate coupon
+  with a gate). The 3.68 file has three: 1 the case, 2 the 4 `crank-M`, 3 test prints. The light-strip builds are not in
+  them.
 - [`print/4.26/`](print/4.26/) and [`print/3.68/`](print/3.68/): every part on its own, `<part>.stl` in print pose and
   `<part>.step` in the CAD frame, plus `ROD.txt`. A loose STL needs the per-part settings above set by hand.
 - [`print/rod-jig.stl`](print/rod-jig.stl) and `.step`: the jig that straightens and cuts the filament rod.
 
-The generic projects are not in `print/`: they are build outputs, meant to be served by the website. To make your own
-copies, or CC2 versions of them (`--printer cc2`), run `make_plates.py configs` ([Building](#building-from-source)).
+The per-configuration projects are not in `print/`: they are build outputs, meant to be served by the website. To make
+your own copies, or Elegoo CC2 versions of them (`--printer cc2`), run `make_plates.py configs`
+([Building](#building-from-source)).
+
+The author prints on an Elegoo Centauri Carbon 2 from plate files of the same parts with the CC2's own presets, every
+build included (the light-strip ones too). `python -B make_plates.py --printer cc2` writes them to `print/cc2-local/`
+(not in git), if you have a CC2 and want them.
 
 ## Layout
 
@@ -205,13 +220,16 @@ Each project can also build a case for the
 [Silkscreen light strip](https://github.com/iandchasse/silkscreen-light-strip), a flex PCB frontlight on the board's
 J3: the 4.26″ has 16 such configurations, the 3.68″ one build. **These cases are in development and are not released.**
 The strip is rev A and untested, and the website does not offer its cases. The builds exist in the source and in plates
-2 and 5 of the author's plate files, but nothing here asks you to print them.
+2 and 5 of the author's CC2 plate files (`print/cc2-local/`, not in git), but nothing here asks you to print them.
 
 ## Building from source
 
 - **Python 3.11:** one virtual environment per case, made from that case's `requirements.txt` (CadQuery 2.8, trimesh,
   ezdxf, manifold3d, shapely, scipy, matplotlib and others). Either environment can run the shared scripts.
-- **OrcaSlicer 2.4** at its default install path, for the slicing read-backs and the per-configuration projects.
+- **OrcaSlicer 2.4** at its default install path, for the slicing read-backs and the per-configuration projects. Its
+  command line also makes `enclosures/orca-project-defaults.json` (the settings OrcaSlicer fills in for a project;
+  `python -B make_plates.py defaults`, only needed after an OrcaSlicer update), which the plate files and projects are
+  written over.
 - **KiCad 9** only for `src/prepare_hardware.py`, which re-derives the board files in `hardware/` from a
   silkscreen-pcb checkout. The derived files are already in `hardware/`, so you do not need KiCad to build.
 - Run every script with `python -B`. Outputs go to each project's `out/`, which is not in git.

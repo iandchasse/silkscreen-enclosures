@@ -19,13 +19,13 @@ so its length across is a stack of 0.2 mm layers: at 9.9 mm the slicer dropped t
 of play a side. It is now 10.0 mm, exactly 50 layers: 0.30 mm a side, about 0.2 mm less slide in all. Nothing else
 changed, but on the 3.68 the key's two rail-side corners are rounder (R1.0, was R0.5), so they keep at least that
 play too (about 0.46 mm there as sliced). If your hook keys are already printed, reprint just the 4 keys for your
-size (`key-426`; on the 3.68 `key-x3std` or `key-x3ls`, the build's own) from plate 1 or 2. The old keys still fit
+size (`key-426`; on the 3.68 `key-x3std` or `key-x3ls`, the build's own) from plate 1 (the CC2 plate file's plate 1 or 2). The old keys still fit
 and work if you don't.
 
 **4.26 bottom keys, 2026-10-03: the caps sit 0.15 mm lower** (Ian: "a small fraction of a mm too high"). Face up
 `key-426` now stands about 1.35 mm proud (was 1.50), and face down on its hooks about 2.4 (was 2.5). Only the cap's
-top moved: the hooks, the slots, the travel and everything else are unchanged, so reprint just the 4 keys (plate 1
-or 2) to get it; the old keys still fit and work. 1.35 is the lowest the crank spec allows (at least 1.0 mm proud
+top moved: the hooks, the slots, the travel and everything else are unchanged, so reprint just the 4 keys (plate 1)
+to get it; the old keys still fit and work. 1.35 is the lowest the crank spec allows (at least 1.0 mm proud
 with the board 0.2 mm off), and the 4.26 build now checks it. The 3.68 keys keep their height. To undo it, set
 `KEY_CAP` proud back to 1.50 in `enclosures/case-426/src/params.py` and rebuild (below), or revert that commit on
 its own.
@@ -35,14 +35,14 @@ the shortest chin: 117.4 mm tall instead of 125.0, the wordmark centred in what 
 the stock touch panel (GDEQ0426T82-FT01C): touch does OK/Back, and the five side keys are as on the standard case.
 **Its board must NOT have the four bottom switches (SW9, SW8, SW3, SW2) fitted:** they stick out 1.9 mm past the
 board's bottom edge, into the chin wall, and the case will not close over them. Order the board without the bottom
-row, or remove them. Print **plate 4 "Chinless case"** of `silkscreen-426-plates.3mf`: `tub-chinless`, `lid-chinless`
-(side keys included, with their supports set as on plates 1 and 2) and the shared `midplate`. No keys, cranks, rod,
+row, or remove them. Print **plate 3 "Case: touch panel, chinless, ..."** of `silkscreen-426-plates.3mf`: `tub-chinless`, `lid-chinless`
+(side keys included, with their supports set as on plate 1) and the shared `midplate`. No keys, cranks, rod,
 gate or coupons, so the gate coupon is not needed either.
 
 **4.26 light-strip chinless case, 2026-10-07 (new, not printed yet; in development, not released):** the chinless case for the plain panel with the
 Silkscreen light strip: the same 117.4 mm chin, the light-strip front, and the page keys and power as its only keys
 (no touch, no bottom row). The same board rule: **no SW9, SW8, SW3, SW2**. Print **plate 5 "Light-strip chinless
-case"**: `tub-light-strip-chinless`, `lid-chinless` (the chinless case's lid: the lid does not depend on the panel)
+case"** of the author's CC2 plate file (`cc2-local/`, not in git): `tub-light-strip-chinless`, `lid-chinless` (the chinless case's lid: the lid does not depend on the panel)
 and the shared `midplate`.
 
 **4.26 configurations, 2026-10-07 (new, not printed yet):** the 4.26 case now comes in 32 configurations: either
@@ -93,7 +93,7 @@ unreleased light-strip case) and 4 `key-426`**. Both print with supports off, th
 
 1. Open `silkscreen-426-plates.3mf` at plate 1 (standard tub).
 2. Delete everything on it except the tub and the 4 keys.
-3. Optional, first: `coupon-chin` with one `key-426` (plate 3, about 15 minutes) checks the hooks in their slots.
+3. Optional, first: `coupon-chin` with one `key-426` (plate 4, about 15 minutes) checks the hooks in their slots.
    It is a fit check only: nothing is chosen from it.
 4. Assemble with the tub **face down, on a cloth, from the keys until the board is in**:
    - Drop each key in from inside, hooks in its two slots, and let it slide out until both hooks stop. It stands
@@ -106,7 +106,7 @@ unreleased light-strip case) and 4 `key-426`**. Both print with supports off, th
 In use, face up or held to read, each key rests on its switch as before. Face down, the keys drop 1.0 mm outward
 onto their hooks, all level, and settle back when the case is turned over.
 
-If your case is still the test-1 print, also reprint the 4 cranks (crank-M from plate 3 if your board has APEM
+If your case is still the test-1 print, also reprint the 4 cranks (crank-M from plate 2 if your board has APEM
 switches) and the lid. Ream the cranks' bores first.
 
 Print from the plate file, not the loose STLs in `4.26/`. The plate file carries each part's own settings: Arachne
@@ -265,32 +265,37 @@ Open the plate file for your reader in OrcaSlicer:
 - [`silkscreen-426-plates.3mf`](silkscreen-426-plates.3mf): the 4.26in case
 - [`silkscreen-368-plates.3mf`](silkscreen-368-plates.3mf): the 3.68in (x3) case
 
-Each is set up for the Elegoo Centauri Carbon 2 (0.4 nozzle, 0.20 mm Standard, Elegoo PLA, Textured PEI, no brim, a
-one-loop skirt).
+Each is a generic OrcaSlicer project, the same setup as the per-configuration projects the website serves: Generic
+Marlin Printer (0.4 nozzle), 0.20mm Standard, Generic PLA, Textured PEI, no brim, a one-loop skirt, every plate laid out
+for a 220 x 210 mm bed. Open it in OrcaSlicer 2.3.2 or later (the 2.4 series is what it was checked in) and pick your own
+printer and filament; keep the project's changed settings if OrcaSlicer asks. Files from before 2026-10-21 crash
+OrcaSlicer 2.3.2 and later on opening (they had no `filament_colour`); if yours does, take the current file.
 The keys, cranks and gates already carry elephant-foot compensation 0, and the cranks Arachne walls. Every key and
-crank already sits on a 2-layer raft ("Rafts" below). The lid already carries its side-key supports (below). The 3.68
-file has three plates, the 4.26 file five:
+crank already sits on a 2-layer raft ("Rafts" below). The lid already carries its side-key supports (below). The files
+hold the released builds only: the standard build, and on the 4.26 the chinless one. The 3.68 file has three plates, the
+4.26 file four:
 
 | Plate | What is on it |
 |---|---|
-| 1 "Standard case" | the standard tub, lid, midplate, 4 bottom keys, 4 crank-T, 2 gates (one is a spare) |
-| 2 "Light-strip case" | the same with the light-strip tub (on the 3.68, its own 4 keys too) |
-| 3 "Test prints and extras" | the chin coupon(s), each with a key to try in it (the hook keys' optional fit check), the gate coupon(s) with a gate, the PCBA test-fit dummy, the rod jig, 4 crank-M |
-| 4 "Chinless case (touch, no bottom keys)", 4.26 only | the chinless tub and lid and the midplate, nothing else; only for a board without SW9/SW8/SW3/SW2 fitted (above) |
-| 5 "Light-strip chinless case", 4.26 only | the light-strip chinless tub, the chinless lid and the midplate; the same board rule |
+| 1 "Case: touch panel, bottom keys, ..." (3.68: "Case: standard: bare x3 panel, ...") | the standard tub, lid, midplate, 4 bottom keys, 4 crank-T, 2 gates (one is a spare) and the rod jig |
+| 2 "Only for APEM MJTP1117 boards: crank-M" | 4 crank-M |
+| 3 "Case: touch panel, chinless, ...", 4.26 only | the chinless tub and lid and the midplate, nothing else; only for a board without SW9/SW8/SW3/SW2 fitted (above) |
+| 3 (3.68) / 4 (4.26) "Test prints" | the PCBA test-fit dummy, the chin coupon (3.68: coupon-strip) with a key to try in it (the hook keys' optional fit check), the gate coupon with a gate |
 
-**Plates 2 and 5 are for the Silkscreen light strip, which is in development (rev A, untested). Those cases are not
-released and the website does not offer them.** Print plate 1, 3 or 4.
+The light-strip builds are in development (rev A, untested), are not released and are not in these files. The author's
+own CC2 plate files, which have them, are made with `make_plates.py --printer cc2` into `print/cc2-local/` (not in git;
+Elegoo Centauri Carbon 2 presets, a 256 mm layout, five plates on the 4.26: standard, light-strip, test prints and
+extras, chinless, light-strip chinless).
 
-1. **Print the gate coupon first** (plate 3), once per printer and filament: it checks the gate's fit. The chin
+1. **Print the gate coupon first** (the last plate), once per printer and filament: it checks the gate's fit. The chin
    coupon on the same plate (4.26: `coupon-chin` with a `key-426`; 3.68: `coupon-strip` with its build's key) is an
    optional fit check for the hook keys; nothing is chosen from it. The case README's "Bottom keys" section says what
    to look for.
 2. **Print plate 1** (4.26: the GDEQ0426T82-FT01C touch and frontlight panel; 3.68: the bare x3 panel). On the 4.26
-   with a board without the bottom switches, print plate 4 (chinless, touch panel) instead; it needs none of steps 1,
+   with a board without the bottom switches, print plate 3 (chinless, touch panel) instead; it needs none of steps 1,
    3 and 4.
 3. **Pick the cranks for your board's switches:** crank-T (plate 1) for SHOU HAN TS365ZJ switches, which every
-   JLC-assembled board has; crank-M (plate 3) for APEM MJTP1117 switches.
+   JLC-assembled board has; crank-M (plate 2) for APEM MJTP1117 switches.
 4. **Make the rod** (not printed): 63.25 mm of 1.75 mm PLA filament, straightened and cut in the rod jig. The steps
    are in `4.26/ROD.txt` and `3.68/ROD.txt`.
 
@@ -326,7 +331,7 @@ need them. The rafts under the keys and cranks are not supports: they are set pe
   1-1.5 mm past the key's root, under the lid's rounded back edge beside the hinge (a pinhead mark there at most). Nothing goes under the lid's logo, its grip
   grooves or its screw holes, and nothing on the tub.
 - **In the plate file** this is already set: the lid has supports on in manual mode (supports only inside a support
-  enforcer) and one enforcer box per side key (5 on the 4.26, 3 on the 3.68; the 4.26 chinless lid on plates 4 and 5
+  enforcer) and one enforcer box per side key (5 on the 4.26, 3 on the 3.68; the 4.26 chinless lid on plate 3 (and 5 of the CC2 file)
   has the same 5, and a 4.26 side-key layout's lid one per key it has, 3). Every other object has supports off.
 - **After printing,** pick each grid out of its notch from outside the case with a fingernail or tweezers. It sits
   one 0.2 mm air layer under the bar, with no dense interface, and about 0.4 mm off the walls beside it. Checked with the
@@ -376,8 +381,9 @@ Prusa MK4 250 x 210, Bambu 256 and anything larger).
 - **Other slicers are not supported.** PrusaSlicer, Cura and the rest don't read these per-part settings; use
   OrcaSlicer.
 
-The plate files above stay set up for Ian's Elegoo Centauri Carbon 2; the same CC2 versions of the per-configuration
-files can be made with `make_plates.py configs --printer cc2` (into `out/configs-cc2/`). These files are not in git:
+The plate files above are generic projects, like these; the author's Elegoo Centauri Carbon 2 versions of both
+(`make_plates.py --printer cc2`, into `print/cc2-local/`) and of the per-configuration files (`make_plates.py configs
+--printer cc2`, into `out/configs-cc2/`) are made on request. These files are not in git:
 the website is meant to publish them (as of 2026-10-21 it does not yet); you can also make yours with the case
 project (below). The website's builder is to offer the 16 standard and chinless ones (side keys as one four-way choice,
 as below); the light-strip ones are in development and it will not offer them. The top-level
@@ -413,15 +419,15 @@ run of all 32 (`src/pipeline.py`, about 1 h from nothing) writes every one.
 per side key it has) side by side, the midplate turned crosswise in front of them; with bottom keys also 4
 `key-426`, 4 `crank-T` and 2 gates (one spare) beside the midplate and the rod jig beside the lid. With bottom keys,
 plate 2 holds 4 `crank-M`, only for APEM MJTP1117 boards. There are no test prints: with bottom keys, print the gate
-coupon from plate 3 of `silkscreen-426-plates.3mf` first (the plate file's step 1). About 41 g with bottom keys and
+coupon from plate 4 of `silkscreen-426-plates.3mf` first (the plate file's step 1). About 41 g with bottom keys and
 33 g chinless; the time is your printer profile's (the generic profile's cautious speeds give 3 h 20 min and 2 h 30
 min, the CC2 1 h 40 min and 1 h 15 min). Checked with the OrcaSlicer CLI only (all 32 slice, a raft under every key
-and crank, supports only in the lid's side-key enforcers): not yet opened in the OrcaSlicer GUI, and not printed.
+and crank, supports only in the lid's side-key enforcers): opened in the OrcaSlicer 2.4.0-dev GUI (2026-10-21) but not printed.
 
 ## The 3.68: its own OrcaSlicer project too (standard only)
 
 The 3.68 has one released configuration, the standard build (the bare x3 panel); the light-strip 3.68 is not
-released and has no project. Besides the CC2 plate file `silkscreen-368-plates.3mf` (above), it has an OrcaSlicer
+released and has no project. Besides the plate file `silkscreen-368-plates.3mf` (above), it has an OrcaSlicer
 project of its own like the 4.26's, `enclosures/case-368/out/configs/standard.3mf` (1.08 MB): the file the website is
 meant to serve for the 3.68. It carries the same OrcaSlicer generic presets and fits the same 220 x 210 mm bed, and the same
 rules apply: open it in OrcaSlicer, pick your printer, keep a 0.4 mm nozzle and 0.2 mm layers, other slicers are not
@@ -434,15 +440,15 @@ boards. No test prints: print the gate coupon (`coupon-gate-x3std`) from plate 3
 Since 2026-10-13: four M2 x 8 socket head cap screws (pan heads also fit), and a one-loop skirt. Make it with the case
 project: `make_plates.py configs --size 368` from `enclosures/`, once the standard build's `plates.py` has run
 (`../enclosures/case-368/README.md`, "Print files"). Checked with the OrcaSlicer CLI only (both plates slice, a raft
-under every key and crank, supports only in the lid's 3 enforcers, each key 50 layers): not yet opened in the
-OrcaSlicer GUI, and not printed.
+under every key and crank, supports only in the lid's 3 enforcers, each key 50 layers): opened in the OrcaSlicer
+2.4.0-dev GUI (2026-10-21), not printed.
 
 ## What is in this folder
 
 | Path | What |
 |---|---|
 | `silkscreen-426-plates.3mf`, `silkscreen-368-plates.3mf` | the plate files above |
-| `rod-jig.stl`, `rod-jig.step` | the rod jig, the same for both sizes (also on plate 3) |
+| `rod-jig.stl`, `rod-jig.step` | the rod jig, the same for both sizes (also on plate 1 of the plate files) |
 | [`4.26/`](4.26/) | every 4.26 part on its own, and `ROD.txt` |
 | [`3.68/`](3.68/) | every 3.68 part on its own, and `ROD.txt` |
 
@@ -468,7 +474,7 @@ case's CAD frame (the board's coordinates) for editing. The gate's STEP is in it
 | Files | Written by |
 |---|---|
 | `4.26/`, `3.68/` | `enclosures/case-426/src/build.py` and `enclosures/case-368/src/build.py`, at the end of a full build (every print build: on the 4.26 standard, light-strip, chinless and light-strip chinless) |
-| the two plate files | `enclosures/make_plates.py`, from each build's print-oriented STLs (`src/plates.py`, in `out/<build>/print/`) |
+| the two plate files | `enclosures/make_plates.py`, from each build's print-oriented STLs (`src/plates.py`, in `out/<build>/print/`): generic projects, the released builds only. `make_plates.py --printer cc2` writes the author's CC2 versions with every build to `cc2-local/` (git-ignored) |
 | one OrcaSlicer project per 4.26 configuration (not in this folder) | `enclosures/make_plates.py configs`, into `enclosures/case-426/out/configs/` (OrcaSlicer's generic presets, what the website serves; `--printer cc2`: `out/configs-cc2/`; build output, not in git; above) |
 | the 3.68 standard build's OrcaSlicer project (not in this folder) | `enclosures/make_plates.py configs --size 368`, into `enclosures/case-368/out/configs/standard.3mf` (the same generic presets, what the website serves; `--printer cc2`: `out/configs-cc2/`; build output, not in git; above) |
 | `rod-jig.*` | `enclosures/rod_jig.py` |

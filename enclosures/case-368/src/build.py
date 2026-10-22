@@ -658,7 +658,8 @@ def write_print(dirs):
                                           its two slots, printed with one key; test 2 removed the drag coupon's keys)
                                           and the gate's proof coupon (tub.gate_coupon), printed with a gate
       ROD.txt                             the rod and the gate: cut, taper, fit, service (rod_note)
-    enclosures/make_plates.py lays the same parts out on three plates in print/silkscreen-368-plates.3mf. The rod is
+    enclosures/make_plates.py lays the standard build out on three plates in print/silkscreen-368-plates.3mf (a generic
+    OrcaSlicer project; print/cc2-local/, git-ignored, has the author's CC2 file with both builds). The rod is
     not a part: a 63.25 cut of 1.75 PLA filament (ROD.txt). A STEP that differs from the one there only by its
     timestamp is left as it is. Files there that this build no longer makes are removed."""
     import trimesh, plates
@@ -694,7 +695,7 @@ def rod_note():
     return f"""Bottom keys: the crank rod (not printed) and its gate (printed, gate.stl)
 
 Rod: 1.75 mm PLA filament, cut to {P.ROD_CUT:.2f} +- {P.ROD_CUT_TOL:.1f} mm. One per case.
-  - Make it in the rod jig (print/rod-jig.stl, also on plate 3 of print/silkscreen-368-plates.3mf). Cut
+  - Make it in the rod jig (print/rod-jig.stl, also on plate 1 of print/silkscreen-368-plates.3mf). Cut
     about 80 mm of filament and warm it until it goes limp: about 10 s in hot water (a kettle left to stand
     a minute), or lay it in the jig's groove and set the jig on the bed at 60 C for 5 minutes. Press it
     into the groove and let it cool there for half a minute. While it is still warm, cut it at both slots

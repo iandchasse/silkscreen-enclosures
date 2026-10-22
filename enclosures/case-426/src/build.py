@@ -1751,9 +1751,9 @@ def write_print(built):
     print build makes are removed; the rod is a cut length, not a part, so it gets a note (ROD.txt). Only from a run
     that built every print build (built): a partial run or a single build never writes here, so it can neither
     remove nor overwrite a print file.
-    enclosures/make_plates.py lays the standard and light-strip parts out on three plates in
-    print/silkscreen-426-plates.3mf, the chinless case (its tub and lid, and the midplate) on a fourth and the
-    light-strip chinless case (its tub, the chinless lid, the midplate) on a fifth."""
+    enclosures/make_plates.py lays the standard build (plate 1), the APEM cranks (2), the chinless case (its tub and
+    lid, and the midplate; 3) and the test prints (4) out in print/silkscreen-426-plates.3mf, a generic OrcaSlicer
+    project of the released builds; print/cc2-local/ (git-ignored) has the author's CC2 file with all four builds."""
     import plates
     missing = [b for b in P.PRINT_BUILDS if b not in built]
     if missing:
@@ -1783,7 +1783,7 @@ _OUT = P.X0 - (P.RAIL_END_X - P.ROD_CUT)                            # rod out of
 ROD_NOTE = f"""Bottom keys: the crank rod (not printed) and its gate (printed, gate.stl)
 
 Rod: 1.75 mm PLA filament, cut to {P.ROD_CUT:.2f} +- 0.2 mm. One per case.
-  - Make it in the rod jig (print/rod-jig.stl, also on plate 3 of print/silkscreen-426-plates.3mf). Cut
+  - Make it in the rod jig (print/rod-jig.stl, also on plate 1 of print/silkscreen-426-plates.3mf). Cut
     about 80 mm of filament and warm it until it goes limp: about 10 s in hot water (a kettle left to stand
     a minute), or lay it in the jig's groove and set the jig on the bed at 60 C for 5 minutes. Press it
     into the groove and let it cool there for half a minute. While it is still warm, cut it at both slots

@@ -5,6 +5,8 @@ CLAUDE.local.md
 print/SITE-BUILDER-NOTE.md
 # the owner's own files
 print.zip
+# Ian's Elegoo CC2 plate files, every build (make_plates.py --printer cc2); the public ones are print/*-plates.3mf
+print/cc2-local/
 *.gcode
 # vendor reference files, not ours to redistribute (see enclosures/case-*/hardware/reference/SOURCES.md)
 enclosures/case-426/hardware/reference/GDEQ0426T82-FT01C.pdf

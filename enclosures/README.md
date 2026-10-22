@@ -57,9 +57,15 @@ scripts in this folder. The commands below call it `$py`.
 
 ## Scripts in this folder
 
-- [`make_plates.py`](make_plates.py) writes the two OrcaSlicer plate files, `print/silkscreen-426-plates.3mf` (five
-  plates: standard, light-strip, test prints, chinless, light-strip chinless) and `print/silkscreen-368-plates.3mf`
-  (the first three), from each print build's oriented STLs. It also reads each build's CAD-frame
+- [`make_plates.py`](make_plates.py) writes the two OrcaSlicer plate files, `print/silkscreen-426-plates.3mf` (four
+  plates: the standard case, the APEM cranks, the chinless case, test prints) and `print/silkscreen-368-plates.3mf`
+  (three: the case, the cranks, test prints), from each print build's oriented STLs. They are generic OrcaSlicer
+  projects (Generic Marlin Printer, 0.20mm Standard, Generic PLA; a 220 x 210 mm bed) holding the released builds only;
+  the plates are the per-configuration projects' plates. `make_plates.py --printer cc2` writes the author's Elegoo CC2
+  versions, every build included (the light-strip ones too), into `print/cc2-local/` (not in git). A project's
+  `Metadata/project_settings.config` holds OrcaSlicer's whole key set (`orca-project-defaults.json`, made by
+  `make_plates.py defaults` with the installed OrcaSlicer's command line; remake it after an OrcaSlicer update), with
+  the stock presets over it: OrcaSlicer 2.3.2 and later crash on a project that has no `filament_colour`. It also reads each build's CAD-frame
   `lid.stl` and `skey_*.stl` (from build.py) to place a support enforcer under each side key's hinge notch: the lid
   is the only object with supports, and only there (manual mode). Run it after build.py and plates.py.
   `make_plates.py configs [--builds a,b]` writes one OrcaSlicer project per 4.26 configuration (all 32 by default)
@@ -146,7 +152,7 @@ from this folder (`pipeline.py` runs `make_plates.py` itself, so this is only ne
 
 ```powershell
 & $py -B rod_jig.py      # only when the rod changes
-& $py -B make_plates.py  # the two plate files (4.26: plates 1-5)
+& $py -B make_plates.py  # the two public plate files (4.26: plates 1-4); --printer cc2: print/cc2-local/, the author's, every build
 ```
 
 Last, the showcase reads both projects' `out/` and the repo's `print/4.26/` and `print/3.68/`: run its

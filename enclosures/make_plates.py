@@ -4,6 +4,25 @@ repo's print/ folder:
     print/silkscreen-426-plates.3mf    the 4.26 case (enclosures/case-426)
     print/silkscreen-368-plates.3mf    the 3.68 case (enclosures/case-368)
 
+These two are OrcaSlicer GENERIC projects (2026-10-21, Ian: "the plate files that should be on the repo should be
+orcaslicer generic like what is served on the website"): the presets every OrcaSlicer install ships (Generic Marlin
+Printer 0.4 nozzle, 0.20mm Standard, Generic PLA; PRINTERS['generic']), every plate laid out for a 220 x 210 bed, and
+the per-part settings of the website's per-configuration projects (GENERIC_OBJ, GENERIC_LID, GENERIC_RAFT besides the
+rafts, EFC 0 and the lid's side-key enforcers). They hold the RELEASED builds only, and their plates are the
+per-configuration projects' (config_case, config_case_368), one after the other:
+  4.26: plate 1 "Case: touch panel, bottom keys, ..." (the standard build: tub, lid with 5 side keys and 5 enforcers,
+        midplate, 4 key-426, 4 crank-T, 2 gates (one spare), the rod jig); plate 2 "Only for APEM MJTP1117 boards:
+        crank-M" x 4; plate 3 "Case: touch panel, chinless, ..." (the chinless build: tub, lid, midplate); plate 4
+        "Test prints" (optional fit checks, standard build: the PCBA test-fit dummy, the chin coupon with a key-426
+        to try in it, the gate coupon with a gate to test it with; print the coupons first).
+  3.68: plate 1 the standard build's case (tub, lid with 3 side keys, midplate, 4 key-x3std, 4 crank-T, 2 gates, the
+        rod jig); plate 2 the APEM crank-M x 4; plate 3 "Test prints" (the PCBA dummy, coupon-strip with a key-x3std,
+        coupon-gate with a gate).
+The light-strip builds are unreleased, so they are not in these files.
+
+Ian's own Elegoo Centauri Carbon 2 (CC2) plate files, every build included (the light-strip ones too), are made with
+`--printer cc2` into print/cc2-local/ (git-ignored; his ElegooSlicer opens those):
+    print/cc2-local/silkscreen-426-plates.3mf, print/cc2-local/silkscreen-368-plates.3mf
 Plate 1 "Standard case": the standard tub, lid, midplate, 4 bottom keys, 4 crank-T, 2 gates (one spare).
 Plate 2 "Light-strip case": the same with the light-strip tub (and, on the 3.68, its own keys).
 Plate 3 "Test prints and extras": the rod jig, the chin coupon(s) with a bottom key to try in each (optional fit
@@ -20,8 +39,17 @@ panel; build.py's share check asserts it) and the shared midplate. Last again, s
 their places on the plate; the enforcers' ids move up 6, and with five plates OrcaSlicer's plate grid is three wide,
 so plates 3 and 4 sit at other origins on its canvas (plate_origins).
 
-Settings: the stock Elegoo Centauri Carbon 2 0.4 nozzle / 0.20mm Standard @Elegoo CC2 0.4 nozzle / Elegoo PLA
-@ECC2 presets, resolved inside the Elegoo vendor folder as OrcaSlicer's GUI resolves them, with no brim and a one-loop
+Why the files are written the way they are (2026-10-21): OrcaSlicer 2.3.2 and later (through 2.5.0-alpha and main)
+crash on opening a project whose Metadata/project_settings.config has no "filament_colour" (Plater.cpp,
+Plater::priv::load_files: `config_loaded.option<ConfigOptionStrings>("filament_colour")->size()`, no null check; Bambu
+Studio fixed the same line in 02.08). The stock presets set none, so every file this script wrote before crashed
+OrcaSlicer on Windows and macOS. project_settings() now writes OrcaSlicer's whole key set, as OrcaSlicer's own save
+does: orca-project-defaults.json holds the defaults OrcaSlicer fills in (made by `make_plates.py defaults` from the
+installed OrcaSlicer), the flattened stock presets go over them, and filament_colour is written, one entry per filament.
+
+Settings: the stock presets of the printer (PRINTERS: the generic trio, or for cc2 the Elegoo Centauri Carbon 2 0.4
+nozzle / 0.20mm Standard @Elegoo CC2 0.4 nozzle / Elegoo PLA @ECC2), resolved inside their vendor folders as
+OrcaSlicer's GUI resolves them, with no brim and a one-loop
 skirt (SKIRT, 2026-10-13), are the project settings; the plate type is Textured PEI (60 C for this PLA). Every key,
 crank and gate carries elephant-foot compensation 0; the cranks also carry Arachne walls (per-object settings; the
 same parts as slice_check.py's small_part(), and the process its crank read-back slices). Every bottom key and
@@ -39,7 +67,9 @@ No imports from the case projects (the configs pass reads the 4.26's src/variant
 only, no side effects). Run from this folder (enclosures/) with a Python 3.11 virtual environment made from
 requirements.txt:
 
-    python -B make_plates.py
+    python -B make_plates.py [plates] [--printer generic|cc2]     generic (default): print/*-plates.3mf, the public
+                                                                  files; cc2: print/cc2-local/, Ian's, all builds
+    python -B make_plates.py defaults [--datadir DIR]             remake orca-project-defaults.json (installed Orca)
     python -B make_plates.py configs [--builds a,b,...]
                                                                      [--printer generic|cc2]
     python -B make_plates.py configs --size 368 [--printer ...]
@@ -255,9 +285,19 @@ META_KEYS = {'name', 'from', 'type', 'setting_id', 'instantiation', 'inherits', 
              'compatible_prints_condition', 'renamed_from', 'description'}
 
 
-def project_settings(printer='cc2'):
-    """Metadata/project_settings.config: the flattened stock presets (PRINTERS[printer]), no brim, the one-loop
-    skirt, and the preset names."""
+FILAMENT_COLOUR = '#F2754E'              # OrcaSlicer's own default filament colour
+ORCA = Path(r'C:\Program Files\OrcaSlicer\orca-slicer.exe')
+# The defaults OrcaSlicer fills in for every setting a project does not name: its own project_settings.config
+# (all FullPrintConfig keys, 631 in 2.4). 2026-10-21: OrcaSlicer 2.3.2 and later read "filament_colour" from a project's
+# settings without checking that the key is there (Plater::priv::load_files) and crash when it is not, and no stock
+# preset sets it, so the files written from the presets alone crashed OrcaSlicer on opening. A project that holds
+# the whole key set, as OrcaSlicer's own save writes it, cannot trip such a read. Made by `make_plates.py defaults`.
+DEFAULTS = HERE / 'orca-project-defaults.json'
+
+
+def _stock_config(printer):
+    """The three stock presets of PRINTERS[printer] flattened into one settings dict (no metadata keys), the preset
+    names and the stock presets themselves."""
     presets = PRINTERS[printer]['presets']
     names = {k: n for k, (_, n) in presets.items()}
     pre = stock_presets(presets)
@@ -268,10 +308,25 @@ def project_settings(printer='cc2'):
     cfg = {}
     for kind in ('machine', 'filament', 'process'):
         cfg.update({k: v for k, v in pre[kind].items() if k not in META_KEYS})
+    return cfg, pre, names
+
+
+def project_settings(printer='cc2'):
+    """Metadata/project_settings.config: OrcaSlicer's defaults (DEFAULTS) with the flattened stock presets
+    (PRINTERS[printer]) over them, no brim, the one-loop skirt, the preset names and one filament colour per filament.
+    Keys the presets carry that this OrcaSlicer does not know (adaptive_layer_height, the scarf keys, ...: the June
+    profiles' legacy ones, and a newer OrcaSlicer's) are kept, as the files always had them: 2.4 ignores them, a newer
+    one reads them. -> (the file's text, the keys that differ from the stock process)."""
+    cfg, pre, names = _stock_config(printer)
+    try:
+        dump = json.loads(DEFAULTS.read_text(encoding='utf-8'))
+    except OSError:
+        sys.exit(f'{DEFAULTS}: missing (python -B make_plates.py defaults makes it with the installed OrcaSlicer)')
     changed = sorted({k for k, v in NO_BRIM.items() if pre['process'].get(k) != v} | set(SKIRT))
-    cfg.update(NO_BRIM)
-    cfg.update(SKIRT)
-    cfg.update({
+    out = dict(dump)
+    out.update(cfg)
+    ours = {
+        **NO_BRIM, **SKIRT,
         'name': 'project_settings',
         'from': 'project',
         'version': APP_VERSION,
@@ -279,14 +334,60 @@ def project_settings(printer='cc2'):
         'print_settings_id': names['process'],
         'filament_settings_id': [names['filament']],
         'filament_ids': [pre['filament'].get('filament_id', '')],
+        'filament_colour': [FILAMENT_COLOUR],
         'print_compatible_printers': pre['process'].get('compatible_printers', []),
         'inherits_group': ['', '', ''],
         # [process, filament, printer]: the keys that differ from the stock preset
         'different_settings_to_system': [';'.join(changed), '', ''],
         'curr_bed_type': BED_TYPE,
-    })
-    text = json.dumps(cfg, indent='\t', sort_keys=True, ensure_ascii=True)
+    }
+    unknown = sorted(set(ours) - set(dump))
+    if unknown:
+        sys.exit(f'{DEFAULTS.name} has no {", ".join(unknown)}: remake it (make_plates.py defaults)')
+    out.update(ours)
+    # OrcaSlicer reads these without a check: present, one entry per filament
+    nf = len(out['filament_settings_id'])
+    short = [k for k in ('filament_colour', 'filament_ids', 'filament_type', 'filament_diameter') if len(out[k]) != nf]
+    if nf != 1 or short or set(dump) - set(out):
+        sys.exit(f'project settings: {nf} filaments, per-filament keys of another length: {short}')
+    text = json.dumps(out, indent='\t', sort_keys=True, ensure_ascii=True)
     return text.replace('\n', '\r\n') + '\r\n', changed
+
+
+def make_defaults(datadir=None):
+    """make_plates.py defaults: DEFAULTS from the installed OrcaSlicer. A one-part project whose settings are the keys
+    every printer's flattened presets share (so that OrcaSlicer's CLI loads it: with fewer it crashes) and a
+    filament_colour goes through `orca-slicer --export-3mf`, which writes the project back with every key it has; the
+    keys that file adds are OrcaSlicer's defaults, and the ones it carries from the input are overwritten by the presets
+    whenever project_settings runs."""
+    import subprocess
+    import tempfile
+    flats = [_stock_config(p)[0] for p in PRINTERS]
+    shared = sorted(set.intersection(*(set(f) for f in flats)))
+    base = {k: flats[0][k] for k in shared}
+    g = PRINTERS['generic']['presets']
+    base.update({'printer_settings_id': g['machine'][1], 'print_settings_id': g['process'][1],
+                 'filament_settings_id': [g['filament'][1]], 'filament_colour': [FILAMENT_COLOUR]})
+    with tempfile.TemporaryDirectory() as d:
+        d = Path(d)
+        cube = trimesh.creation.box(extents=(20, 20, 5))
+        cube.apply_translation(-cube.bounds[0] + [100, 100, 0])
+        part = Part('cube', d / 'cube.stl')
+        part.mesh = cube
+        src, dst = d / 'in.3mf', d / 'out.3mf'
+        write_3mf(src, 'defaults', [('defaults', [part])], json.dumps(base, indent='\t', sort_keys=True), 'generic')
+        cmd = [str(ORCA)] + (['--datadir', str(datadir)] if datadir else []) + ['--export-3mf', str(dst), str(src)]
+        r = subprocess.run(cmd, capture_output=True, timeout=600, cwd=d)
+        if r.returncode or not dst.exists():
+            sys.exit(f'{" ".join(cmd)}: exit {r.returncode}')
+        with zipfile.ZipFile(dst) as z:
+            cfg = json.loads(z.read('Metadata/project_settings.config'))
+    if cfg.get('filament_colour') != [FILAMENT_COLOUR]:
+        sys.exit(f'OrcaSlicer wrote filament_colour {cfg.get("filament_colour")}')
+    DEFAULTS.write_text(json.dumps(cfg, indent='\t', sort_keys=True, ensure_ascii=True) + '\n', encoding='ascii',
+                        newline='\n')
+    print(f'{DEFAULTS.name}: {len(cfg)} keys (the presets share {len(shared)}; {len(set(cfg) - set(base))} are '
+          f"OrcaSlicer's own)")
 
 
 # ---------------------------------------------------------------- parts and plates
@@ -555,6 +656,8 @@ def plate_origins(n, bed=BED):
 # ---------------------------------------------------------------- the two cases
 
 ROD_JIG = PRINT / 'rod-jig.stl'         # rod_jig.py: the same rod, so the same jig, in both cases
+CC2_LOCAL = PRINT / 'cc2-local'         # Ian's CC2 plate files, every build (git-ignored)
+
 
 def case_426():
     proj = HERE / 'case-426'
@@ -588,8 +691,8 @@ def case_426():
                     [Part('tub (light-strip chinless)', lsc / 'tub.stl'),
                      Part('lid (chinless)', lsc / 'lid.stl', side_keys=lsc.parent)]],
                    [])
-    return dict(title='Silkscreen 4.26 case - all printed parts',
-                out=PRINT / 'silkscreen-426-plates.3mf',
+    return dict(title='Silkscreen 4.26 case - all printed parts (Elegoo CC2)',
+                out=CC2_LOCAL / 'silkscreen-426-plates.3mf', printer='cc2',
                 sources=[std, ls, chin, lsc], shared=[(std / f'{s}.stl', ls / f'{s}.stl') for s in shared]
                 + [(std / 'midplate.stl', chin / 'midplate.stl'), (std / 'midplate.stl', lsc / 'midplate.stl'),
                    (chin / 'lid.stl', lsc / 'lid.stl')],
@@ -624,8 +727,8 @@ def case_368():
                 Part('gate (for the gate coupons)', std / 'gate.stl')],
                [Part(CRANK_M.format(i), std / 'crank-M.stl') for i in range(1, 5)]])
     shared = ['pcba-dummy', 'crank-M', 'gate']
-    return dict(title='Silkscreen 3.68 case - all printed parts',
-                out=PRINT / 'silkscreen-368-plates.3mf',
+    return dict(title='Silkscreen 3.68 case - all printed parts (Elegoo CC2)',
+                out=CC2_LOCAL / 'silkscreen-368-plates.3mf', printer='cc2',
                 sources=[std, ls], shared=[(std / f'{s}.stl', ls / f'{s}.stl') for s in shared],
                 plates=[('Standard case', *case_plate(std, 'tub (standard)', 'key-x3std')),
                         ('Light-strip case', *case_plate(ls, 'tub (light strip)', 'key-x3ls')),
@@ -691,9 +794,10 @@ def object_settings(p, printer='cc2'):
     return obj
 
 
-def write_3mf(path, title, plates, settings_text):
-    """plates: [(name, [Part, ...] laid out in plate coordinates)]. Returns the objects written."""
-    origins = plate_origins(len(plates))
+def write_3mf(path, title, plates, settings_text, printer='cc2'):
+    """plates: [(name, [Part, ...] laid out in plate coordinates)]. printer: PRINTERS' key, for the per-object settings
+    (object_settings) and the plates' places on OrcaSlicer's canvas (its bed). Returns the objects written."""
+    origins = plate_origins(len(plates), PRINTERS[printer]['bed'])
     files = {}
     objects = []                                   # (k, part, plate index, world offset, centre)
     extra = {}                                     # k: [(id, j, name, offset from the object's origin)]
@@ -755,7 +859,7 @@ def write_3mf(path, title, plates, settings_text):
         cfg += [f'  <object id="{2 * k}">\n',
                 f'    <metadata key="name" value={quoteattr(p.name)}/>\n',
                 '    <metadata key="extruder" value="1"/>\n']
-        cfg += [f'    <metadata key="{key}" value="{v}"/>\n' for key, v in object_settings(p).items()]
+        cfg += [f'    <metadata key="{key}" value="{v}"/>\n' for key, v in object_settings(p, printer).items()]
         vols = [(2 * k - 1, 'normal_part', p.name, vol)]
         vols += [(e, 'support_enforcer', n, t) for e, _, n, t in extra.get(k, [])]
         for vid, sub, vname, t in vols:
@@ -870,7 +974,7 @@ def build(case, settings_text):
     if missing:
         sys.exit('missing (run src/plates.py for every print build): ' + ', '.join(missing))
     plates = lay_out(case)
-    write_3mf(case['out'], case['title'], plates, settings_text)
+    write_3mf(case['out'], case['title'], plates, settings_text, case.get('printer', 'cc2'))
     print(f'  -> {case["out"].relative_to(HERE.parent)} ({case["out"].stat().st_size} bytes)')
 
 
@@ -953,6 +1057,32 @@ def config_case_368(slug, printer='generic'):
         plates = [(plates[0][0], rows[0], rows[1], cols, side), (plates[1][0], [], [], plates[1][2], [])]
     return dict(title=f'Silkscreen 3.68 case {slug} ({words})', plates=plates, side_keys=SIDE_KEYS_368,
                 cad=[build_dir / 'lid.stl', build_dir / 'lid_body.stl'], printer=printer)
+
+
+# The public plate files (print/silkscreen-4xx-plates.3mf): generic projects with the released builds only, made of the
+# per-configuration projects' plates (so each plate is the one the website serves) and a plate of test prints
+def public_426():
+    V = load_variants()
+    std, chin = config_case(V, 'standard', 'generic'), config_case(V, 'chinless', 'generic')
+    src = HERE / 'case-426' / 'out' / 'standard' / 'print'
+    test = ('Test prints (optional fit checks, print these first)',
+            [Part('pcba-dummy (test fit)', src / 'pcba-dummy.stl')], [],
+            [[Part('coupon-chin', src / 'coupon-chin.stl'), Part('key-426 (for the chin coupon)', src / 'key-426.stl')],
+             [Part('coupon-gate', src / 'coupon-gate.stl'), Part('gate (for the gate coupon)', src / 'gate.stl')]], [])
+    return dict(title='Silkscreen 4.26 case - standard and chinless builds', out=PRINT / 'silkscreen-426-plates.3mf',
+                printer='generic', plates=[*std['plates'], *chin['plates'], test],
+                shared=[(src / 'midplate.stl', HERE / 'case-426' / 'out' / 'chinless' / 'print' / 'midplate.stl')])
+
+
+def public_368():
+    std = config_case_368('standard', 'generic')
+    src = HERE / 'case-368' / 'out' / 'standard' / 'print'
+    test = ('Test prints (optional fit checks, print these first)',
+            [Part('pcba-dummy (test fit)', src / 'pcba-dummy.stl')], [],
+            [[Part('coupon-strip', src / 'coupon-strip.stl'), Part('key-x3std (for the coupon strip)', src / 'key-x3std.stl')],
+             [Part('coupon-gate', src / 'coupon-gate.stl'), Part('gate (for the gate coupon)', src / 'gate.stl')]], [])
+    return dict(title='Silkscreen 3.68 case - standard build', out=PRINT / 'silkscreen-368-plates.3mf',
+                printer='generic', plates=[*std['plates'], test], shared=[])
 
 
 def part_model(p):
@@ -1318,19 +1448,25 @@ def configs(V, slugs, settings_text, printer='generic', size='426'):
 if __name__ == '__main__':
     import argparse
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
-    ap.add_argument('what', nargs='?', choices=('plates', 'configs'), default='plates',
-                    help='plates: the two plate files in print/ (the default); configs: the per-configuration projects')
+    ap.add_argument('what', nargs='?', choices=('plates', 'configs', 'defaults'), default='plates',
+                    help='plates: the two plate files in print/ (the default); configs: the per-configuration projects; '
+                         "defaults: remake orca-project-defaults.json with the installed OrcaSlicer")
     ap.add_argument('--builds', default='all', help='configs: the slugs, comma-separated, or all (the default)')
     ap.add_argument('--size', choices=('426', '368'), default='426',
                     help='configs: the case, 426 (the default: its 32 configurations, case-426/out/configs/) or 368 '
                          '(its one released configuration, standard: case-368/out/configs/)')
     ap.add_argument('--printer', choices=tuple(PRINTERS), default='generic',
-                    help="configs: generic (the default: OrcaSlicer's generic presets, a 220 x 210 bed; out/configs/, "
-                         "what the website serves) or cc2 (Ian's Elegoo Centauri Carbon 2; out/configs-cc2/)")
+                    help="generic (the default: OrcaSlicer's generic presets, a 220 x 210 bed): plates writes the public "
+                         "print/silkscreen-*-plates.3mf (the released builds), configs out/configs/ (what the website "
+                         "serves); cc2 (Ian's Elegoo Centauri Carbon 2): plates writes print/cc2-local/ (every build, "
+                         "git-ignored), configs out/configs-cc2/")
+    ap.add_argument('--datadir', default=None, help="defaults: OrcaSlicer's --datadir (a copy of a profile folder)")
     o = ap.parse_args()
-    text, changed = project_settings(o.printer if o.what == 'configs' else 'cc2')
-    print('project settings: stock presets', ', '.join(n for _, n in PRINTERS[o.printer if o.what == 'configs'
-                                                                            else 'cc2']['presets'].values()),
+    if o.what == 'defaults':
+        make_defaults(o.datadir)
+        sys.exit(0)
+    text, changed = project_settings(o.printer)
+    print('project settings: stock presets', ', '.join(n for _, n in PRINTERS[o.printer]['presets'].values()),
           '; different_settings_to_system:', changed or 'nothing', '; plate:', BED_TYPE)
     if o.what == 'configs' and o.size == '368':
         slugs = list(CONFIGS_368) if o.builds == 'all' else [s for s in o.builds.split(',') if s]
@@ -1347,7 +1483,7 @@ if __name__ == '__main__':
                 sys.exit(f'--builds: {ex}')
         configs(V, slugs, text, o.printer)
     else:
-        for make in (case_426, case_368):
+        for make in ((public_426, public_368) if o.printer == 'generic' else (case_426, case_368)):
             c = make()
             print(c['title'])
             build(c, text)
