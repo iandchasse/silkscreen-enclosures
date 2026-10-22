@@ -460,18 +460,22 @@ footer code { font-size: 12.5px; }
   SC.PART = {
     J1: 'USB-C socket', J2: 'display connector', J3: 'frontlight connector', J4: 'touch connector',
     J5: 'battery connector', J6: 'expansion (dev) header', J7: 'microSD socket', U4: 'ESP32 module', L1: 'display inductor',
-    SW1: 'right lower page key', SW4: 'right upper page key', SW5: 'left lower page key', SW7: 'left upper page key',
+    U10: 'frontlight driver chip', SW1: 'right lower page key', SW4: 'right upper page key', SW5: 'left lower page key', SW7: 'left upper page key',
     SW2: 'Right key', SW3: 'Left key', SW8: 'OK key', SW9: 'Back key', SW10: 'power key', SW11: 'reset button',
     H1: 'mounting hole', H2: 'mounting hole', H3: 'mounting hole', H4: 'mounting hole', H5: 'locating-pin hole',
-    H6: 'mounting hole'
+    H6: 'mounting hole', CR2: '3V3-pin clamp', CR3: 'battery-pin clamp', F2: 'battery-pin fuse', U8: 'header ESD array',
+    D3: 'frontlight clamp', D8: 'frontlight clamp'
   };
   SC.TAG = {
     J1: 'USB-C', J2: 'display', J3: 'frontlight', J4: 'touch', J5: 'battery', J6: 'expansion header', J7: 'microSD',
-    U4: 'ESP32', L1: 'inductor', SW1: 'right-down', SW4: 'right-up', SW5: 'left-down', SW7: 'left-up', SW2: 'Right',
+    U4: 'ESP32', U10: 'frontlight driver', L1: 'inductor', SW1: 'right-down', SW4: 'right-up', SW5: 'left-down', SW7: 'left-up', SW2: 'Right',
     SW3: 'Left', SW8: 'OK', SW9: 'Back', SW10: 'power', SW11: 'reset', H1: 'hole', H2: 'hole', H3: 'hole', H4: 'hole',
-    H5: 'pin hole', H6: 'hole'
+    H5: 'pin hole', H6: 'hole', CR2: '3V3 clamp', CR3: 'battery clamp', F2: 'battery fuse', U8: 'ESD array',
+    D3: 'frontlight clamp', D8: 'frontlight clamp'
   };
   SC.part = function (ref) { var n = SC.PART[ref]; return n ? 'the ' + n + ' (' + SC.esc(ref) + ')' : SC.esc(ref); };
+  // possessive: 'the display connector\u2019s (J2\u2019s)'
+  SC.partPos = function (ref) { var n = SC.PART[ref]; return n ? 'the ' + n + '\u2019s (' + SC.esc(ref) + '\u2019s)' : SC.esc(ref) + '\u2019s'; };
   SC.tag = function (ref) { var n = SC.TAG[ref]; return n ? n + ' ' + SC.esc(ref) : SC.esc(ref); };
   SC.esc = function (s) {
     return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; });
@@ -827,6 +831,15 @@ footer code { font-size: 12.5px; }
       var bad = v == null || v === '' || (typeof v === 'object' && !Array.isArray(v) && !el.hasAttribute('data-len'));
       el.classList.toggle('k-missing', bad);
       if (bad) { el.textContent = '?'; console.warn('[SC.bind] ' + path + ' is missing in data-' + state.size + '-' + state.build); return; }
+      // data-as: name a reference in plain words first (part: 'the display connector (J2)', Part: capitalised,
+      // partpos: 'the display connector\u2019s (J2\u2019s)', tag: 'display J2')
+      var as = el.getAttribute('data-as');
+      var vl = Array.isArray(v) ? v : [v];
+      if (as && vl.every(function (x) { return typeof x === 'string'; })) {
+        var named = vl.map(function (x) { return as === 'tag' ? SC.tag(x) : as === 'partpos' ? SC.partPos(x) : SC.part(x); }).join(el.getAttribute('data-join') != null ? el.getAttribute('data-join') : ', ');
+        el.innerHTML = as === 'Part' ? named.charAt(0).toUpperCase() + named.slice(1) : named;
+        return;
+      }
       el.innerHTML = fmtVal(el, v);
     });
   };

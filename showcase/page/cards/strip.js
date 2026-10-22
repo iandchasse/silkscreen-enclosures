@@ -227,19 +227,20 @@ function stripDrawFlat(svg, G) {
   });
   G.tps.forEach(function (d) { var a = P(d.x, d.y); el('circle', { cx: a[0], cy: a[1], r: 3.8, fill: 'var(--gold)' }); });
   G.fingers.forEach(function (fx) { var a = P(fx - 0.15, G.tip_y - 2.0), b = P(fx + 0.15, G.tip_y - 0.2); el('rect', { x: a[0], y: a[1], width: b[0] - a[0], height: b[1] - a[1], fill: 'var(--gold)' }); });
-  var label = function (x, y, lx, ly, text, col) {
+  // anchor 'end' puts the text's end at tx (default lx) instead of centring it on the leader: for the labels at the right edge
+  var label = function (x, y, lx, ly, text, col, anchor, tx) {
     var a = P(x, y);
     el('line', { x1: a[0], y1: a[1], x2: lx, y2: ly, stroke: col || 'var(--ink-3)', 'stroke-width': 1 });
-    var t = el('text', { x: lx, y: ly + (ly < a[1] ? -4 : 14), fill: 'var(--ink-2)', 'font-size': 13, 'text-anchor': 'middle' });
+    var t = el('text', { x: tx == null ? lx : tx, y: ly + (ly < a[1] ? -4 : 14), fill: 'var(--ink-2)', 'font-size': 13, 'text-anchor': anchor || 'middle' });
     t.textContent = text;
   };
   label(44.0, (H0 + H1) / 2, P(0, (H0 + H1) / 2)[0], 22, 'hinge: keep free (3.68\u2033 folds here)', 'var(--ink-3)');
   label(44.2, 47.15, P(0, 44)[0], 22, 'top pair', 'var(--ink-3)');
   label(44.0, 90, P(0, 90)[0], 22, 'bar: 3M 9077 + PI on the back', 'var(--tape)');
   label(50.0, 137.2, P(0, 128)[0], 212, 'foot', 'var(--ink-3)');
-  label(55.2, 146.5, P(0, 146.5)[0], 22, 'bend zone: keep free', 'var(--ink-3)');
+  label(55.2, 146.5, P(0, 146.5)[0], 22, 'bend zone: keep free', 'var(--ink-3)', 'end');
   label(55.2, 158.0, P(0, 159)[0], 212, 'diodes + S/C/W pads (PI behind)', 'var(--ink-3)');
-  label(54.2, 165.6, P(0, 165)[0], 22, 'contacts into the frontlight connector', 'var(--gold)');
+  label(54.2, 165.6, P(0, 165)[0], 22, 'contacts into the frontlight connector', 'var(--gold)', 'end', 1292);
 }
 var STRIP_TAPE = [
   ['<span class="tag tape">3M 9077</span>factory', 'Back of the top-pair piece and of the bar + foot',

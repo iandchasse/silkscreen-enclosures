@@ -43,10 +43,10 @@ SC.card({
     var sl = tk.map(function (k) { var r = RB.report[k].main; return r ? r.slack_mm : null; }).filter(function (x) { return x != null; });
     if (sl.length) fill('ribbons-slack', f(Math.min.apply(null, sl), 1) + '&ndash;' + f(Math.max.apply(null, sl), 1));
     var pins = { J2: 'EPD 24p', J3: 'light 6p', J4: 'touch 6p' };
-    var refs = keys.map(function (k) { var r = RB.connectors[k].ref; return r + (keys.length > 1 && pins[r] ? ' ' + pins[r] : ''); });
-    if (RB.strip_tail) refs.push(RB.strip_tail.ref + ' light strip');
+    var refs = keys.map(function (k) { var r = RB.connectors[k].ref; return SC.tag(r) + (keys.length > 1 && pins[r] ? ' ' + SC.esc(pins[r]) : ''); });
+    if (RB.strip_tail) refs.push('light strip tail to ' + SC.tag(RB.strip_tail.ref));
     refs.push('slot ' + f(s[3] - s[2], 1) + ' mm');
-    ctx.q('#ribbons-refs').innerHTML = refs.map(function (r) { return '<span class="ref">' + SC.esc(r) + '</span>'; }).join('');
+    ctx.q('#ribbons-refs').innerHTML = refs.map(function (r) { return '<span class="ref">' + r + '</span>'; }).join('');
 
     var find = function (id) { return dr ? dr.layers.filter(function (l) { return l.id === id; })[0] || null : null; };
     var bb = function (l) {
@@ -68,7 +68,7 @@ SC.card({
           if (low) a.label(low[0], low[1], 'slack bows\ntoward the lid', 26, -26, { hot: true });
         }
         if (pcb) { var pb = bb(pcb); a.label((s[2] + s[3]) / 2, (pb[2] + pb[3]) / 2, 'board slot ' + f(s[3] - s[2], 1), 26, 30); }
-        if (j2) { var jb = bb(j2); a.label((jb[0] + jb[1]) / 2, jb[2], RB.connectors.main.ref, 18, -30); }
+        if (j2) { var jb = bb(j2); a.label((jb[0] + jb[1]) / 2, jb[2], SC.tag(RB.connectors.main.ref), 18, -30); }
         var pn = ['epd', 'glass', 'touch', 'film', 'ps'].map(find).filter(Boolean)[0];
         if (pn) { var nb = bb(pn); a.label(Math.min(nb[1] - 1, dr.window[1] - 4), (nb[2] + nb[3]) / 2, 'panel', 18, 28); }
       },
@@ -86,12 +86,12 @@ SC.card({
     if (plain) {
       // the report is the FT01C's (unchanged in this build's data): show only what the outline gives
       t.innerHTML = '<thead><tr><th>FPC</th><th>Flat length</th><th>Tail vs connector</th></tr></thead><tbody>' +
-        keys.map(function (k) { return '<tr><td>' + nm[k] + ' \u2192 ' + SC.esc(RB.connectors[k].ref) + '</td><td>' + f(flat(k), 2) + ' mm</td><td>' + sgn(off(k)) + '</td></tr>'; }).join('') + '</tbody>';
+        keys.map(function (k) { return '<tr><td>' + nm[k] + ' \u2192 ' + SC.tag(RB.connectors[k].ref) + '</td><td>' + f(flat(k), 2) + ' mm</td><td>' + sgn(off(k)) + '</td></tr>'; }).join('') + '</tbody>';
     } else {
       t.innerHTML = '<thead><tr><th>Ribbon</th><th>Leaves at</th><th>Flat length</th><th>Slack</th><th>Tail vs connector</th></tr></thead><tbody>' +
         keys.map(function (k) {
           var r = RB.report[nomK][k] || {};
-          return '<tr><td>' + nm[k] + ' \u2192 ' + SC.esc(RB.connectors[k].ref) + '</td><td>z ' + f(r.exit_z, 2) + '</td><td>' + f(r.flat_length_mm, 2) + ' mm</td><td>' + rng(k, 'slack_mm', 1) + '</td><td>' + sgn(off(k)) + '</td></tr>';
+          return '<tr><td>' + nm[k] + ' \u2192 ' + SC.tag(RB.connectors[k].ref) + '</td><td>z ' + f(r.exit_z, 2) + '</td><td>' + f(r.flat_length_mm, 2) + ' mm</td><td>' + rng(k, 'slack_mm', 1) + '</td><td>' + sgn(off(k)) + '</td></tr>';
         }).join('') + '</tbody>';
     }
   },

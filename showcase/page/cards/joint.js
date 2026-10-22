@@ -108,13 +108,16 @@ SC.card({
       if (!ts.length) return;
       var ys = ts.map(function (t) { return (t.pad_y[0] + t.pad_y[1]) / 2; });
       var y = ys.reduce(function (s, v) { return s + v; }, 0) / ys.length;
-      var refs = ts.slice().sort(function (p, q) { return q.pad_y[0] - p.pad_y[0]; }).map(function (t) { return t.ref; }).join(', ');
-      if (wall === 'left') tx(W.left + 2, y, refs + (ts.length > 1 ? ' keys' : ' key'));
-      else tx(W.right - 2, y, refs + (ts.length > 1 ? ' keys' : ' key'), 'end');
+      var refs = ts.slice().sort(function (p, q) { return q.pad_y[0] - p.pad_y[0]; }).map(function (t) { return t.ref; });
+      refs.forEach(function (r, i) {
+        var yy = y + (refs.length - 1) / 2 * 4.2 - i * 4.2;
+        if (wall === 'left') tx(W.left + 2, yy, SC.tag(r));
+        else tx(W.right - 2, yy, SC.tag(r), 'end');
+      });
     });
     if (JT.usb_y) tx(W.right - 2, (JT.usb_y[0] + JT.usb_y[1]) / 2, 'USB-C', 'end');
     if (JT.reset_y != null) tx(W.right - 2, JT.reset_y - 3.2, 'reset pin', 'end');
-    if (JT.j6_x) tx((JT.j6_x[0] + JT.j6_x[1]) / 2, W.top - 2.6, 'expansion header J6', 'middle');
+    if (JT.j6_x) tx(W.right - 2, W.top - 7.6, SC.tag('J6'), 'end');
     if (JT.top_screw) tx(JT.top_screw[0] - 2.5, JT.top_screw[1] - 2.6, 'top screw', 'end');
     xtra.forEach(function (q) { if (q[0] === 'top-left') tx(q[1] + 2.5, q[2] - 2.6, 'top-left screw'); });
     tx((W.left + W.right) / 2, W.bottom + 2.6, D.meta.bottom_keys && !D.meta.bottom_keys.length ? 'chin wall, no keys' : 'bottom keys and their ledge', 'middle');

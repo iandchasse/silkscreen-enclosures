@@ -55,7 +55,7 @@ SC.card({
     fill('sidekeys-sx', dside ? f(dside.at, 1) : f(SD.root[0], 1));
     fill('sidekeys-pref', SC.part(P.ref));
     // the plain name already carries the key's place; add the role only where the name would not say it (the power key on the x3 board)
-    fill('sidekeys-prole', role(P) === 'power' && !/power/.test(SC.PART[P.ref] || '') ? ', used as the power key' : '');
+    fill('sidekeys-prole', P.ref === power && !/power/.test(SC.PART[P.ref] || '') ? ', used as the power key,' : '');
     fill('sidekeys-backr', f(E.back_r != null ? E.back_r : 2, 1));
     fill('sidekeys-footgap', f(TG.foot_gap ? TG.foot_gap[0] : 0.75, 2));
     fill('sidekeys-footgap2', f(TG.foot_gap ? TG.foot_gap[1] : 1.2, 1));
@@ -67,9 +67,9 @@ SC.card({
     fill('sidekeys-padlen', f(padMax, 0));
     fill('sidekeys-face', f(S.tab_pad[0], 1) + ' &times; ' + f(S.tab_pad[1], 1));
     var pw = by[power];
-    fill('sidekeys-powerpad', pw && padLen(pw) !== padMax ? f(padLen(pw), 0) + ' mm on ' + SC.esc(pw.ref) + ', power' : 'the same on every key');
+    fill('sidekeys-powerpad', pw && padLen(pw) !== padMax ? f(padLen(pw), 0) + ' mm on ' + SC.part(pw.ref) : 'the same on every key');
     fill('sidekeys-nub', f(TG.nub[0], 1) + ' &times; ' + f(TG.nub[1], 1));
-    fill('sidekeys-powernub', pw && nubW(pw) !== TG.nub[0] ? f(nubW(pw), 1) + ' wide on ' + SC.esc(pw.ref) : 'the same on every key');
+    fill('sidekeys-powernub', pw && nubW(pw) !== TG.nub[0] ? f(nubW(pw), 1) + ' wide on ' + SC.part(pw.ref) : 'the same on every key');
     fill('sidekeys-plunger', TG.plunger ? f(TG.plunger[0], 2) + ' &times; ' + f(TG.plunger[1], 2) : '2.88 &times; 1.50');
     var gaps = S.tabs.map(function (t) { return t.gap; });
     fill('sidekeys-gap', rng(gaps, 2));
@@ -105,7 +105,7 @@ SC.card({
     var z0 = TG.z[0], zb = TG.bar_top;
     var dir = function (t) { return Math.sign(t.free - t.y_root) || 1; };
     ctx.Drawing('key_side', 'dw-sidekeys-side', {
-      label: 'Side section through the ' + SD.ref + ' side key', order: ['tub', 'lid', 'tab'],
+      label: 'Side section through ' + SC.part(SD.ref), order: ['tub', 'lid', 'tab'],
       annotate: function (a0, dd) {
         var a = fitA(a0, dd);
         var d = dir(SD);
@@ -122,7 +122,7 @@ SC.card({
     var sx = P.side, sy = -dir(P);
     var padNear = sy > 0 ? P.pad_y[1] : P.pad_y[0];
     var tabPlan = ctx.Drawing('tab_plan', 'dw-sidekeys-plan', {
-      label: 'Plan of the ' + P.ref + ' side key',
+      label: 'Plan of ' + SC.part(P.ref),
       moving: { tab: 'tab', nub: 'nub' }, groupOrder: ['tab', 'nub'],
       annotate: function (a0, dd) {
         var a = fitA(a0, dd);
@@ -136,7 +136,7 @@ SC.card({
     });
     var Xw = EL.side > 0 ? Wx[1] : Wx[0], ex_ = EL.side;
     var tabElev = ctx.Drawing('tab_elev', 'dw-sidekeys-elev', {
-      label: 'Section across the ' + EL.ref + ' side key',
+      label: 'Section across ' + SC.part(EL.ref),
       moving: { tab: 'tab', nub: 'nub' }, groupOrder: ['tab', 'nub'],
       annotate: function (a0, dd) {
         var a = fitA(a0, dd);
@@ -145,7 +145,7 @@ SC.card({
         a.label(Xw - 0.5 * ex_, TG.z[0] + 0.3, 'key: part of\nthe lid', 28 * ex_, 10, { hot: true });
         a.label(EL.stop - 0.45 * ex_, 0.2, 'sliver', -30 * ex_, 30);
         a.label(EL.nub_to + 0.9 * ex_, EL.face[2] - 1.6, 'nub, 45\u00b0\nunderside', -30 * ex_, -36);
-        a.label(EL.face[0] - 1.2 * ex_, EL.face[2], EL.ref, -30 * ex_, -34);
+        a.label(EL.face[0] - 1.2 * ex_, EL.face[2], SC.tag(EL.ref), -30 * ex_, -34);
       },
     });
 
@@ -153,7 +153,7 @@ SC.card({
     ctx.q('#sidekeys-table').innerHTML = '<thead><tr><th>Key</th><th>Pad</th><th>Root \u2192 plunger</th><th>Flexure</th><th>Gap</th><th>Travel to click</th><th>Press at centre</th><th>At root end</th><th>At free end</th><th>Rev I key</th><th>Hard stop</th><th>Strain there</th></tr></thead><tbody>' +
       S.tabs.map(function (t) {
         var m = TM[t.ref], ff = m.finger_force_N;
-        return '<tr><td>' + SC.esc(t.ref) + ' ' + SC.esc(role(t)) + '</td><td>' + f(padLen(t), 0) + ' mm</td><td>' + f(m.length_root_to_plunger_mm, 1) + ' mm</td><td>' +
+        return '<tr><td>' + SC.tag(t.ref) + '</td><td>' + f(padLen(t), 0) + ' mm</td><td>' + f(m.length_root_to_plunger_mm, 1) + ' mm</td><td>' +
           f(Math.abs(t.y_block - t.y_root), 1) + ' mm</td><td>' + f(m.gap_mm, 2) + ' mm</td><td>' + f(m.pad_travel_to_click_mm, 2) + ' mm</td><td>' + f(ff.pad_centre, 1) + ' N</td><td>' +
           f(ff.pad_end_near_root, 1) + ' N</td><td>' + f(ff.pad_end_far, 1) + ' N</td><td>' + (m.rev_i_N != null ? f(m.rev_i_N, 1) + ' N' : '&ndash;') + '</td><td>' + f(m.stop_travel_mm, 2) + ' mm</td><td>' +
           f(m.strain_at_stop_pct, 2) + ' %</td></tr>';
@@ -179,7 +179,7 @@ SC.card({
       selHost.innerHTML = '';
       refs.forEach(function (r) {
         var b = document.createElement('button');
-        b.type = 'button'; b.textContent = r; b.title = r + ' ' + role(by[r]);
+        b.type = 'button'; b.innerHTML = SC.tag(r); b.title = SC.PART[r] ? SC.PART[r] + ' (' + r + ')' : r;
         b.setAttribute('aria-pressed', String(r === sel));
         b.onclick = function () { sel = ctx.el._skSel = r; drawSel(); set(+input.value, true); };
         selHost.appendChild(b);
@@ -209,7 +209,7 @@ SC.card({
         : d < click - 1e-9 ? 'Pushing the plunger: ' + f(d - gap, 2) + ' mm of ' + f(click - gap, 2) + ' to the click'
         : d < maxT - 1e-9 ? 'Clicked; ' + f(maxT - d, 2) + ' mm to the hard stop'
         : 'On the hard stop: the lid takes the press';
-      stateEl.textContent = sel + ': ' + st + (SC.exag ? '  (motion \u00d74)' : '');
+      stateEl.textContent = SC.text(SC.tag(sel)) + ': ' + st + (SC.exag ? '  (motion \u00d74)' : '');
       if (toStage && SC.viewer && SC.viewer.press) SC.viewer.press(sel, p, { src: 'sidekeys' });
     }
     drawSel();

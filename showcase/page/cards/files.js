@@ -116,10 +116,10 @@ SC.card({
       (dm.volume_mm3 ? ', about ' + fmt(dm.volume_mm3 * 1.24e-3, 0) + '&nbsp;g of PLA' : '') + '. ' +
       (dm.watertight ? 'It is one closed solid' + (dm.triangles ? ' (' + dm.triangles + ' triangles)' : '') + '. ' : '') +
       (dm.holes_kept != null ? dm.holes_kept + ' holes are kept and ' + dm.holes_filled + ' filled; kept holes are drilled ' + fmt(dm.hole_comp, 1) + '&nbsp;mm oversize because printed holes shrink. ' : '') +
-      (sites.length ? '<strong>Every switch site is open</strong> (' + SC.esc(sites.join(', ')) + '), each in low walls ' + fmt(dm.cradle ? dm.cradle.w : 0.8, 1) + '&nbsp;mm wide, so each key can be tried with a real switch' +
+      (sites.length ? '<strong>Every switch site is open</strong> (' + sites.map(SC.tag).join(', ') + '), each in low walls ' + fmt(dm.cradle ? dm.cradle.w : 0.8, 1) + '&nbsp;mm wide, so each key can be tried with a real switch' +
         (realClear ? ': in the model a real switch in each site touches nothing' : '') + '. ' : '') +
       (touch.length ? 'The dummy touches no printed part but ' + touch.join(', ') + ', the same designed contact as the real board. ' : '') +
-      (dm.small_parts_left_out && dm.small_parts_left_out.length ? 'Left out of the dummy: ' + SC.esc(dm.small_parts_left_out.join(', ')) + '.' : '');
+      (dm.small_parts_left_out && dm.small_parts_left_out.length ? 'Left out of the dummy: ' + dm.small_parts_left_out.map(SC.part).join(', ') + '.' : '');
     var u = dm.usb_mock;
     ctx.q('#files-usb').innerHTML = u ? '<strong>A USB-C socket (J1) that prints.</strong> A real USB-C receptacle is ' + fmt(u.real_wall_mm, 1) + '&nbsp;mm of steel, thinner than a 0.4&nbsp;mm nozzle can lay, so the dummy&rsquo;s shell is ' +
       fmt(u.body_w, 2) + '&nbsp;mm wide with ' + fmt(u.side_wall_mm, 2) + '&nbsp;mm side walls. Its bore is ' + u.bore.map(function (x) { return fmt(x, 2); }).join(' &times; ') + '&nbsp;mm and ' +

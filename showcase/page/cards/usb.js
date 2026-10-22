@@ -60,7 +60,7 @@ SC.card({
         a.line(U.mouth_x, U.zc - 3.3, U.mouth_x, U.zc + 3.3);
         a.dim(U.mouth_x, U.recess_z[1] + 1.9, U.face_x, U.recess_z[1] + 1.9, r2(U.face_to_mouth), 10, true);
         a.dim(U.face_x, U.recess_z[1] + 1.9, U.x1, U.recess_z[1] + 1.9, f(U.x1 - U.face_x, 2), 10);
-        a.label(U.mouth_x - 0.1, U.zc - 2.6, ref + ' mouth', -40, -30);
+        a.label(U.mouth_x - 0.1, U.zc - 2.6, SC.tag(ref) + ' mouth', -40, -30);
         a.label((U.floor_x[0] + U.floor_x[1]) / 2, U.recess_z[1] - 0.3, 'floor ' + f(U.floor_t, 1), -30, 28, { hot: true });
         a.label(U.face_x + 0.6, U.recess_z[0] + 0.4, 'recess', 30, -24);
         a.label(U.x1, U.recess_z[1] + 0.4, 'case face', 18, 22);
@@ -73,17 +73,17 @@ SC.card({
       annotate: function (a0, dd) {
         var a = fitA(a0, dd);
         a.dim(U.x1 + 0.6, U.recess_y[0], U.x1 + 0.6, U.recess_y[1], f(U.recess[0], 2), 12);
-        a.label(U.mouth_x - 0.8, U.yc + 3.0, ref, -30, 20);
+        a.label(U.mouth_x - 0.8, U.yc + 3.0, SC.tag(ref), -30, 20);
         a.label((U.floor_x[0] + U.floor_x[1]) / 2, U.recess_y[1] - 0.6, 'floor', -26, 24, { hot: true });
-        if (skey) a.label(skey.root[0] - 0.86, skey.root[1] - 0.2, sref + ' key root', -30, 14);
+        if (skey) a.label(skey.root[0] - 0.86, skey.root[1] - 0.2, SC.tag(sref) + ' key root', -30, 14);
       },
     });
     var row = function (t, v, s) { return '<div><dt>' + t + '</dt><dd>' + v + '<small>' + s + '</small></dd></div>'; };
     ctx.q('#usb-nums').innerHTML = [
-      row('Floor face to ' + SC.esc(ref), r2(U.face_to_mouth) + ' mm', 'its inside on the panel\u2019s corridor, ' + f(U.insert_x - U.mouth_x, 3) + ' in front of the mouth'),
+      row('Floor face to ' + SC.part(ref), r2(U.face_to_mouth) + ' mm', 'its inside on the panel\u2019s corridor, ' + f(U.insert_x - U.mouth_x, 3) + ' in front of the mouth'),
       row('Typical plug', r2(U.plug_short_mm) + ' mm short', 'of full depth; the overmold stops on the floor'),
       row('Recess', f(U.recess[0], 2) + ' &times; ' + f(U.recess[1], 2) + ' mm', 'typical cables; ' + f(U.x1 - U.face_x, 2) + ' deep, R' + f(U.r, 1) + ', 45\u00b0 lead-in'),
-      row('Port hole', f(U.hole[0], 2) + ' &times; ' + f(U.hole[1], 2) + ' mm', SC.esc(ref) + '\u2019s opening plus 0.1 a side; open below, closed by the lid'),
+      row('Port hole', f(U.hole[0], 2) + ' &times; ' + f(U.hole[1], 2) + ' mm', SC.partPos(ref) + ' opening plus 0.1 a side; open below, closed by the lid'),
     ].join('');
 
     var input = ctx.q('#usb-plug'), outEl = ctx.q('#usb-out');
