@@ -114,7 +114,7 @@ SC.card({
     });
     if (JT.usb_y) tx(W.right - 2, (JT.usb_y[0] + JT.usb_y[1]) / 2, 'USB-C', 'end');
     if (JT.reset_y != null) tx(W.right - 2, JT.reset_y - 3.2, 'reset pin', 'end');
-    if (JT.j6_x) tx((JT.j6_x[0] + JT.j6_x[1]) / 2, W.top - 2.6, 'J6', 'middle');
+    if (JT.j6_x) tx((JT.j6_x[0] + JT.j6_x[1]) / 2, W.top - 2.6, 'expansion header J6', 'middle');
     if (JT.top_screw) tx(JT.top_screw[0] - 2.5, JT.top_screw[1] - 2.6, 'top screw', 'end');
     xtra.forEach(function (q) { if (q[0] === 'top-left') tx(q[1] + 2.5, q[2] - 2.6, 'top-left screw'); });
     tx((W.left + W.right) / 2, W.bottom + 2.6, D.meta.bottom_keys && !D.meta.bottom_keys.length ? 'chin wall, no keys' : 'bottom keys and their ledge', 'middle');
@@ -126,9 +126,9 @@ SC.card({
     fill('joint-at-tab', f(dA.at, 1).replace(/\.0$/, ''));
     fill('joint-at-top', f(dP.at, 0));
     var tabRef = (dA.notes && dA.notes.ref) || '', tab = tabs.filter(function (t) { return t.ref === tabRef; })[0];
-    fill('joint-tab-ref', SC.esc(tabRef));
+    fill('joint-tab-ref', SC.part(tabRef));
     fill('joint-tab-wall', !tab || tab.side > 0 ? 'Right' : 'Left');
-    fill('joint-latch-ref', SC.esc((dL.notes && dL.notes.ref) || 'SW1'));
+    fill('joint-latch-ref', SC.part((dL.notes && dL.notes.ref) || 'SW1'));
     var z = D.meta.z;
     ctx.Drawing('joint_tongue', 'dw-joint-tongue', {
       label: 'Section through the tongue on the left wall', order: ['tub', 'lid', 'pcb'],

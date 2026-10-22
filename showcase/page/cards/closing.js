@@ -54,7 +54,7 @@ SC.card({
     fill('cl-nposts', words[posts.length] || String(posts.length));
     fill('cl-posts', list(posts));
     var scrRefs = (CL.screw_list || [{ id: 'top', label: 'top screw' }]).filter(function (s) { return !Hs[s.id]; });
-    ctx.q('#closing-refs').innerHTML = Object.keys(Hs).sort().map(function (h) { return '<span class="ref">' + h + '</span>'; }).join('')
+    ctx.q('#closing-refs').innerHTML = Object.keys(Hs).sort().map(function (h) { return '<span class="ref">' + SC.tag(h) + '</span>'; }).join('')
       + scrRefs.map(function (s) { return '<span class="ref">' + SC.esc(s.label) + '</span>'; }).join('') + (G ? '<span class="ref">rod gate</span>' : '');
     var SL = CL.screw_list || [], nS = SL.length || 3, HD = CL.head || {}, CB = CL.cb_depth;
     var nw = words[nS] || String(nS);

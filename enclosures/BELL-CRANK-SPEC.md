@@ -1,6 +1,6 @@
 # Bottom keys: bell crank + sliding key — implementation spec (2026-09-26, stage 4: review fixes)
 
-Scope: SW9, SW8, SW3 and SW2 in both cases: the 4.26" Rev K (standard and light-strip builds) and the 3.68" x3 (standard and light-strip builds). This replaces today's rocker, spring toe, rib, V-seat and toe ledge.
+Scope: the four bottom-row buttons (SW9, SW8, SW3 and SW2) in both cases: the 4.26" Rev K (standard and light-strip builds) and the 3.68" x3 (standard and light-strip builds). This replaces today's rocker, spring toe, rib, V-seat and toe ledge.
 
 Frame: X runs along the board; the key centres are 11.4975, 23.4975, 36.4975 and 48.4975. "dx" is X measured from the key centre. Y runs up the board, with 0 at the board's bottom edge. Z points toward the screen: 0 is the PCB rear and 1.6 the PCB front. Units are mm and degrees. θ is the crank angle; positive means pressed, and 0 means the crank-M nose is touching the nominal MJTP face.
 

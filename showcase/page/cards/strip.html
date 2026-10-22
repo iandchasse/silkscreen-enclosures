@@ -37,14 +37,14 @@
     [data-card="strip"] details[open] > summary { margin-bottom: 8px; }
   </style>
   <div class="mech-head">
-    <div class="refs"><span class="ref">J3</span><span class="ref">D1&ndash;D12</span><span class="ref">D13 D14</span></div>
+    <div class="refs"><span class="ref">frontlight J3</span><span class="ref">LEDs D1&ndash;D12</span><span class="ref">diodes D13 D14</span></div>
     <h2>Light strip</h2>
-    <p class="thesis">A flex circuit puts six warm/cool pairs of side-view LEDs along the panel&rsquo;s left edge and plugs into the board&rsquo;s frontlight connector, J3. The light grazes the page from under the bezel. One strip fits both readers; each case size has a light-strip build that makes room for it.</p>
+    <p class="thesis">A flex circuit puts six warm/cool pairs of side-view LEDs along the panel&rsquo;s left edge and plugs into the board&rsquo;s frontlight connector (J3). The light grazes the page from under the bezel. One strip fits both readers; each case size has a light-strip build that makes room for it.</p>
   </div>
   <div class="strip-tags">
     <span>12 &times; XL-4008 &middot; 6 warm 3000 K / 6 cool 6000&ndash;6500 K</span>
     <span>0.11 mm 2-layer flex &middot; black coverlay</span>
-    <span>plugs into J3 &middot; no firmware change</span>
+    <span>plugs into the frontlight connector &middot; no firmware change</span>
     <span class="warn">not built yet</span>
   </div>
 
@@ -125,11 +125,11 @@
         <h4>Electrical</h4>
         <dl class="strip-kv">
           <dt>Strings</dt><dd>2 &times; 6 LEDs + BAV70W, one lit at a time</dd>
-          <dt>Current</dt><dd>13.3 mA nominal, 13.9 mA max (R37 = 15 &Omega;)</dd>
+          <dt>Current</dt><dd>13.3 mA nominal, 13.9 mA max (set by the board&rsquo;s 15 &Omega; resistor R37)</dd>
           <dt>LED_SW</dt><dd>18.4 V typ &middot; 21.7 V worst (&minus;10 &deg;C, top bin)</dd>
           <dt>Ceiling</dt><dd>22 V design &middot; 24.25 V OVP min</dd>
           <dt>LED_MONIT</dt><dd>lit 1.4&ndash;2.4 V &middot; open &ge; 2.49 V (first second)</dd>
-          <dt>Connector</dt><dd>J3 FH34SRJ: 1 SW &middot; 2 C&minus; &middot; 5 SW &middot; 6 W&minus;</dd>
+          <dt>Connector</dt><dd>frontlight connector J3, FH34SRJ: 1 SW &middot; 2 C&minus; &middot; 5 SW &middot; 6 W&minus;</dd>
         </dl>
       </div>
       <div class="strip-box">

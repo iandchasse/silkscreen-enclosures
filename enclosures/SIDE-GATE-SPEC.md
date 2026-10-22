@@ -191,7 +191,7 @@ Both sketches are drawn with the case face down, which is how it sits during ass
 - **Positions:**
   - Pushed flush, the tail is at -4.09 and the tip at 59.16.
   - At home the tail is at -2.34 and the tip at 60.91.
-  - The taper stays clear of the SW2 ring (to 56.3) in both.
+  - The taper stays clear of the ring round the Right key (SW2) (to 56.3) in both.
 
 ## 7. Loads (R2)
 

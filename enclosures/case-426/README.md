@@ -26,6 +26,14 @@ built into the repo's `docs/showcase/` (its data files are generated, not in git
 `showcase/gen/adapt_426.py`, see the repo README). **This folder is `enclosures/case-426`**; what it makes to print is in the repo's `print/` folder, and the generic OrcaSlicer
 projects the website serves are described in the [top-level README](../../README.md#print-a-case).
 
+**Board parts named in this file.** The board prints its reference designators on its back (H5's on the front). The page keys are SW7
+(left, upper), SW5 (left, lower), SW4 (right, upper) and SW1 (right, lower); SW10 is the power button (top of the right
+edge) and SW11 the reset button; SW9, SW8, SW3 and SW2 are the bottom-row buttons, left to right (Back, OK, Left,
+Right). J1 is the USB-C socket; J2, J3 and J4 the display, frontlight and touch connectors; J5 the battery connector;
+J6 the dev header, the board's 12-pin expansion header on its top edge; J7 the microSD socket; U4 the ESP32-S3 module;
+H1-H6 the mounting holes (H3 and H4 are the bottom two). Resistors and capacitors are named only where a step needs
+them; silkscreen-pcb's README and docs/HARDWARE.md describe every part.
+
 ## Builds: 32 configurations from four choices
 
 This project is the main home of the 4.26in case, and builds it from one code base in every combination of four
@@ -38,7 +46,7 @@ and the no-dev-header option since 2026-10-04). Each configuration has one name,
 | Panel | **touch**: GDEQ0426T82-FT01C, touch and frontlight; **light strip**: the plain GDEY0426T82 with the Silkscreen light strip ([Light-strip variant](#light-strip-variant)) | `standard` / `light-strip` | `LIGHT_STRIP` | the tub only: its window bevel (the light strip keeps Rev K's 45-degree one for now), the raised ceiling over the left border, hold-down and foot pads, wall relief, stop rails, ribbon gap (the pocket's front and left border) |
 | Chin | **bottom keys** (4, bell crank; 125.0 mm); **chinless** (117.4 mm) | (the base) / `chinless` | `BOTTOM_KEYS` | the tub below y ~11 and the lid below y ~8 (the H3 / H4 blocks, the grip grooves), the back icon, the case's length; the bottom-key parts |
 | Side keys | **all four**; **left pair**; **right pair**; **upper pair** (power on every case) | (none) / `-leftkeys` / `-rightkeys` / `-upperkeys` | `TAB_ROOTS` | per key left out: the tub's slot, nub window and tongue break, and the lid's key with its cut and groove break (the side walls, y 40-113) |
-| Dev header | **J6** fitted; **no J6** | (none) / `-nodev` | `DEV_HEADER` | the top wall of the tub and the lid, and a second top tongue run (y > 112.9) |
+| Dev header | the dev header (J6) **fitted**; **not fitted** | (none) / `-nodev` | `DEV_HEADER` | the top wall of the tub and the lid, and a second top tongue run (y > 112.9) |
 
 The four regions don't overlap, so each choice changes its own region and nothing else; the twin checks ("What the
 builds share", below) prove it for every configuration.
@@ -49,8 +57,9 @@ base  := standard | light-strip | chinless | light-strip-chinless
 sides := leftkeys | rightkeys | upperkeys          (none: all four side keys)
 ```
 - LEFT and RIGHT are as the case is held, screen toward you, top up (CAD +X is the user's right). The page keys:
-  left pair SW7 (upper) and SW5 (lower), right pair SW4 (upper) and SW1 (lower); the upper pair is SW7 and SW4.
-- Power (SW10) is on every case: the right edge, at the top. The USB-C port is lower on the same edge, below the right
+  the left pair is the upper and lower keys on the left edge (SW7, SW5), the right pair the upper and lower keys on
+  the right edge (SW4, SW1); the upper pair is the top key on each side (SW7, SW4).
+- The power button (SW10) is on every case: the right edge, at the top. The USB-C port is lower on the same edge, below the right
   pair.
 - Each configuration has exactly one slug: the words in this order, at most one side set, `-nodev` last, no aliases
   (`standard-chinless` and `standard-nodev-upperkeys` are refused). `src/variants.py` holds the grammar, the side sets
@@ -62,10 +71,10 @@ The four bases:
 |---|---|---|---|---|---|
 | `standard` | GDEQ0426T82-FT01C, touch and frontlight | as assembled | 68.2 × 125.0 × 12.7 | `LOGO` y 6.29, above the keys | plate 1 (CC2 file: 1): `tub-standard` and the shared parts |
 | `light-strip` | plain GDEY0426T82 with the Silkscreen light strip | as assembled | 68.2 × 125.0 × 12.7 | y 6.29 | CC2 file only, plate 2: `tub-light-strip` and the shared parts |
-| `chinless` (touch-centric) | GDEQ0426T82-FT01C; touch does OK/Back | **without SW9, SW8, SW3, SW2** | **68.2 × 117.4 × 12.7** | **y 6.605, centred** on the face below the window (y 0.0-13.215) | plate 3 (CC2 file: 4): `tub-chinless`, `lid-chinless`, the shared `midplate` |
-| `light-strip-chinless` (2026-10-07) | plain GDEY0426T82 with the Silkscreen light strip; no touch | **without SW9, SW8, SW3, SW2** | 68.2 × 117.4 × 12.7 | y 6.95, centred | CC2 file only, plate 5: `tub-light-strip-chinless`, the chinless lid (`lid-chinless`), the shared `midplate` |
+| `chinless` (touch-centric) | GDEQ0426T82-FT01C; touch does OK/Back | **without the bottom-row buttons (SW9, SW8, SW3, SW2)** | **68.2 × 117.4 × 12.7** | **y 6.605, centred** on the face below the window (y 0.0-13.215) | plate 3 (CC2 file: 4): `tub-chinless`, `lid-chinless`, the shared `midplate` |
+| `light-strip-chinless` (2026-10-07) | plain GDEY0426T82 with the Silkscreen light strip; no touch | **without the bottom-row buttons (SW9, SW8, SW3, SW2)** | 68.2 × 117.4 × 12.7 | y 6.95, centred | CC2 file only, plate 5: `tub-light-strip-chinless`, the chinless lid (`lid-chinless`), the shared `midplate` |
 
-These four, with all four side keys and J6, are the *print builds*: their files are in the repo's `print/4.26/` and
+These four, with all four side keys and the dev header, are the *print builds*: their files are in the repo's `print/4.26/` and
 the plate file. Every configuration, the print builds included, also gets its own OrcaSlicer project,
 `out/configs/<slug>.3mf` ("One OrcaSlicer project per configuration", below). Light-strip chinless (Ian, 2026-10-07:
 it "is the chinless build" with the light-strip front) has only the page keys and power to navigate with: no touch
@@ -73,7 +82,10 @@ and no bottom row ([light-strip-chinless](#light-strip-chinless)).
 
 ### The 32 configurations
 
-| # | slug | panel | chin | side keys (as held) | J6 | length | prints the lid of | board must NOT have | may leave off | 3MF (CC2) | plate 1 as sliced (CC2) |
+In the board columns, SW9 SW8 SW3 SW2 are the bottom-row buttons, SW7 and SW5 the left page keys (upper, lower), SW4
+and SW1 the right ones, and J6 the dev header.
+
+| # | slug | panel | chin | side keys (as held) | dev header | length | prints the lid of | board must NOT have | may leave off | 3MF (CC2) | plate 1 as sliced (CC2) |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | `standard` | touch | bottom keys | all four | yes | 125.0 | (its own) | - | - | 1.24 MB | 39.6 g, 1 h 41 min |
 | 2 | `standard-nodev` | touch | bottom keys | all four | no | 125.0 | (its own) | J6 | - | 1.24 MB | 39.8 g, 1 h 41 min |
@@ -111,7 +123,7 @@ and no bottom row ([light-strip-chinless](#light-strip-chinless)).
 - **prints the lid of:** the lid never depends on the panel, so a light-strip configuration prints its touch twin's
   lid (the share check asserts it byte for byte). 32 tubs and 16 lids in all.
 - **board must NOT have:** a hard rule; the case does not close over these. Chinless: the four bottom switches hang
-  1.92 mm past the board's bottom edge, into the chin wall. `-nodev`: the lid's lip runs through J6's body.
+  1.92 mm past the board's bottom edge, into the chin wall. `-nodev`: the lid's lip runs through the dev header's body.
 - **may leave off:** the switches of the side keys the layout leaves out ([Side-key layouts](#side-key-layouts--leftkeys--rightkeys--upperkeys-any-base)),
   with their ladder resistors. A saving, not a rule: every layout is checked with all five side switches fitted, so
   a fully populated board (Ian's Rev 1.0 and 1.01 boards) fits every configuration.
@@ -128,7 +140,7 @@ and no bottom row ([light-strip-chinless](#light-strip-chinless)).
 |---|---|---|---|---|
 | Panel | touch (FT01C) | the touch group (J4 U7 R42 R44 R46 R52), the frontlight group and J3 | | |
 | Panel | light strip | the frontlight group and J3 (the strip's tail plugs into J3) | | the touch group is not used |
-| Chin | bottom keys | SW9 SW8 SW3 SW2 with R60 R18 R19 R20 R4 C27 | | light strip only: trim SW9's left lug lead to Z 1.7 and cover it with Kapton ([Fitting the strip](#fitting-the-strip)) |
+| Chin | bottom keys | SW9 SW8 SW3 SW2 with R60 R18 R19 R20 R4 C27 | | light strip only: trim the Back button's (SW9's) left lug lead to Z 1.7 and cover it with Kapton ([Fitting the strip](#fitting-the-strip)) |
 | Chin | chinless | | **SW9 SW8 SW3 SW2** | keep **R4** (IO1's pull-up), or the firmware must ignore IO1 |
 | Dev header | J6 | J6 (with U8 CR2 CR3 F2 R65 R68 R69) | | |
 | Dev header | no J6 | | **J6** | so no light attachment |
@@ -415,8 +427,8 @@ The standard build's FT01C touch panel with **no bottom keys**, and the shortest
   `LOGO` y 6.95 (ink y 3.40-10.51). The back icon follows the case's centre (y 56.9, was 53.1).
 - No keys, cranks, rod, gate, rail, key openings, hook slots or rim relief: the seam's V runs all along the chin. It
   needs no rod, no gate, no coupons and no `ROD.txt` steps. The five side keys are part of the lid, as in every build.
-- **Prints:** plate 4 "Chinless case" of `print/silkscreen-426-plates.3mf`: `print/4.26/tub-chinless`,
-  `lid-chinless` (its side keys get the same supports as on plates 1 and 2) and the shared `midplate`. The
+- **Prints:** plate 3 "Chinless case" of `print/silkscreen-426-plates.3mf` (plate 4 of the CC2 file): `print/4.26/tub-chinless`,
+  `lid-chinless` (its side keys get the same supports as on the standard case) and the shared `midplate`. The
   OrcaSlicer CLI slices the plate in about 1 h 16 min (31.8 g), with supports only under the lid's five side-key
   hinges.
 - What changes from the standard tub and lid (everything else is the same: `chin.json` compares the tub above y 11
@@ -441,11 +453,11 @@ The chinless chin with the light strip's front: the plain GDEY0426T82 panel and 
 tub's front and the chinless tub's chin (`chin_check` compares it with its keyed twin, `light-strip`, and
 `strip_check` gives the keyed light strip's numbers without the SW9 rows), and it prints the chinless lid (the lid
 never depends on the panel; the share check asserts the lid, the side keys and the midplate equal to `chinless`'s).
-- **Board:** as chinless, **without SW9, SW8, SW3, SW2**; keep R4 (IO1's pull-up), or tell the firmware it is
-  chinless. No SW9 lead to trim (the keyed light strip's fitting step).
+- **Board:** as chinless, **without the bottom-row buttons (SW9, SW8, SW3, SW2)**; keep R4 (IO1's pull-up), or tell
+  the firmware it is chinless. No Back-button (SW9) lead to trim (the keyed light strip's fitting step).
 - **Navigation:** the page keys and power only (no touch, no bottom row).
-- **Prints:** plate 5 "Light-strip chinless case" of `print/silkscreen-426-plates.3mf`:
-  `print/4.26/tub-light-strip-chinless`, `lid-chinless` (its side keys' supports as on plates 1, 2 and 4) and the
+- **Prints:** plate 5 "Light-strip chinless case" of the author's CC2 plate file only (`print/cc2-local/`, not in git; the public file has no light-strip builds):
+  `print/4.26/tub-light-strip-chinless`, `lid-chinless` (its side keys' supports as on the other cases) and the
   shared `midplate`.
 - **Showcase:** the fourth 4.26 build, "Light-strip chinless" (`lc`, 2026-10-07), in the page built in
   `docs/showcase/` (the published page gets it when it is next republished): its tub, the chinless lid, the plain
@@ -454,9 +466,9 @@ never depends on the panel; the share check asserts the lid, the side keys and t
 
 ### -nodev: no dev header (any base and layout)
 
-**J6, the dev header, NOT fitted.** The header's opening in the tub's and the lid's top wall is closed, and a second
+**The dev header (J6, the board's expansion header) NOT fitted.** The header's opening in the tub's and the lid's top wall is closed, and a second
 top tongue run (43.4-58.7, the first one mirrored) closes the joint to the right corner.
-- The lid's new lip there passes through a fitted J6's body (13.8 mm3), so the board must not have it. That also
+- The lid's new lip there passes through a fitted header's body (13.8 mm3), so the board must not have it. That also
   means no light attachment.
 - `header_closed_check` proves the wall closed and the run there (`out/<build>/header.json`). All 16 -nodev
   configurations build and pass it (10 of 10 rows each).
@@ -475,7 +487,7 @@ top tongue run (43.4-58.7, the first one mirrored) closes the joint to the right
 Since Rev J each side key is part of the lid's wall, with a slot and a nub window for it in the tub. A key the layout
 leaves out is the plain wall in both halves: nothing to see, nothing extra to print, no supports. Its switch may stay
 fitted (it stays in the hardware model, and the lid's lip still ducks under it: `joint.switch_spans`), so every board
-fits every layout. Power (SW10, the right edge's top key) is on every case.
+fits every layout. The power button (SW10, the right edge's top key) is on every case.
 
 | Layout (slug) | Keys besides power, as held | Left out (plain wall) | With bottom keys | Chinless | GPIO wake from deep sleep |
 |---|---|---|---|---|---|
@@ -573,7 +585,7 @@ configurations gets `out/configs/<slug>.3mf`, with what that configuration print
 outputs: not in git and not in `print/`; they are what the website serves. Plate 1 "Case: <the configuration in
 words>" holds its tub, its lid with one support enforcer per side key it has (5, or 3 for a side-key layout) and the
 midplate; with bottom keys also 4 `key-426`, 4 `crank-T`, 2 gates (one spare) and the rod jig. Plate 2 (bottom keys
-only) holds 4 `crank-M`, only for APEM MJTP1117 boards. There are no test prints (they stay on plate 3 of the plate
+only) holds 4 `crank-M`, only for APEM MJTP1117 boards. There are no test prints (they stay on plate 4 of the plate
 file).
 *OrcaSlicer, any printer (2026-10-11; Ian: "orca slicer generic files as the default, at least for what I serve on
 the website. Other non-orca slicers can go screw"):* `make_plates.py configs` (`--printer generic`, the default)
@@ -622,7 +634,7 @@ publishing them. To get one configuration's
 file: `src/pipeline.py --builds <slug>`, or `make_plates.py configs --builds <slug>` once its build and `plates.py`
 have run; the file is `out/configs/<slug>.3mf`.
 
-The PCBA dummy is per build, in `out/<slug>/print/` after `dummy.py` and `plates.py` (and on plate 3 of the plate
+The PCBA dummy is per build, in `out/<slug>/print/` after `dummy.py` and `plates.py` (and on plate 4 of the plate
 file). The rod jig is `print/rod-jig.stl`, the same for both sizes. The lid closing (2026-10-12) and the socket head
 screws (2026-10-13) come next, then the bottom keys' section, then the light-strip build's; the numbered sections
 after them describe Rev K as it was, which is the standard build, except where they point to Rev L's bottom keys and
@@ -901,7 +913,7 @@ The wrong one shifts the key's rest height by ±0.48 mm.
 | `key-426` | 4 | on its -X end (+X up), on a 2-layer raft, elephant-foot compensation 0, no supports | the same part in both builds (face at 6.00); 10.0 tall on 15.5 mm²; two hooks on its chin side |
 | `crank-T` or `crank-M` | 4 | on its pad end (the y −7.70 face), +Y up, on a 2-layer raft, elephant-foot compensation 0, Arachne walls | the one for your switches; 7.00 tall, first layer 1.1 × 10.5 |
 | `gate` | 1 (print 2: one spare) | inner face down, elephant-foot compensation 0 | the rod's left stop; the same part in both builds and in the 3.68 case |
-| `coupon-chin` | optional: the hook keys' fit check | face down | the chin around SW3's opening with its two slots; test it with one `key-426` (assembly, step 0) |
+| `coupon-chin` | optional: the hook keys' fit check | face down | the chin around the Left key's (SW3's) opening with its two slots; test it with one `key-426` (assembly, step 0) |
 | `coupon-gate` | once per printer and filament | face down | the gate coupon: fit, cam and a 5.5 kg push (below) |
 | `tub-standard` or `tub-light-strip` | 1 | face down | carries the rail, webs, openings, the hook keys' slots, the rod's channel and the gate's slot |
 
@@ -932,7 +944,7 @@ The wrong one shifts the key's rest height by ±0.48 mm.
   hooks' sections lie in the layers, so their bending is in-layer; the seams sit inside, off the button face and the
   chin face. Each key takes 3m 1s and 0.28 g with its raft (2m 52s, 0.26 g without).
 - The button face is a side wall in this pose (fine layer lines, not the PEI texture). Nothing on the key flexes.
-- The plate file's case plates carry 4 keys, 4 crank-T and 2 gates, and plate 3 has 4 crank-M (0.1 g
+- The plate file's case plates carry 4 keys, 4 crank-T and 2 gates, and plate 2 has 4 crank-M (0.1 g
   each), so the board in hand decides.
 - **The gate** (6.2 x 3.4 x 1.75, 24 mm3) prints on its inner face: the flange is its first layers,
   the bevel a 45-degree overhang, the 1.3 mm pull hole vertical, every wall 0.6 or more.
@@ -940,7 +952,7 @@ The wrong one shifts the key's rest height by ±0.48 mm.
 ### The rod (not printed) and its gate (`print/4.26/ROD.txt`)
 
 - **Rod:** 1.75 mm PLA filament, cut to **63.25 ± 0.2 mm**, one per case.
-  - **Make it in the rod jig** (`print/rod-jig.stl` at the repo root, also on plate 3 of
+  - **Make it in the rod jig** (`print/rod-jig.stl` at the repo root, also on plate 1 of
     `print/silkscreen-426-plates.3mf`; `../rod_jig.py` makes it): an 86 x 12 x 5 bar with a straight groove and two slots for the printer
     scraper's razor blade, 63.5 apart (the rod plus one blade's thickness). Cut about 80 mm of filament
     and warm it until it goes limp: about 10 s in hot water (a kettle left to stand a minute), or lay it
@@ -965,7 +977,7 @@ The wrong one shifts the key's rest height by ±0.48 mm.
 ### Assembly (tub face down)
 
 0. **The chin coupon (optional fit check, about 15 minutes; nothing is chosen from it, and a first case can go
-   straight to the full print).** Print `coupon-chin` (the tub's chin around SW3's opening: the chin wall with its two
+   straight to the full print).** Print `coupon-chin` (the tub's chin around the Left key's (SW3's) opening: the chin wall with its two
    hook slots, the ledge, the slots' roof and the rail face) and one `key-426`. Face down, drop the key in from inside
    with its hooks in the two slots: it should slide out with no binding and stop on both hooks, 2.4 proud and level
    (within 0.2 end to end). A firm thumb push outward from inside (about 5 N) should leave no whitening at the hooks
@@ -1368,7 +1380,7 @@ mouth. Whatever length the path does not use goes into the U. There are two case
 
 ### Print notes
 - **Files:** `print/4.26/tub-light-strip.stl` (oriented face down, as sliced) and
-  `print/4.26/tub-light-strip.step` (CAD frame), or plate 2 of `print/silkscreen-426-plates.3mf`. Every other
+  `print/4.26/tub-light-strip.step` (CAD frame), or plate 2 of the author's CC2 plate file. Every other
   part is shared with the standard build: the rest of `print/4.26/`.
 - Same orientation and settings as Rev K: face down, no supports. The ceiling is a shallow pocket in
   the skin's inside face, and the stops and pads stand up from it as posts. The wall relief's roof
@@ -1387,7 +1399,7 @@ mouth. Whatever length the path does not use goes into the U. There are two case
   fitting (0.05 tape leaves 0.165).
 
 ### Fitting the strip
-1. **Trim SW9's left mounting-lug lead first.** It stands on the board's front at CAD X 7.77-8.15,
+1. **Trim the Back button's (SW9's) left mounting-lug lead first.** It stands on the board's front at CAD X 7.77-8.15,
    Y 3.8-4.8 (KiCad about 52.2, 143.9), next to the strip's neck. As it comes, its tip is 0.71 proud
    of the board (Z 2.31). The U clears it by 0.255 with the strip placed as in step 3. But with the glass
    against the left wall and the bar on its edge, the U's lower leg still lands on that tip (0.007 mm3).
@@ -1522,7 +1534,7 @@ mouth. Whatever length the path does not use goes into the U. There are two case
 | Printed parts | 11, in PLA: tub, lid (the five side keys are part of it), midplate, four bottom keys and their four cranks. Plus an optional printable PCBA dummy for test fits, and the chin and gate coupons |
 | Hardware | 3 × M2×10 socket head cap (ISO 4762; a pan head, ISO 7045, also fits), thread-forming into printed holes; 63.25 mm of 1.75 mm PLA filament for the cranks' rod (held by a printed gate, no screw); a straightened paperclip for service. No foam, tape, inserts or other bought parts |
 | Printer | Elegoo Centauri Carbon 2, 0.4 mm nozzle, 0.20 mm layers, Elegoo PLA. Supports only under the side keys' hinge notches (§7) |
-| Board | Silkscreen, Ian's revision of 2026-09-21 (adds H6, moves H5) |
+| Board | Silkscreen, Ian's revision of 2026-09-21 (adds mounting hole H6, moves H5) |
 | Units and frame | mm. X = KiCad X − 44.24, Y = 148.25 − KiCad Y, Z = 0 at the PCB's rear face, +Z toward the screen |
 
 For scale:
@@ -2189,7 +2201,8 @@ board is at risk.
 ## 6. Assembly and service
 
 **Before you start**
-- Trim J5's and J6's through-hole leads to about 0.75 mm proud of the board's front face.
+- Trim the through-hole leads of the battery connector (J5) and the dev header (J6) to about 0.75 mm proud of the
+  board's front face.
 - Measure the battery pack's thickness (see §11).
 
 **Assembly**
@@ -2202,10 +2215,10 @@ board is at risk.
    two snaps. Or slide it in from the plate's top edge.
 5. Midplate onto the back of the display; it clicks in at its four detents.
 6. PCBA in:
-   - Feed the tails through the board slot into J2/J3/J4.
-   - Press the board onto the three snap posts (H1, H2, H6) until it clicks. The plungers pass the
+   - Feed the tails through the board slot into the display, frontlight and touch connectors (J2, J3, J4).
+   - Press the board onto the three snap posts (through mounting holes H1, H2, H6) until it clicks. The plungers pass the
      cranks' noses (the cranks hang clear in the face-down tub).
-   - Plug the battery into J5 and wind any spare lead round the two cleats.
+   - Plug the battery into the battery connector (J5) and wind any spare lead round the two cleats.
 
    **Or, instead of steps 5 and 6:** put the display, the midplate with its battery, and the PCBA
    together first, and push that stack in until the midplate clicks at its detents.
@@ -2238,7 +2251,7 @@ switch pressed. The bottom keys have no gap face up (each rests on its crank, an
 | midplate | screen side down | springs are short bridges; lips and barbs have 45° undersides; every slot is 0.5 mm so first-layer squash can't close it |
 | bottom keys (`key-426`) | on its -X end (+X up) | the -X hook on the 2-layer raft (since 2026-10-06), the +X hook's -X face a 45° lead; no supports; elephant-foot compensation 0 (per object) |
 | cranks | on the pad end, +Y up | every −Y face ≥ 45°; on a 2-layer raft (since 2026-10-06) |
-| pcba-dummy | board face down | J6's 1.9 mm overhang prints unsupported |
+| pcba-dummy | board face down | the dev header's (J6's) 1.9 mm overhang prints unsupported |
 
 - 0.2 mm layers, three or more perimeters, no supports, except under the lid's side keys (2026-09-30, Ian):
   for TAB_HINGE (3.0) from each key's root the foot is cut away up to TAB_FOOT (1.05) above the bed, and the bar

@@ -121,7 +121,7 @@ SC.card({
       (touch.length ? 'The dummy touches no printed part but ' + touch.join(', ') + ', the same designed contact as the real board. ' : '') +
       (dm.small_parts_left_out && dm.small_parts_left_out.length ? 'Left out of the dummy: ' + SC.esc(dm.small_parts_left_out.join(', ')) + '.' : '');
     var u = dm.usb_mock;
-    ctx.q('#files-usb').innerHTML = u ? '<strong>J1 that prints.</strong> A real USB-C receptacle is ' + fmt(u.real_wall_mm, 1) + '&nbsp;mm of steel, thinner than a 0.4&nbsp;mm nozzle can lay, so the dummy&rsquo;s shell is ' +
+    ctx.q('#files-usb').innerHTML = u ? '<strong>A USB-C socket (J1) that prints.</strong> A real USB-C receptacle is ' + fmt(u.real_wall_mm, 1) + '&nbsp;mm of steel, thinner than a 0.4&nbsp;mm nozzle can lay, so the dummy&rsquo;s shell is ' +
       fmt(u.body_w, 2) + '&nbsp;mm wide with ' + fmt(u.side_wall_mm, 2) + '&nbsp;mm side walls. Its bore is ' + u.bore.map(function (x) { return fmt(x, 2); }).join(' &times; ') + '&nbsp;mm and ' +
       fmt(u.bore_depth_mm, 1) + '&nbsp;mm deep, ' + u.plug_clearance_mm.map(function (x) { return fmt(x, 2); }).join(' / ') + '&nbsp;mm a side round a plug at the spec&rsquo;s ' +
       fmt(u.spec_insertion_mm, 2) + '&nbsp;mm insertion, so a cable shows at once how far your plugs seat.' : '';

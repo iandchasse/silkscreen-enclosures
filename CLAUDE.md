@@ -41,7 +41,7 @@ on the printer. Open design work is in `enclosures/OPEN-WORK.md`. Machine paths 
 ## How to inspect the CAD so it holds up on the printer
 
 Every 3.68 failure in October 2026 passed in CAD and failed on the printer: latches bent onto the midplate, side keys
-with no first layer, the crank rubbing the slot roof, bottom screws with 2 mm of thread, a slit in SW7's nub,
+with no first layer, the crank rubbing the slot roof, bottom screws with 2 mm of thread, a slit in the power key's (SW7's) nub,
 backstops 0.065 mm too tall. The method that caught each one:
 
 1. **Judge the part as printed, not as drawn.** Slice with the CC2 plate file's presets (OrcaSlicer 2.4 CLI; the
@@ -67,7 +67,7 @@ backstops 0.065 mm too tall. The method that caught each one:
        the screw is its tapered point and doesn't count as thread);
      - the tip short of the pilot's end, and at least 0.8 mm of plastic left in front of it;
      - a socket head flush or below the back.
-     It also reads (3.68 only) the board's room at the tub's H3/H4 bosses (`board_room`: FAIL under 0.20 with a
+     It also reads (3.68 only) the board's room at the tub's bosses under its bottom mounting holes (H3/H4) (`board_room`: FAIL under 0.20 with a
      +0.16 board; bosses only, the midplate's 0.13 / 0.03 is not read).
    - `lid_close.py` (latch arms bent on the way in).
    - `slice_check.detent_join` and the crank free-swing check.
@@ -111,7 +111,8 @@ The 4.26:
 1. From `enclosures/case-426`, run `src/pipeline.py`. It has a step cache and a memory-budget scheduler, so let it run
    alone. `--unshared --verify` runs the full audit. The step cache is keyed on the project's absolute path: after the
    folder moves, the first run is a cold one (about an hour for all 32); OrcaSlicer's slices are memoised by content
-   and survive a move.
+   and survive a move. Its `plates3mf` step writes only the public generic plate files, never Ian's CC2 files in
+   `print/cc2-local/`: step 2 refreshes those, so don't skip it.
 2. From `enclosures/`, run `make_plates.py`, then `make_plates.py configs` and `make_plates.py configs --printer cc2`
    (and `make_plates.py --printer cc2` for his CC2 plate files).
 3. From `enclosures/case-426`, run `src/configs_slice.py`, and again with `--printer cc2`.

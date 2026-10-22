@@ -41,15 +41,15 @@ gate or coupons, so the gate coupon is not needed either.
 
 **4.26 light-strip chinless case, 2026-10-07 (new, not printed yet; in development, not released):** the chinless case for the plain panel with the
 Silkscreen light strip: the same 117.4 mm chin, the light-strip front, and the page keys and power as its only keys
-(no touch, no bottom row). The same board rule: **no SW9, SW8, SW3, SW2**. Print **plate 5 "Light-strip chinless
+(no touch, no bottom row). The same board rule: **no bottom-row buttons (SW9, SW8, SW3, SW2)**. Print **plate 5 "Light-strip chinless
 case"** of the author's CC2 plate file (`cc2-local/`, not in git): `tub-light-strip-chinless`, `lid-chinless` (the chinless case's lid: the lid does not depend on the panel)
 and the shared `midplate`.
 
 **4.26 configurations, 2026-10-07 (new, not printed yet):** the 4.26 case now comes in 32 configurations: either
 panel (touch, or the light strip), with or without the bottom keys, with all four page keys or only the left pair,
 the right pair or the upper pair (a key left out is the plain wall; power is on every case), and with or without
-the dev header (J6). This folder keeps the four above (the *print builds*: standard, light-strip, chinless,
-light-strip chinless, each with all four page keys and J6). Every configuration, these included, also has its own
+the dev header (the board's expansion header, J6). This folder keeps the four above (the *print builds*: standard,
+light-strip, chinless, light-strip chinless, each with all four page keys and the dev header). Every configuration, these included, also has its own
 OrcaSlicer project, made by the case project: see [Any other 4.26 configuration](#any-other-426-configuration-its-own-orcaslicer-project)
 below.
 
@@ -128,7 +128,7 @@ If your lid is still the test-1 lid, you can test the side-key fix on your case 
 
 1. Put 2 layers of clear office tape on the tip of each right-hand key's nub. That adds about 0.10 mm, the same as
    the new nubs.
-2. Refit the lid and press SW1, SW4 and SW10.
+2. Refit the lid and press the three right-hand keys: the two page keys and the power key (SW1, SW4, SW10).
 3. If they click like the left side, the new lid will work. If they still don't click, don't reprint the lid yet.
 
 **3.68:** not printed yet. Its files carry the same fixes, the hook keys included, and its cranks are the same part
@@ -175,7 +175,7 @@ met; and the latches let the lid lift 0.2 mm before they held. **Reprint `lid`, 
 two screws move into the chin's corners (7.2 mm of thread, was 2.0), so on the back the two lower heads sit about 8 mm
 lower and 1.75 mm further out; a fourth screw closes the corner above the power key (its counterbore leaves a small
 notch, about 0.4 mm, in the back's rounded edge, as on the 4.26's top screw); the backstops and the rib print 0.2 mm
-lower; the latch barbs sit one layer lower, so they hold from the first touch. The same lid also fixes SW7 (power),
+lower; the latch barbs sit one layer lower, so they hold from the first touch. The same lid also fixes the power key (SW7 on the x3 board),
 which printed with a small hole in its nub (the corner toward the case's bottom, at the key: the nub stood free of the
 key there across a 0.1-0.2 mm slit); its nub is now fused to the key. Nothing changes on the front. The keys, cranks,
 gate and rod are unchanged; the gate's proof coupon now carries part of a corner block and need not be reprinted.
@@ -184,8 +184,8 @@ and the lid where it really sits" and "SW7's nub, fused to its key").
 
 **A one-loop skirt, both cases, 2026-10-13 (Ian's decision):** both plate files and every configuration's OrcaSlicer
 project now print one loop of skirt, 3 mm round the first layer, before anything else. The job used to start on a
-side key's hinge support, straight after the purge line (SW7's on the 3.68 lid Ian printed; a 4.26 lid printed
-alone starts on SW5's); now it starts on the skirt. Peel it off. No part changes, and nothing needs reprinting for
+side key's hinge support, straight after the purge line (the power key's, SW7, on the 3.68 lid Ian printed; a 4.26 lid printed
+alone starts on the left lower page key's, SW5); now it starts on the skirt. Peel it off. No part changes, and nothing needs reprinting for
 it: it comes with your next print. If you slice a loose STL, set *Skirt loops* 1, *Skirt height* 1 layer, *Skirt
 distance* 3 mm. In ElegooSlicer the plate files' skirt is listed as a changed setting, so it should be kept;
 check that the preview shows a line round the parts on the first layer.
@@ -215,9 +215,9 @@ are unchanged, and the lid prints as before, with no supports at the screw holes
 tight for a real cell, no safe place for its lead, and side keys that stood on one bead):** **reprint `lid` only** (the
 standard and light-strip builds share it; the tub, midplate, keys, cranks, gate and rod are unchanged). The back is one
 layer thicker and the bay one layer deeper, so the case is **12.9 mm** deep (light strip 13.7; was 12.7 and 13.5): a
-503035 up to 5.3 mm thick with two layers of tape on each face (6.02 mm) now has 0.445 mm of air under J7. The two hooks
+503035 up to 5.3 mm thick with two layers of tape on each face (6.02 mm) now has 0.445 mm of air under the microSD socket (J7). The two hooks
 are gone; the lip is raised so the cell tucks under it, pushed right and down until it stops under the lip, held with tape. The lead lies on
-the midplate's bare back above J5, held by one strip of tape, with any spare coiled flat beside it (the README's
+the midplate's bare back above the battery connector (J5), held by one strip of tape, with any spare coiled flat beside it (the README's
 *The battery* has the route). The backstop posts moved 3.45 mm past the board's cut, and the top rib is a low fence.
 The same lid has six internal ribs and latch arms that are 1.3 thick at the root (nothing shows outside; the lid
 snaps on with about 5.5 N an arm, was 3.3, and the long edges let go at roughly 19-22 N, was 12-16 N), and its side
@@ -246,7 +246,7 @@ in the OrcaSlicer CLI for both sizes; nothing is printed (`../enclosures/case-36
 **3.68 long sides, 2026-10-21 (Ian: with all four screws in, each long side is closed at the screws and bows open in the
 middle; he chose the invisible change first): reprint the 3.68 tub only** (`3.68/tub-standard`, or `3.68/tub-light-strip`
 for a light-strip case; the lid, midplate, keys, cranks, gate and rod are unchanged, and nothing shows from outside). The
-board was clamped line to line between the lid's two posts and the tub's two bosses at H3/H4, 8.25 mm above the bottom
+board was clamped line to line between the lid's two posts and the tub's two bosses at the board's two bottom mounting holes (H3/H4), 8.25 mm above the bottom
 corner screws with no screw through it, so any extra board thickness levered the lid open along its long sides. The tub's
 two bosses are now two layers (0.4 mm) shorter: the board floats there, with 0.40 mm of room to the bosses as printed
 and 0.24 mm with a board 0.16 mm thicker (the check fails under 0.20 and fails on the old tub, 0.000). That is the room
@@ -267,7 +267,7 @@ Open the plate file for your reader in OrcaSlicer:
 
 Each is a generic OrcaSlicer project, the same setup as the per-configuration projects the website serves: Generic
 Marlin Printer (0.4 nozzle), 0.20mm Standard, Generic PLA, Textured PEI, no brim, a one-loop skirt, every plate laid out
-for a 220 x 210 mm bed. Open it in OrcaSlicer 2.3.2 or later (the 2.4 series is what it was checked in) and pick your own
+for a 220 x 210 mm bed. It should open in OrcaSlicer 2.3.2 and later (checked in the 2.4.0-dev GUI; 2.4.2 loads it the same way by its source); pick your own
 printer and filament; keep the project's changed settings if OrcaSlicer asks. Files from before 2026-10-21 crash
 OrcaSlicer 2.3.2 and later on opening (they had no `filament_colour`); if yours does, take the current file.
 The keys, cranks and gates already carry elephant-foot compensation 0, and the cranks Arachne walls. Every key and
@@ -279,7 +279,7 @@ hold the released builds only: the standard build, and on the 4.26 the chinless 
 |---|---|
 | 1 "Case: touch panel, bottom keys, ..." (3.68: "Case: standard: bare x3 panel, ...") | the standard tub, lid, midplate, 4 bottom keys, 4 crank-T, 2 gates (one is a spare) and the rod jig |
 | 2 "Only for APEM MJTP1117 boards: crank-M" | 4 crank-M |
-| 3 "Case: touch panel, chinless, ...", 4.26 only | the chinless tub and lid and the midplate, nothing else; only for a board without SW9/SW8/SW3/SW2 fitted (above) |
+| 3 "Case: touch panel, chinless, ...", 4.26 only | the chinless tub and lid and the midplate, nothing else; only for a board without the bottom-row buttons (SW9/SW8/SW3/SW2) fitted (above) |
 | 3 (3.68) / 4 (4.26) "Test prints" | the PCBA test-fit dummy, the chin coupon (3.68: coupon-strip) with a key to try in it (the hook keys' optional fit check), the gate coupon with a gate |
 
 The light-strip builds are in development (rev A, untested), are not released and are not in these files. The author's
@@ -311,8 +311,8 @@ board), held in the midplate's slot under its lip and snaps; a pack much thicker
 Most sellers have it: Amazon US (AKZYTUE, Liter, Winfox, CKWJMUBS, LJHLR, ...), Adafruit #1578, Pimoroni.
 
 - **Connector:** JST PH 2.0, 2 pins. Its polarity is **not standardised**: sellers wire it both ways, and one brand
-  can ship both. Before the first plug-in, check with a meter that the red wire goes to J5's + pin (the board's
-  silkscreen). A PHR-2 housing can be re-pinned by lifting its two latches with a pin.
+  can ship both. Before the first plug-in, check with a meter that the red wire goes to the + pin of the battery connector
+  (J5; the + is marked on the board's silkscreen). A PHR-2 housing can be re-pinned by lifting its two latches with a pin.
 - **Protection board:** buy only a listing that states one (PCM, protection circuit). Some 503035 listings come with
   PH 1.25 or 3-pin leads by default; pick the 2-pin PH 2.0 option.
 - **Charge voltage:** the board's charger stops at 4.2 V, so a "high-voltage" (4.35 V) cell is safe; it is only
@@ -331,7 +331,7 @@ need them. The rafts under the keys and cranks are not supports: they are set pe
   1-1.5 mm past the key's root, under the lid's rounded back edge beside the hinge (a pinhead mark there at most). Nothing goes under the lid's logo, its grip
   grooves or its screw holes, and nothing on the tub.
 - **In the plate file** this is already set: the lid has supports on in manual mode (supports only inside a support
-  enforcer) and one enforcer box per side key (5 on the 4.26, 3 on the 3.68; the 4.26 chinless lid on plate 3 (and 5 of the CC2 file)
+  enforcer) and one enforcer box per side key (5 on the 4.26, 3 on the 3.68; the 4.26 chinless lid on plate 3 (plates 4 and 5 of the CC2 file)
   has the same 5, and a 4.26 side-key layout's lid one per key it has, 3). Every other object has supports off.
 - **After printing,** pick each grid out of its notch from outside the case with a fingernail or tweezers. It sits
   one 0.2 mm air layer under the bar, with no dense interface, and about 0.4 mm off the walls beside it. Checked with the
@@ -381,27 +381,30 @@ Prusa MK4 250 x 210, Bambu 256 and anything larger).
 - **Other slicers are not supported.** PrusaSlicer, Cura and the rest don't read these per-part settings; use
   OrcaSlicer.
 
-The plate files above are generic projects, like these; the author's Elegoo Centauri Carbon 2 versions of both
+The two plate files above (`print/silkscreen-426-plates.3mf` and `silkscreen-368-plates.3mf`) are in git and
+generic, like the per-configuration projects. The author's Elegoo Centauri Carbon 2 versions of both
 (`make_plates.py --printer cc2`, into `print/cc2-local/`) and of the per-configuration files (`make_plates.py configs
---printer cc2`, into `out/configs-cc2/`) are made on request. These files are not in git:
-the website is meant to publish them (as of 2026-10-21 it does not yet); you can also make yours with the case
-project (below). The website's builder is to offer the 16 standard and chinless ones (side keys as one four-way choice,
+--printer cc2`, into `out/configs-cc2/`) are his own working copies: git-ignored, not published, and made by running
+those two commands. The generic per-configuration files are not in git either: the website is meant to publish them
+(as of 2026-10-21 it does not yet); you can also make yours with the case project (below). The website's builder is to offer the 16 standard and chinless ones (side keys as one four-way choice,
 as below); the light-strip ones are in development and it will not offer them. The top-level
 [README](../README.md#print-a-case) lists what each file contains.
 
 **1. Pick your slug,** `base[-sides][-nodev]`:
 - **base**, by your panel and your board's bottom row:
 
-  | | bottom row fitted (SW9, SW8, SW3, SW2) | bottom row NOT fitted |
+  | | bottom-row buttons fitted (SW9, SW8, SW3, SW2) | bottom-row buttons NOT fitted |
   |---|---|---|
   | GDEQ0426T82-FT01C (touch + frontlight) | `standard` | `chinless` |
   | plain GDEY0426T82 + the Silkscreen light strip (in development, not released) | `light-strip` | `light-strip-chinless` |
 
 - **sides**, the page keys you want, as you hold it (screen toward you): none for all four; `-leftkeys` for the left
-  pair only (SW7 up, SW5 down); `-rightkeys` for the right pair only (SW4 up, SW1 down); `-upperkeys` for the upper
-  key on each side (SW7, SW4). Power (SW10, top of the right edge) is on every case. A key left out is the plain
+  pair only (up and down on the left edge: SW7, SW5); `-rightkeys` for the right pair only (up and down on the right
+  edge: SW4, SW1); `-upperkeys` for the upper key on each side (SW7, SW4). The power button (SW10, top of the right
+  edge) is on every case. A key left out is the plain
   wall; its switch may stay on the board (the case clears it and never presses it).
-- **`-nodev`** if your board has no J6 (the dev header). A board WITH J6 needs a case without `-nodev`.
+- **`-nodev`** if your board has no dev header (the 12-pin expansion header, labelled J6). A board WITH the header
+  needs a case without `-nodev`.
 - Examples: `standard`, `chinless-upperkeys`, `chinless-leftkeys-nodev`. The 32 are listed with what each
   needs on the board in [`../enclosures/case-426/README.md`](../enclosures/case-426/README.md#the-32-configurations).
 
@@ -457,7 +460,7 @@ case's CAD frame (the board's coordinates) for editing. The gate's STEP is in it
 
 - **Tubs:** `tub-standard`. `tub-light-strip` is for the light-strip case, which is in development and not released.
 - **4.26 chinless:** `tub-chinless` and `lid-chinless`, its own tub and lid, with the shared `midplate`. The board
-  must not have SW9/SW8/SW3/SW2 fitted.
+  must not have the bottom-row buttons (SW9/SW8/SW3/SW2) fitted.
 - **4.26 light-strip chinless** (in development, not released): `tub-light-strip-chinless`, with `lid-chinless` and the
   shared `midplate`. The same board rule.
 - **Shared by both builds** (standard and light-strip): `lid` (with the side keys), `midplate`, `crank-T`, `crank-M`,
@@ -466,8 +469,8 @@ case's CAD frame (the board's coordinates) for editing. The gate's STEP is in it
 - **3.68 per build:** its keys (`key-x3std`, `key-x3ls`: the hook keys since test 2) and coupons (`coupon-strip-`
   and `coupon-gate-`, each `-x3std` or `-x3ls`) follow the tub. The coupon strip is the hook keys' optional fit check
   (its two slots, printed with one key); the drag coupon's keys are gone.
-- **4.26 coupons:** `coupon-chin` (the hook keys' optional fit check: the chin around SW3's opening with its two
-  slots, printed with one `key-426`; the drag coupon's keys are gone) and `coupon-gate`.
+- **4.26 coupons:** `coupon-chin` (the hook keys' optional fit check: the chin around the Left key's (SW3's) opening with its
+  two slots, printed with one `key-426`; the drag coupon's keys are gone) and `coupon-gate`.
 
 ## How these files are made
 

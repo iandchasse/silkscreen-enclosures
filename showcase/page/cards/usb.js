@@ -31,7 +31,7 @@ SC.card({
     var dplan = SC.drawing('usb_plan');
     var sref = (dplan && dplan.notes && dplan.notes.skey) || 'SW1';
     ((D.cards.sidekeys && D.cards.sidekeys.tabs) || []).forEach(function (t) { if (t.ref === sref) skey = t; });
-    fill('usb-skey', SC.esc(sref));
+    fill('usb-skey', SC.part(sref));
     fill('usb-depth', f(U.x1 - U.mouth_x, 1));
     fill('usb-corr', f(U.insert_x - U.mouth_x, 3));
     fill('usb-face', r2(U.face_to_mouth));

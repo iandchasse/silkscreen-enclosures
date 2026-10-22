@@ -10,6 +10,18 @@ project the website serves for the 3.68 is described in the [top-level README](.
 light-strip build below is in development and not released. It has no `.venv`:
 run it with a Python 3.11 virtual environment made from `requirements.txt`, from this folder (`python` below).
 
+**Board parts named in this file.** The board prints its reference designators on its back (H5's on the front). On the trimmed x3 board
+SW7, the left upper page key, is the power key; SW4 and SW1 are the right upper and lower page keys; SW5, the left lower
+one, is left off; SW10, the board's own power button, goes with the cut; SW11 is the reset button; SW9, SW8, SW3 and
+SW2 are the bottom-row buttons, left to right (Back, OK, Left, Right). J1 is the USB-C socket; J2 and J3 are the display and frontlight
+connectors, J5 the battery connector and J7 the microSD socket; J6, the expansion header, goes with the cut. U1 and U9 are
+the microSD ESD arrays, U3 is the 3.3 V regulator and L1 the display's boost inductor (all named where the lid and bay
+clearances are measured); Q2 is the charger's enable switch. H1-H6 are
+the mounting holes (H1 goes with the cut; H3 and H4 are the bottom two). The power rework (R36, R72, R73, R74) and the
+two fixes of a pre-Rev 1.01 board (the charge-enable wire to Q2 and R81; the ground wire
+from C6, the 3.3 V regulator's output capacitor, to C21; R40 is a 3V3 point for the first) name the parts they solder;
+silkscreen-pcb's README ("Cutting the board down") and docs/HARDWARE.md describe them.
+
 ## Two builds: standard and light strip
 
 This project builds the 3.68-inch case two ways, from one code base (`src/variant.py`, `SILKSCREEN_VARIANT`):
@@ -848,7 +860,7 @@ paperclip. No screw.
 
 - **Make it in the rod jig**: 63.25 ± 0.2 mm of 1.75 mm PLA filament (real filament is 1.72–1.78), straight (a bowed
   rod binds the cranks) and square at both ends (the tail bears on the gate). The jig (`print/rod-jig.stl` at the repo root, also
-  on plate 3 of `print/silkscreen-368-plates.3mf`; `../rod_jig.py` makes it) is an 86 x 12 x 5 bar with a straight groove
+  on plate 1 of `print/silkscreen-368-plates.3mf`; `../rod_jig.py` makes it) is an 86 x 12 x 5 bar with a straight groove
   and two slots for the printer scraper's razor blade, 63.5 apart (the rod plus one blade's thickness); it prints in
   9 minutes (3.9 g). Cut about 80 mm of filament and warm it until it goes limp: about 10 s in hot water (a kettle left
   to stand a minute), or lay it in the groove and set the jig on the bed at 60 °C for 5 minutes. Press it into the
@@ -1235,8 +1247,8 @@ the centre and 1.42 / 2.08 / 2.20 / 3.30 at the top edge.)
 
 ## x3
 
-A 3D-printed case for the Silkscreen board with the 3.68-inch 528 × 792 panel, the board trimmed above J5, power
-moved to UP2, and a 500 mAh battery inside. It is Rev K (the case refined over five prints) rebuilt for the new
+A 3D-printed case for the Silkscreen board with the 3.68-inch 528 × 792 panel, the board trimmed above the battery connector (J5), power
+moved to the left upper page key (UP2, SW7), and a 500 mAh battery inside. It is Rev K (the case refined over five prints) rebuilt for the new
 panel. It is not a patch of the Codex attempt, which was kept in `archive/codex/` until 2026-09-28 and is now in git history only.
 
 **Status, 2026-09-24:** modelled, checked, sliced; not yet printed. Third pass: the second pass's 12.3 mm case
@@ -1251,7 +1263,7 @@ not close; 1.0 mm more air behind the board and deeper latch notches in the midp
 | Shell (W × H × D) | **68.2 × 108.0 × 12.9 mm** (12.7 until the bay's change, 11.7 until the lid's fix, 11.3 until the screen bevel) | 68.2 × 105.8 × 12.76 | 68.2 × 124.0 × 12.7 |
 | With the keys | 14.4 mm (1.5 proud; 14.2 until the bay's change, 13.2 until the lid's fix, 12.8 until the screen bevel; x3's rockers: 12.35) | 13.52 | 14.6 |
 | Battery | 503035, 500 mAh, in the lid behind the board | 402050, 500 mAh, over the ESP32 module | 503035 in the board's notch |
-| Lead to J5 | 34 mm routed from a centre exit (22 from a right-end exit), taped at one point on the midplate above J5 | 20 mm | wound on cleats |
+| Lead to the battery connector (J5) | 34 mm routed from a centre exit (22 from a right-end exit), taped at one point on the midplate above it | 20 mm | wound on cleats |
 | Printed parts | 12 (tub, lid + 3 side keys, midplate, 4 keys, 4 cranks, gate) + a filament rod | 8 (+ battery keeper) | 7 |
 | Screws | 4 × M2 × 8 (3 until 2026-10-13) | 5 (M2 × 10, × 8, × 4) | 3 × M2 × 10 |
 
@@ -1431,7 +1443,7 @@ Same orientations and settings as x3: tub face down, lid back face down, midplat
 (but for the lid's side-key notches, as in x3), no brim. The bottom keys print on their −X end and the cranks on their pad end (see *Bottom keys*).
 
 - **Files:** `print/3.68/` (see *Two builds*): `tub-light-strip`, `key-x3ls`, its coupons and the shared parts, each
-  as a print-oriented STL and a STEP in the CAD frame; or plate 2 of `print/silkscreen-368-plates.3mf`. `src/build.py`
+  as a print-oriented STL and a STEP in the CAD frame; or plate 2 of the author's CC2 plate file. `src/build.py`
   regenerates them from `out/light-strip/` and `out/standard/`.
 
 - **Lid:** the latch arm's chamfer faces up and inward, so it needs no support. The lid's overhang area is unchanged
@@ -1514,9 +1526,10 @@ Handle the strip ESD-safe with the board unpowered; see *Board notes*.
    the foot against its pocket's roof.
 5. **Midplate, then the board.**
    - Thread the strip's tail through the board's slot, 6.5 mm left of the panel's FPC.
-   - On the back, plug it into **J3** with its contacts facing away from the board, and close J3's latch.
+   - On the back, plug it into the **frontlight connector (J3)** with its contacts facing away from the board, and
+     close the connector's latch.
    - This panel leaves 4–5.6 mm of slack in the tail (`tools/foldpath.py`). Leave it as a loop between the slot
-     and J3. On the back it hangs to about Z −3.2; the lid's floor is at −7.4 (−6.4 until 2026-10-12). Part of it can instead sit in the
+     and the connector. On the back it hangs to about Z −3.2; the lid's floor is at −7.4 (−6.4 until 2026-10-12). Part of it can instead sit in the
      chin, where the gap takes a loop up to 1.65 past the glass edge.
 
 ### Board notes (x3 board with the strip): flagged, not fixed
@@ -1733,17 +1746,17 @@ The bay takes a **503035**: 3.7 V, 500 mAh, JST PH2.0. It is the pack Rev K carr
 31.1 × 37.2 × 5.18 mm with its wrap. Amazon sells the size as 5 × 30 × 37 mm, e.g. B07S84SBV3 ($7.99, about 50 mm of
 lead). **It must be at most 5.3 mm thick with up to two layers of tape on each face (6.02 mm), 30.5 wide, and 37.0 long with its
 protection board plus at most one layer of tape over each end** (the pocket is 31.7 wide; the end stop is 37.7 from its
-bottom wall). The lip and the board leave a cell of that size 0.445 mm of air under J7. Check its polarity against J5 before connecting; Amazon PH2.0 packs are
+bottom wall). The lip and the board leave a cell of that size 0.445 mm of air under the microSD socket (J7). Check its polarity against the battery connector (J5) before connecting; Amazon PH2.0 packs are
 not all wired the same way.
 
 **Why this cell, and why here.** The only place behind the board where a cell adds nothing but its own thickness
-is the shallow patch, and its lead has to reach J5. A search over that patch (the cell as a rectangle at every
-angle, its lead end within reach of J5's plug) found room for a 503035 only. The other layouts:
+is the shallow patch, and its lead has to reach the battery connector (J5). A search over that patch (the cell as a rectangle at every
+angle, its lead end within reach of the connector) found room for a 503035 only. The other layouts:
 
 | Layout | Capacity | Case | Notes |
 |---|---|---|---|
-| **503035 behind the board** (this) | 500 mAh | **11.3 mm deep, 107 tall** | fits as sold; its lead end is next to J5 |
-| 503035 beside the board, top left (Rev K's layout) | 500 mAh | 10.3 deep, 123 tall | nothing under it, so only J5 sets the depth; lead 17 mm |
+| **503035 behind the board** (this) | 500 mAh | **11.3 mm deep, 107 tall** | fits as sold; its lead end is next to the battery connector |
+| 503035 beside the board, top left (Rev K's layout) | 500 mAh | 10.3 deep, 123 tall | nothing under it, so only the battery connector sets the depth; lead 17 mm |
 | Liter 402050 (20 × 50 × 3.65) beside the board, across the top | 500 mAh | 10.3 deep, 118 tall | a 25 mm lead; over the ESP32 instead (Codex's layout) it is 12.8 mm |
 | LP203180 (2.0 × 31 × 80) over the ESP32 | 800 mAh | ≈10.7 deep, 107 tall | not on Amazon (battery makers, sample lots); one listing gives 3.2 mm with its protection board, which would make it 11.9 |
 
@@ -1755,7 +1768,7 @@ pack, stops it sliding out from under the lip, which keeps at least 0.4 mm over 
 lies 1.3 mm over the lower two-thirds of a 5.2 pack (0.1 until 2026-10-12): room for the charging wires, or for a
 pack that swells a little as it ages.
 
-**Lead.** Plug it into J5 with the lid stood up. The fixed run goes from the plug's back toward the cell, up past
+**Lead.** Plug it into the battery connector (J5) with the lid stood up. The fixed run goes from the plug's back toward the cell, up past
 the board's rounded corner and onto the midplate's bare back above the plug. One strip of electrical tape, the tape
 point, holds it there: just right of the pocket's top-right corner, at least 2 mm above the board's cut edge and
 about 4 mm short of the top wall. Coil any spare flat beside the tape point. The free span runs from the tape point
@@ -1767,7 +1780,7 @@ from the middle; up to about 80 mm fits, so nothing needs cutting or measuring.
 
 **The antenna.** The pack is not over the ESP32's antenna, but it is close. Its bottom-left corner is 1.25 mm
 above the module's top edge, at the inner corner of the antenna end (X 0.51–7.5); the first pass's smaller cell
-was 9 mm away. The pack cannot go right (the lead needs the 2.3 mm to J5's plug) or left (SW7). Moving the bay up
+was 9 mm away. The pack cannot go right (the lead needs the 2.3 mm to the battery connector) or left (the power key, SW7). Moving the bay up
 buys the antenna room at a millimetre of case height and of lead for each millimetre. Check Wi-Fi range on the
 first build.
 
@@ -1851,14 +1864,14 @@ New in x3:
 1. **Board.** Check each point before closing the lid:
    - Cut the upper extension at KiCad Y 62.00 and dress the edge. Leave nothing above Y 62: the lid's backstops start
      3.45 mm above it.
-   - Fit R72 (10 kΩ) and R74 (0 Ω). Remove R36 and R73 (R73 must be gone when R74 is in, or 3V3 is shorted to
+   - Power rework (the left upper page key becomes the power key): fit R72 (10 kΩ) and R74 (0 Ω). Remove R36 and R73 (R73 must be gone when R74 is in, or 3V3 is shorted to
      ground).
-   - Leave SW5 off: the lid has a post in its site.
-   - **Trim J5's through-hole leads and the switches' pins to 0.65 mm proud of the front.**
-   - Seat SW1, SW4 and SW7 flat on the board, within 0.2 mm.
+   - Leave the left lower page key (SW5) off: the lid has a post in its site.
+   - **Trim the battery connector's (J5's) through-hole leads and the switches' pins to 0.65 mm proud of the front.**
+   - Seat the three side switches (SW1, SW4, SW7) flat on the board, within 0.2 mm.
    - A board made before silkscreen-pcb Rev 1.01 needs the two charging wires (*Board notes*). Lay them flat against
      the back:
-     - GND, C6 pad 2 to C21 pad 2. Lay it on the bare board beside C6 and C21, in the 1.5 mm between J7's edge and
+     - GND, C6 pad 2 to C21 pad 2. Lay it on the bare board beside C6 and C21, in the 1.5 mm between the microSD socket's (J7's) edge and
        C6, not over them. Use thin wire (0.5 mm or less), with joints no taller than the caps. Laid over C6, a 1.0 mm
        wire presses a 6.02 mm cell by about 0.3: lay it beside C6.
      - 3V3, R40 pad 2 to R81 pad 2, or across the cut's two 3V3 stubs. Keep R40's joint low and lead the wire off
@@ -1868,8 +1881,8 @@ New in x3:
 3. **Bottom keys.** Keys, cranks, rod and gate, in that order (see *Bottom keys*, *Assembly*; the gate coupon
    comes before the first full print, the chin fit check is optional; keep the tub face down until the board is in).
 4. **Midplate.** Onto the back of the panel; it clicks in at its four detents.
-5. **Board.** FPC through the board's slot into J2 (check the FPC's contact side against J2 first). Press the
-   board onto the H2 and H6 snap posts until it clicks.
+5. **Board.** FPC through the board's slot into the display connector (J2; check the FPC's contact side against it
+   first). Press the board onto the snap posts at mounting holes H2 and H6 until it clicks.
 6. **Battery.** Check the pack: at most 5.3 mm thick with up to two layers of tape on each face, 30.5 wide and 37.0
    long with its protection board (and one layer of tape over each end), lead end up. Tuck its bottom edge under the
    lid's lip, push it to the right (and down only until it stops under the lip) and tape it down. Stand the lid up beside the case's top edge and
@@ -1974,9 +1987,9 @@ range, and the board after the cut, other than the charging wires. The first pri
   edge, round corners, and the screen's edge and corner pixels in view at every corner.
 - Wi-Fi range with the pack in (its corner is 1.25 mm from the antenna end).
 - The hooks: the pack should snap in with a firm press and come out by lifting its top end.
-- The FPC's contact side against J2 (the drawing does not say).
+- The FPC's contact side against the display connector, J2 (the drawing does not say).
 - The side keys and the latches. Test 1 (the 4.26 case): with 0.25 on both sides its right-hand keys did not click, so
-  the +X keys here (SW1, SW4) now stop 0.15 from their plungers; check that all three click with a firm, springy feel
+  the +X keys here (the right page keys, SW1 and SW4) now stop 0.15 from their plungers; check that all three click with a firm, springy feel
   before the key bottoms.
 - The cranks (test 1): the rod feeds through both closed cheeks of each crank without force after reaming; the keys
   (printed on their −X end) show no slit on their button faces.
@@ -1990,14 +2003,14 @@ range, and the board after the cut, other than the charging wires. The first pri
 - The four screws (2026-10-13): each M2 × 8 bites and pulls its corner home, with no whitening or bulge round the
   pilots (the top-left one toward the screen's corner, the bottom ones toward the rod); the top-left corner stays
   shut with the lid pressed home; the lid lifts nowhere when pressed at the edges; the rod still pushes out past the
-  right corner block; the board sits on the H3/H4 pins with no free play at its bottom edge.
+  right corner block; the board sits on the pins at its bottom mounting holes (H3/H4) with no free play at its bottom edge.
 - The side keys (2026-10-12 lid): each key's bottom edge prints on the bed along its whole length, with no loose or
   stringy edge round the hinge, the nub or the pad; each hinge's support grid picks out of its notch from outside; the
   key moves freely in its slot, and all three click.
-- SW7 (2026-10-13 lid): its nub is whole, with no split, crumbled corner or seam blob at its end toward the case's
+- The power key, SW7 (2026-10-13 lid): its nub is whole, with no split, crumbled corner or seam blob at its end toward the case's
   bottom, where it meets the key; its pad as clean as SW4's. If the pad is what was bad before, note that: the
   G-code shows nothing there. The skirt is the job's first line and peels off.
-- SW1 (2026-10-13 lid): its nub as clean as SW4's. This lid starts SW1's outer wall on the nub's side of its slit, at
+- The right lower page key, SW1 (2026-10-13 lid): its nub as clean as the upper one's (SW4). This lid starts SW1's outer wall on the nub's side of its slit, at
   the nub's upper end (toward SW4) where it meets the key, as the lid Ian printed did on SW7 (without SW7's hole). A
   split, crumbled corner or seam blob there would mean the seam, not the hole, was SW7's trouble.
 - The bottom keys: each key slides in by hand and presses freely; the gap round a key's cap is even (about 0.2 at the

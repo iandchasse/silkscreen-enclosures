@@ -41,7 +41,7 @@ OrcaSlicer for you, take the current one. OrcaSlicer 2.3.1 and older are not tes
 | **Look at one part, or print it from the author's plate files** | [`print/`](print/) |
 | **Change a case** | [`enclosures/`](enclosures/README.md): `case-426/` and `case-368/`, their build scripts and design records |
 | **The board** | [silkscreen-pcb](https://github.com/iandchasse/silkscreen-pcb) |
-| **A light for the reader** | [silkscreen-light-attachment](https://github.com/iandchasse/silkscreen-light-attachment) (clips on to J6), or [silkscreen-light-strip](https://github.com/iandchasse/silkscreen-light-strip) (J3; its cases are [in development](#in-development-the-light-strip-cases)) |
+| **A light for the reader** | [silkscreen-light-attachment](https://github.com/iandchasse/silkscreen-light-attachment) (clips on to the board's expansion header), or [silkscreen-light-strip](https://github.com/iandchasse/silkscreen-light-strip) (plugs into the board's frontlight connector; its cases are [in development](#in-development-the-light-strip-cases)) |
 
 ## Print a case
 
@@ -64,7 +64,7 @@ laid out on a few plates.
 **Use OrcaSlicer.** Open the project, pick your printer, and keep a **0.4 mm nozzle and 0.2 mm layers** (first layer
 0.2 too). The keys are exactly 50 layers long, and the raft's air gap and the lid supports' gap are one layer each.
 PrusaSlicer, Cura and the others do not read the per-part settings and are not supported. The projects were written with
-OrcaSlicer 2.4.0-dev and open in 2.3.2 and later (see the status above).
+OrcaSlicer 2.4.0-dev and should open in OrcaSlicer 2.3.2 and later (checked in the 2.4.0-dev GUI; 2.4.2 loads them the same way by its source; see the status above).
 
 ### What every project contains
 
@@ -90,7 +90,7 @@ OrcaSlicer 2.4.0-dev and open in 2.3.2 and later (see the status above).
 All 16 are for the touch panel **GDEQ0426T82-FT01C** (touch and frontlight) on the full Silkscreen board. The file name
 is the choice you make in the builder:
 
-| Side keys (as you hold it) | Bottom keys, J6 opening | Bottom keys, no J6 | Chinless, J6 opening | Chinless, no J6 |
+| Side keys (as you hold it) | Bottom keys, dev-header opening | Bottom keys, no dev header | Chinless, dev-header opening | Chinless, no dev header |
 |---|---|---|---|---|
 | All four | `standard` | `standard-nodev` | `chinless` | `chinless-nodev` |
 | Left pair | `standard-leftkeys` | `standard-leftkeys-nodev` | `chinless-leftkeys` | `chinless-leftkeys-nodev` |
@@ -103,23 +103,24 @@ is the choice you make in the builder:
 Weights and times are OrcaSlicer's estimates with the generic presets; your printer's times will differ. The exact
 figure for every file is in the table under the list below.
 
-- **Bottom keys** (`standard`): four bell-crank keys under the screen (SW9, SW8, SW3, SW2). The case is
+- **Bottom keys** (`standard`): four bell-crank keys under the screen, for the board's Back, OK, Left and Right buttons (SW9, SW8, SW3, SW2). The case is
   68.2 × 125.0 × 12.7 mm. Plate 1 holds the tub, the lid, the midplate, 4 keys (`key-426`), 4 `crank-T`, 2 gates (one
   is a spare) and the rod jig: 14 objects.
 - **Chinless:** no bottom keys; touch does OK and Back. The case is 68.2 × 117.4 × 12.7 mm. Plate 1 holds the tub, the
-  lid and the midplate: 3 objects. **The board must not have SW9, SW8, SW3 or SW2:** they hang 1.9 mm past its bottom
-  edge into the chin wall. Keep R4.
-- **Side keys,** as you hold the reader with the screen toward you: the left pair is SW7 (upper) and SW5 (lower), the
-  right pair SW4 (upper) and SW1 (lower), the upper pair SW7 and SW4. Power (SW10, top of the right edge) is on every
-  case. A key left out is plain wall; its switch may stay on the board.
-- **No J6** (`-nodev`): no opening for the dev header. **The board must not have J6** (the lid's lip runs through it),
-  so no clip-on light attachment. With the opening, a board with or without J6 fits.
-- A fully populated board fits every bottom-key case with the J6 opening.
+  lid and the midplate: 3 objects. **The board must not have the four bottom-row buttons (SW9, SW8, SW3, SW2):** they hang 1.9 mm past its bottom
+  edge into the chin wall. Keep R4 (their 10 kΩ pull-up).
+- **Side keys,** as you hold the reader with the screen toward you: the left pair is the upper and lower keys on the
+  left edge (SW7, SW5), the right pair the upper and lower keys on the right edge (SW4, SW1), and the upper pair the top
+  key on each side (SW7, SW4). The power button (SW10, top of the right edge) is on every case. A key left out is plain wall; its switch may stay on the board.
+- **No dev header** (`-nodev`): no opening for the dev header, the board's 12-pin expansion header (labelled J6).
+  **The board must not have it fitted** (the lid's lip runs through it), so no clip-on light attachment. With the
+  opening, a board with or without the header fits.
+- A fully populated board fits every bottom-key case with the dev-header opening.
 
 <details>
 <summary>Exact figures for each of the 16 files (plate 1, generic presets)</summary>
 
-| File | Case | Side keys | J6 opening | Size | Plate 1 |
+| File | Case | Side keys | Dev-header opening | Size | Plate 1 |
 |---|---|---|---|---|---|
 | `standard` | bottom keys | all four | yes | 1.25 MB | 41.21 g, 3 h 22 min |
 | `standard-nodev` | bottom keys | all four | no | 1.25 MB | 41.46 g, 3 h 23 min |
@@ -153,9 +154,9 @@ than 0.55 mm, supports only inside the lid's enforcers, side keys standing on a 
 | Case | 68.2 × 108.0 × 12.9 mm (14.4 mm over the keys) |
 | Plate 1 | tub, lid (3 side keys, 3 enforcers), midplate, 4 `key-x3std`, 4 `crank-T`, 2 gates (one is a spare), rod jig: 14 objects, 35.50 g, 3 h 14 min |
 | Plate 2 | 4 `crank-M`, for APEM MJTP1117 boards only: 0.84 g, 7 min |
-| Board | the trimmed x3 board (cut at KiCad y 62; see [silkscreen-pcb](https://github.com/iandchasse/silkscreen-pcb); boards made before its Rev 1.01 need two bodge wires). **No SW5** (a post stands where its key would be). The top key on the left edge, SW7, is the power key: fit R72 and R74, leave off R36 and R73. Side keys: SW7 on the left, SW4 and SW1 on the right. |
+| Board | the trimmed x3 board (cut at KiCad y 62; see [silkscreen-pcb](https://github.com/iandchasse/silkscreen-pcb); boards made before its Rev 1.01 need two bodge wires). **No left lower page key** (leave SW5 off: a post stands where its key would be). The top key on the left edge (SW7) is the power key: fit R72 and R74, leave off R36 and R73. Side keys: the upper key on the left (SW7), and the upper and lower keys on the right (SW4, SW1). |
 | Screws | 4 × M2 × 8 socket head cap (ISO 4762); a pan head also fits; never M2 × 10 |
-| Battery | 503035 up to 5.3 mm thick with up to two layers of tape on each face. Push it right, then down until it stops under the lip; tape it. Check where its lead leaves the cell, and its polarity at J5. The lead route is in [`case-368/README.md`](enclosures/case-368/README.md), "The battery". |
+| Battery | 503035 up to 5.3 mm thick with up to two layers of tape on each face. Push it right, then down until it stops under the lip; tape it. Check where its lead leaves the cell, and its polarity at the board's battery connector (J5). The lead route is in [`case-368/README.md`](enclosures/case-368/README.md), "The battery". |
 
 ### You also need
 
@@ -167,7 +168,7 @@ than 0.55 mm, supports only inside the lid's enforcers, side keys standing on a 
 - **The gate coupon,** once per printer and filament (bottom-key cases): [`print/4.26/coupon-gate.stl`](print/4.26/coupon-gate.stl)
   or [`print/3.68/coupon-gate-x3std.stl`](print/3.68/coupon-gate-x3std.stl), or the "Test prints" plate of the plate file.
 - **A battery:** a 503035 LiPo, 500 mAh, with a protection board and a JST PH 2.0 2-pin connector. The polarity is not
-  standard, so meter it against J5's + before the first plug-in. On the 4.26″, wind the spare lead round the midplate's
+  standard, so meter it against the + pin of the board's battery connector (J5) before the first plug-in. On the 4.26″, wind the spare lead round the midplate's
   cleats.
 - **Assembly:** lay the tub face down on a cloth until the board is in. [`print/README.md`](print/README.md) has the
   steps.
@@ -180,7 +181,7 @@ which also lists what to reprint after each design change.
 - [`silkscreen-426-plates.3mf`](print/silkscreen-426-plates.3mf) (3.3 MB) and
   [`silkscreen-368-plates.3mf`](print/silkscreen-368-plates.3mf) (2.1 MB): OrcaSlicer projects with the released builds
   laid out, in the same generic setup as the generic projects (Generic Marlin Printer 0.4 nozzle, 0.20mm Standard,
-  Generic PLA; every plate fits a 220 × 210 mm bed; open them in OrcaSlicer 2.3.2 or later, and pick your own printer
+  Generic PLA; every plate fits a 220 × 210 mm bed; they should open in OrcaSlicer 2.3.2 and later (checked in the 2.4.0-dev GUI; 2.4.2 loads them the same way by its source); pick your own printer
   and filament). The 4.26 file has four plates: 1 the standard case (with the rod jig), 2 the 4 `crank-M` only for APEM
   MJTP1117 boards, 3 the chinless case, 4 test prints (a PCBA test-fit dummy, the chin coupon with a key, the gate coupon
   with a gate). The 3.68 file has three: 1 the case, 2 the 4 `crank-M`, 3 test prints. The light-strip builds are not in
@@ -217,8 +218,8 @@ order.
 ## In development: the light-strip cases
 
 Each project can also build a case for the
-[Silkscreen light strip](https://github.com/iandchasse/silkscreen-light-strip), a flex PCB frontlight on the board's
-J3: the 4.26″ has 16 such configurations, the 3.68″ one build. **These cases are in development and are not released.**
+[Silkscreen light strip](https://github.com/iandchasse/silkscreen-light-strip), a flex PCB frontlight that plugs into the board's
+frontlight connector: the 4.26″ has 16 such configurations, the 3.68″ one build. **These cases are in development and are not released.**
 The strip is rev A and untested, and the website does not offer its cases. The builds exist in the source and in plates
 2 and 5 of the author's CC2 plate files (`print/cc2-local/`, not in git), but nothing here asks you to print them.
 
@@ -269,9 +270,9 @@ A few vendor reference files (the panel drawings and the switch datasheets) are 
 
 - [silkscreen-pcb](https://github.com/iandchasse/silkscreen-pcb): the board. The 4.26″ case takes the full board, the
   3.68″ the trimmed x3 board.
-- [silkscreen-light-strip](https://github.com/iandchasse/silkscreen-light-strip): the J3 warm/cool flex frontlight
+- [silkscreen-light-strip](https://github.com/iandchasse/silkscreen-light-strip): the warm/cool flex frontlight that plugs into the board's frontlight connector
   (rev A, untested), with its own docs.
-- [silkscreen-light-attachment](https://github.com/iandchasse/silkscreen-light-attachment): a clip-on warm/cool light on the board's J6. It needs a 4.26″ case with the dev-header opening (not `-nodev`).
+- [silkscreen-light-attachment](https://github.com/iandchasse/silkscreen-light-attachment): a clip-on warm/cool light that plugs into the board's expansion header (the dev header). It needs a 4.26″ case with the dev-header opening (not `-nodev`).
 - [silkscreenreader.com](https://silkscreenreader.com): the Silkscreen site; its case builder is meant to serve the print files.
 
 ## License

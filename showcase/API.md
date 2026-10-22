@@ -1450,7 +1450,7 @@ and lid, no bottom keys, cranks, rod or gate, and a board with SW9, SW8, SW3 and
 The 4.26 has a fourth build, `lc` (Light-strip chinless, "no touch, no bottom keys"): the light-strip build's plain
 GDEY0426T82 with the Silkscreen light strip, its own tub, the chinless lid (`lid-chinless`, the same file as `cl`'s),
 no bottom keys, and a board with SW9, SW8, SW3 and SW2 not fitted; 68.18 x 117.4 x 12.7. It is print build 4 of the
-case project (plate 5 of the plate file). The case project builds 32 configurations in all; the side-key layouts and
+case project (plate 5 of the author's CC2 plate file). The case project builds 32 configurations in all; the side-key layouts and
 the no-dev-header cases are not showcase builds (the files card names them and where they are described).
 - **Contract.** `EXTRA_BUILDS = {'426': ('cl', 'lc')}`, `KEYLESS = ('cl', 'lc')`, `STRIP_BUILDS = ('ls', 'lc')`,
   `BUILD_DIRS.lc = 'light-strip-chinless'`, `ZIP_DIRS.lc = 'light-strip-chinless/'`, `DRAWINGS_BUILD.lc =

@@ -5,7 +5,7 @@ from one code base. The standard case is the released one; the light-strip case 
 [Silkscreen light strip](https://github.com/iandchasse/silkscreen-light-strip), which is in development and untested,
 so the light-strip cases are not released either. The 4.26 builds 32 configurations (since 2026-10-07): either panel, with the bottom keys or
 **chinless** (for a board without the four bottom switches), all four page keys or only the left, right or upper pair,
-and with or without the dev header (J6) ([`case-426/README.md`](case-426/README.md), "Builds"). What they make to
+and with or without the dev header (the board's expansion header, J6) ([`case-426/README.md`](case-426/README.md), "Builds"). What they make to
 print goes into the repo's [`print/`](../print/) folder; start at [`print/README.md`](../print/README.md) if you only
 want to print a case, and the [top-level README](../README.md#print-a-case) for the generic OrcaSlicer projects that
 the website serves.
@@ -137,10 +137,10 @@ Remove-Item Env:SILKSCREEN_VARIANT   # or build.py builds only that one next tim
 ```
 
 The 4.26's third print build, `chinless`, has no bottom keys and a 117.4 mm case; its board must not have
-SW9/SW8/SW3/SW2 fitted. It has its own tub and lid in `print/4.26/` (`tub-chinless`, `lid-chinless`) and is plate 4
-of the 4.26 plate file. The fourth, `light-strip-chinless` (the same with the light strip's panel), has its own tub
-(`tub-light-strip-chinless`) and prints the chinless lid: plate 5. So run `mechanics.py`, `dummy.py` and `plates.py`
-for both too (the loop above) before `make_plates.py`. Any other configuration (`-nodev`: J6 not fitted; a side-key
+the bottom-row buttons (SW9/SW8/SW3/SW2) fitted. It has its own tub and lid in `print/4.26/` (`tub-chinless`, `lid-chinless`) and is plate 3
+of the public 4.26 plate file (plate 4 of the author's CC2 file). The fourth, `light-strip-chinless` (the same with the light strip's panel), has its own tub
+(`tub-light-strip-chinless`) and prints the chinless lid: plate 5 of the CC2 file only. So run `mechanics.py`, `dummy.py` and `plates.py`
+for both too (the loop above) before `make_plates.py`. Any other configuration (`-nodev`: the dev header not fitted; a side-key
 layout) builds and checks, with no files in `print/`: its OrcaSlicer project is `case-426/out/configs/<slug>.3mf`
 (build output, not in git; the website serves the generic ones at [silkscreenreader.com/builder](https://silkscreenreader.com/builder), see the [top-level README](../README.md#print-a-case)). See `case-426/README.md`, "Builds", for the
 32 configurations and what each needs on the board.

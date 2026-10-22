@@ -180,7 +180,7 @@ var STRIP_DWG = {
   },
   strip_holddown: function (dr) { return 'Between two pairs, at Y ' + SC.fmt(dr.at, 2) + ': a hold-down pad in the tub presses the bar onto the plain panel.'; },
   strip_fold: function (dr) { return 'Through the folded top pair, at Y ' + SC.fmt(dr.at, 2) + ': it lies under the bar with its LEDs facing the back, where the tub\u2019s frame is cut away and the midplate is notched.'; },
-  strip_neck: function (dr) { return 'Along the neck, at X ' + SC.fmt(dr.at, 2) + ': over the bottom glass edge, down the board\u2019s slot and onto the back to J3.'; },
+  strip_neck: function (dr) { return 'Along the neck, at X ' + SC.fmt(dr.at, 2) + ': over the bottom glass edge, down the board\u2019s slot and onto the back to the frontlight connector.'; },
 };
 var STRIP_DWG_ORDER = ['strip_led', 'strip_holddown', 'strip_fold', 'strip_neck'];
 function stripAnnotate(dr, g) {
@@ -239,14 +239,14 @@ function stripDrawFlat(svg, G) {
   label(50.0, 137.2, P(0, 128)[0], 212, 'foot', 'var(--ink-3)');
   label(55.2, 146.5, P(0, 146.5)[0], 22, 'bend zone: keep free', 'var(--ink-3)');
   label(55.2, 158.0, P(0, 159)[0], 212, 'diodes + S/C/W pads (PI behind)', 'var(--ink-3)');
-  label(54.2, 165.6, P(0, 165)[0], 22, 'contacts into J3', 'var(--gold)');
+  label(54.2, 165.6, P(0, 165)[0], 22, 'contacts into the frontlight connector', 'var(--gold)');
 }
 var STRIP_TAPE = [
   ['<span class="tag tape">3M 9077</span>factory', 'Back of the top-pair piece and of the bar + foot',
    '4.26&Prime;: holds the strip on the panel border. 3.68&Prime;: holds the folded pair to the bar (tape to tape) and the foot to the panel; the rest of the bar&rsquo;s liner stays on'],
   ['<span class="tag kapton">Kapton</span>you add', 'Both edges of the board&rsquo;s FPC slot, where the neck passes', 'Routed FR4 edges would scuff the neck'],
-  ['<span class="tag kapton">Kapton</span>you add', 'SW9&rsquo;s left lug lead (4.26&Prime;, trimmed flush first) or pin (3.68&Prime;), just below the slot', 'The neck&rsquo;s U or loop passes within 0.1 mm of it'],
-  ['<span class="tag kapton">Kapton</span>you add', 'A strap across the stiffened back run, onto the board&rsquo;s back', 'J3 holds only about 3 N; the tape takes any pull'],
+  ['<span class="tag kapton">Kapton</span>you add', 'The Back key&rsquo;s (SW9&rsquo;s) left lug lead (4.26&Prime;, trimmed flush first) or pin (3.68&Prime;), just below the slot', 'The neck&rsquo;s U or loop passes within 0.1 mm of it'],
+  ['<span class="tag kapton">Kapton</span>you add', 'A strap across the stiffened back run, onto the board&rsquo;s back', 'The frontlight connector holds only about 3 N; the tape takes any pull'],
   ['<span class="tag free">none</span>', 'The hinge and the bend zone', 'They have to bend freely; tape or stiffener there would crack the copper'],
 ];
 // standard vs light strip, from the manifest: a part differs when one of its nodes is in parts[S].per_build

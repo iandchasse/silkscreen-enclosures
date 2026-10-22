@@ -48,13 +48,14 @@ SC.card({
     };
 
     // ---- head, captions, numbers in the text
-    ctx.q('#sidekeys-refs').innerHTML = S.refs.map(function (r) { return '<span class="ref">' + SC.esc(r) + '</span>'; }).join('');
+    ctx.q('#sidekeys-refs').innerHTML = S.refs.map(function (r) { return '<span class="ref">' + SC.tag(r) + '</span>'; }).join('');
     var P = by[S.draw.plan] || S.tabs[0], SD = by[S.draw.side] || S.tabs[0], EL = by[S.draw.elev] || P;
     var dside = SC.drawing('key_side');
-    fill('sidekeys-sref', SC.esc(SD.ref));
+    fill('sidekeys-sref', SC.part(SD.ref));
     fill('sidekeys-sx', dside ? f(dside.at, 1) : f(SD.root[0], 1));
-    fill('sidekeys-pref', SC.esc(P.ref));
-    fill('sidekeys-prole', SC.esc(role(P)));
+    fill('sidekeys-pref', SC.part(P.ref));
+    // the plain name already carries the key's place; add the role only where the name would not say it (the power key on the x3 board)
+    fill('sidekeys-prole', role(P) === 'power' && !/power/.test(SC.PART[P.ref] || '') ? ', used as the power key' : '');
     fill('sidekeys-backr', f(E.back_r != null ? E.back_r : 2, 1));
     fill('sidekeys-footgap', f(TG.foot_gap ? TG.foot_gap[0] : 0.75, 2));
     fill('sidekeys-footgap2', f(TG.foot_gap ? TG.foot_gap[1] : 1.2, 1));

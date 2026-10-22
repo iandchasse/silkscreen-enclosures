@@ -37,32 +37,32 @@ SC.card({
       tx(xy[0] + (dx || 2.2), xy[1], s, anchor || 'start', null, 2.4);
     };
     (BP.snap_posts || []).forEach(function (h) { if (H[h]) post(H[h], 2.2, h + ' snap post'); });
-    if (H.H5) post(H.H5, 1.9, 'H5 pin', 'end', -2.2);
+    if (H.H5) post(H.H5, 1.9, 'H5 locating pin', 'end', -2.2);
     if (BP.support_post) {
       var sp = BP.support_post;
       SC.svg('circle', { cx: sp[0], cy: -sp[1], r: (sp[2] || 3) / 2 + 1.1, class: 'off' }, svg);
       SC.svg('circle', { cx: sp[0], cy: -sp[1], r: (sp[2] || 3) / 2, class: 'post' }, svg);
-      tx(sp[0] + 3.4, sp[1] + 2.4, (BP.leave_off || []).join(', ') + ' left off: a post', 'start', 'hot', 2.4);
+      tx(sp[0] + 3.4, sp[1] + 2.4, (BP.leave_off || []).map(SC.tag).join(', ') + ' left off: a post', 'start', 'hot', 2.4);
       tx(sp[0] + 3.4, sp[1] - 0.6, 'carries this corner', 'start', 'hot', 2.4);
     }
     var j5 = D.cards.battery.battery.j5;
-    if (j5) { SC.svg('rect', { x: j5[0], y: -j5[3], width: j5[1] - j5[0], height: j5[3] - j5[2], class: 'part' }, svg); tx(j5[0] - 1, (j5[2] + j5[3]) / 2, 'J5', 'end'); }
+    if (j5) { SC.svg('rect', { x: j5[0], y: -j5[3], width: j5[1] - j5[0], height: j5[3] - j5[2], class: 'part' }, svg); tx(j5[0] - 1, (j5[2] + j5[3]) / 2, 'battery J5', 'end'); }
     var roles = D.meta.roles || {};
     (D.cards.sidekeys.tabs || []).forEach(function (t) {
       var y = (t.pad_y[0] + t.pad_y[1]) / 2, x = t.side > 0 ? bx1 : bx0;
       SC.svg('rect', { x: x - 1.8, y: -(y + 2), width: 3.6, height: 4, class: 'part' }, svg);
-      var lab = t.ref + (t.ref === BP.power_key ? ' power' : '');
+      var lab = t.ref === BP.power_key ? 'power ' + t.ref : SC.tag(t.ref);
       tx(x + (t.side > 0 ? 2.8 : -2.8), y, lab, t.side > 0 ? 'start' : 'end', t.ref === BP.power_key ? 'hot' : null, 2.4);
     });
 
     var fv = BP.fit_values || {};
     var steps = [
       '<b>Cut the board</b> across the upper extension at KiCad y ' + f(BP.trim_kicad_y, 2) + ' (y ' + f(ty, 2) + ' in the case frame) and dress the edge. ' +
-        (gone.length ? 'Everything above goes with it: ' + gone.join(', ') + '.' : ''),
+        (gone.length ? 'Everything above goes with it: ' + gone.map(SC.tag).join(', ') + '.' : ''),
       '<b>Power rework.</b> Fit ' + BP.fit.map(function (r) { return r + (fv[r] ? ' (' + fv[r] + ')' : ''); }).join(' and ') + '; remove ' + BP.remove.join(' and ') +
-        '. The power key moves to <b>' + SC.esc(BP.power_key || '') + '</b>' + (roles[BP.power_key] ? ', ' + SC.esc(roles[BP.power_key]) : '') + '.',
-      '<b>Leave ' + BP.leave_off.join(', ') + ' off.</b> H2&rsquo;s lid post would stand in the battery bay, so a post in the empty site carries the board&rsquo;s top-left corner instead; the midplate&rsquo;s ' + (BP.snap_posts || []).join(' and ') + ' snap posts still clip the board.',
-      '<b>Trim</b> J5&rsquo;s through-hole leads and the switches&rsquo; pins to ' + f(BP.lead_trim_mm, 2) + ' mm proud of the front, so the midplate&rsquo;s springs keep their room.',
+        '. The power key moves to <b>' + SC.part(BP.power_key || '') + '</b>' + (roles[BP.power_key] ? ', ' + SC.esc(roles[BP.power_key]) : '') + '.',
+      '<b>Leave ' + BP.leave_off.map(SC.part).join(', ') + ' off.</b> The lid post at mounting hole H2 would stand in the battery bay, so a post in the empty site carries the board&rsquo;s top-left corner instead; the midplate&rsquo;s ' + (BP.snap_posts || []).join(' and ') + ' snap posts still clip the board.',
+      '<b>Trim</b> the battery connector&rsquo;s (J5&rsquo;s) through-hole leads and the switches&rsquo; pins to ' + f(BP.lead_trim_mm, 2) + ' mm proud of the front, so the midplate&rsquo;s springs keep their room.',
     ];
     ctx.q('#boardprep-steps').innerHTML = steps.map(function (s) { return '<li>' + s + '</li>'; }).join('');
     var row = function (t, v, s) { return '<div><dt>' + t + '</dt><dd>' + v + '<small>' + s + '</small></dd></div>'; };
@@ -70,8 +70,8 @@ SC.card({
       row('Cut', 'y ' + f(ty, 2), 'KiCad y ' + f(BP.trim_kicad_y, 2) + ' &middot; board ' + f(bx1 - bx0, 1) + ' &times; ' + f(ty - by0, 2) + ' mm after'),
       row('Fit', BP.fit.join(', '), BP.fit.map(function (r) { return fv[r] || ''; }).join(', ')),
       row('Remove', BP.remove.join(', '), 'before powering up'),
-      row('Leave off', BP.leave_off.join(', '), 'a post stands in its site'),
-      row('Pins', f(BP.lead_trim_mm, 2) + ' mm', 'proud of the front, J5 and the switches'),
+      row('Leave off', BP.leave_off.map(SC.tag).join(', '), 'a post stands in its site'),
+      row('Pins', f(BP.lead_trim_mm, 2) + ' mm', 'proud of the front, the battery connector and the switches'),
     ].join('');
   },
 });

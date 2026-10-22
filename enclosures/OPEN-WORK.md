@@ -11,7 +11,7 @@ middle), would not go fully down, and its long edges could be pried open. The st
 FAILing on the old lid and PASSing on the new one):
 - The bay is one layer deeper (the back is 1.0 thick; the case is 12.9 mm, light strip 13.7), the lip is raised over a
   6.02 mm cell (a 5.3 mm cell with two layers of tape on each face), the hooks are gone.
-- The lead has a route: one strip of tape on the midplate's bare back above J5 (the tape point), a coil well beside
+- The lead has a route: one strip of tape on the midplate's bare back above the battery connector (J5; the tape point), a coil well beside
   it, the top rib lowered to a fence, the backstops moved 3.45 mm past the board's cut and 0.33 mm under the midplate.
 - Six internal ribs (bed 3.0) and thicker latch arms (1.3 at the root, today's section from Z -0.5 up): the springs'
   bow 0.148 -> 0.113 mm in the grillage model, the long edges let go at 19-22.5 N instead of 12-16 N. Ian asked for
@@ -30,7 +30,7 @@ Unproven (nothing is printed):
 
 Ian: with all four screws in, each long side is closed at the screws and bows open in the middle between them. The
 study round (cause, cause-check, a stack study and alternatives, with their checks) found one proven rigid chain and no
-proven cause. The board is clamped line to line at H3/H4 between the tub's bosses (printed 1.67) and the lid's posts
+proven cause. The board is clamped line to line at its two bottom mounting holes (H3/H4) between the tub's bosses (printed 1.67) and the lid's posts
 (0.07 at home): 1.600 of room for a 1.600 board, 8.25 mm above the bottom corner screws with no screw through it (the
 4.26's go through), so any extra thickness levers the lid open along its long sides (0.07-0.10 mm per 0.1 mm of extra;
 models, +-30 % to 2x). Candidates still open: the long-edge latches not holding, a lid or tub that took a set, the
@@ -64,7 +64,7 @@ lever. The cell is ruled out (it does not touch the bay lid: 1.1 mm of air).
   - Checks for Ian that decide between the candidates (no tools): press the middle of each long side (click and stay, or
     spring back); back the two bottom screws out two turns and press again (do the middles close?); lid alone on a flat
     table and tub alone face down (rock?); a shiny dent on the lid's two bottom posts or the tub's bosses; whether the
-    GND bodge wire lies on C6.
+    GND bodge wire lies on C6 (the 3.3 V regulator's output capacitor, one end of that wire).
 
 ## The side keys: teardrop base, both sizes rebuilt (2026-10-20)
 
@@ -91,6 +91,6 @@ printed fine most of the time): the round is kept down to its 45-degree point, t
 ## Other open items
 
 - Hosting of the per-configuration 3MFs is still undecided (local `out/configs*/` for now).
-- The 4.26's Y-102 midplate spring is riddled by J6 holes (`case-426/README.md` section 11).
+- The 4.26's Y-102 midplate spring is riddled by the dev header's (J6's) holes (`case-426/README.md` section 11).
 - Optionally, take the 4.26 latch notch to 1.0.
 - A cache speed-up branch (`tail3b`) is parked in the pre-split history; don't resume it unless Ian asks.

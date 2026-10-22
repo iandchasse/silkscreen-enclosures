@@ -454,6 +454,25 @@ footer code { font-size: 12.5px; }
     }
     return cur;
   };
+  // Plain names for the main board's parts (silkscreen-pcb README, docs/HARDWARE.md). Text names a part in words
+  // first and keeps its reference, printed on the board's back, as the label: SC.part('J5') gives
+  // 'the battery connector (J5)', SC.tag('J5') gives 'battery J5' (chips and drawing labels). Unknown refs pass through.
+  SC.PART = {
+    J1: 'USB-C socket', J2: 'display connector', J3: 'frontlight connector', J4: 'touch connector',
+    J5: 'battery connector', J6: 'expansion (dev) header', J7: 'microSD socket', U4: 'ESP32 module', L1: 'display inductor',
+    SW1: 'right lower page key', SW4: 'right upper page key', SW5: 'left lower page key', SW7: 'left upper page key',
+    SW2: 'Right key', SW3: 'Left key', SW8: 'OK key', SW9: 'Back key', SW10: 'power key', SW11: 'reset button',
+    H1: 'mounting hole', H2: 'mounting hole', H3: 'mounting hole', H4: 'mounting hole', H5: 'locating-pin hole',
+    H6: 'mounting hole'
+  };
+  SC.TAG = {
+    J1: 'USB-C', J2: 'display', J3: 'frontlight', J4: 'touch', J5: 'battery', J6: 'expansion header', J7: 'microSD',
+    U4: 'ESP32', L1: 'inductor', SW1: 'right-down', SW4: 'right-up', SW5: 'left-down', SW7: 'left-up', SW2: 'Right',
+    SW3: 'Left', SW8: 'OK', SW9: 'Back', SW10: 'power', SW11: 'reset', H1: 'hole', H2: 'hole', H3: 'hole', H4: 'hole',
+    H5: 'pin hole', H6: 'hole'
+  };
+  SC.part = function (ref) { var n = SC.PART[ref]; return n ? 'the ' + n + ' (' + SC.esc(ref) + ')' : SC.esc(ref); };
+  SC.tag = function (ref) { var n = SC.TAG[ref]; return n ? n + ' ' + SC.esc(ref) : SC.esc(ref); };
   SC.esc = function (s) {
     return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; });
   };

@@ -90,12 +90,12 @@ SC.card({
           lab(a, dF, 'midplate', (BY.cleat_x[0] + BY.cleat_x[1]) / 2, BY.cleats_y[1], 'cleats: wind\nspare lead', 16, 26, { hot: true });
           lab(a, dF, 'midplate', 12.0, (BY.stop_y[0] + BY.stop_y[1]) / 2, 'stop, ' + f(B.bay_p.stop_h, 0) + ' mm tall', -16, -26, { hot: true });
           lab(a, dF, 'cell', (B.box.x[0] + B.box.x[1]) / 2, (B.box.y[0] + B.box.y[1]) / 2, '503035 cell', 24, 30);
-          lab(a, dF, 'j7', B.j7[0] + 1.0, (B.j7[2] + B.j7[3]) / 2, 'J7 microSD,\nbehind the board', -30, -10);
+          lab(a, dF, 'j7', B.j7[0] + 1.0, (B.j7[2] + B.j7[3]) / 2, 'microSD J7,\nbehind the board', -30, -10);
           var cx = (C.x[0] + C.x[1]) / 2;
           a.arrow(cx, C.mouth_y + 0.2, cx, C.out_y, true);
           a.label(cx, (C.mouth_y + C.out_y) / 2, 'card out,\ncell swung out', 20, -12, { hot: true });
           var j5 = bbox(dF, 'j5');
-          if (j5) lab(a, dF, 'j5', (j5[0] + j5[1]) / 2, (j5[2] + j5[3]) / 2, 'J5', 20, -30);
+          if (j5) lab(a, dF, 'j5', (j5[0] + j5[1]) / 2, (j5[2] + j5[3]) / 2, 'battery J5', 20, -30);
         },
       });
       var wB = widen(dB, 5, 2.5);
@@ -106,7 +106,7 @@ SC.card({
           var r1 = d.v0 + 3.1, r2 = d.v0 + 1.2, up = d.v1 - 1.3;
           labAt(a, dB, 'lid', B.springs_y[0], bz - 0.2, 'lid springs', 88, r1);
           labAt(a, dB, 'cell', (B.box.y[0] + B.box.y[1]) / 2 + 4, (B.box.z[0] + B.box.z[1]) / 2, '503035 cell', 104.5, r1);
-          labAt(a, dB, 'j7', (B.j7[2] + B.j7[3]) / 2, (B.j7[4] + B.j7[5]) / 2, 'J7', 64, r2);
+          labAt(a, dB, 'j7', (B.j7[2] + B.j7[3]) / 2, (B.j7[4] + B.j7[5]) / 2, 'microSD J7', 64, r2);
           a.arrow(C.mouth_y + 0.1, cz, C.out_y, cz, true);
           a.label(C.mouth_y + 1.2, cz, 'card out, once the cell is out', (76 - C.mouth_y - 1.2) / a.px, (r2 - cz) / a.px, { hot: true });
           labAt(a, dB, 'midplate', (BY.stop_y[0] + BY.stop_y[1]) / 2, (BY.stop_z[0] + BY.stop_z[1]) / 2, 'low stop', 84, up, { hot: true });
@@ -117,22 +117,22 @@ SC.card({
         row('Slot', 'rails ' + f(BY.rail_z[1] - BY.rail_z[0], 1) + ' mm, stop ' + f(B.bay_p.stop_h, 0) + ' mm', f(F.clr, 2) + ' mm off the cell; click in, or slide in from the top edge'),
         row('Hold-down', 'lip ' + f(BY.lip.over_cell, 1) + ', 2 snaps ' + f(BY.snaps.over_cell, 1), 'over the cell&rsquo;s back edges, ' + f(BY.lip.clear_of_back, 1) + ' off it; 45&deg; undersides, no supports'),
         row('Cleats', '2, ' + f(BY.cleat_z[1] - BY.cleat_z[0], 1) + ' mm tall', f(BY.cleats_y[1] - BY.cleats_y[0], 1) + ' mm apart, capped, for spare lead'),
-        row('Card path', 'clear', 'J7&rsquo;s mouth is ' + f(B.box.y[0] - C.mouth_y, 1) + ' mm from the cell; the stop is ' + f(BY.stop_z[0] - C.z[1], 2) + ' mm in front of the card'),
+        row('Card path', 'clear', 'The microSD socket&rsquo;s mouth is ' + f(B.box.y[0] - C.mouth_y, 1) + ' mm from the cell; the stop is ' + f(BY.stop_z[0] - C.z[1], 2) + ' mm in front of the card'),
         row('Pack model', f(B.box.x[1] - B.box.x[0], 2) + ' &times; ' + f(B.box.y[1] - B.box.y[0], 2) + ' &times; ' + f(B.box.z[1] - B.box.z[0], 2), 'site 503035 with wrap and protection board'),
       ];
       if (bd['+0.0mm_pack']) nums.push(row('Springs', f(bd['+0.0mm_pack'].force_N, 2) + ' N each', f(bd['-0.3mm_pack'].force_N, 2) + '&ndash;' + f(bd['+0.3mm_pack'].force_N, 2) + ' N over &plusmn;0.3 mm pack thickness'));
     } else {
       var DM = D.cards.battery.depth_map, dp = B.deep_parts || {};
       var deepOrder = Object.keys(dp).sort(function (p, q) { return dp[q] - dp[p]; });
-      fill('bat-deep', deepOrder.filter(function (k) { return dp[k] > 3; }).map(function (k) { return k + ' ' + f(dp[k], 1); }).join(', ') + ' mm');
+      fill('bat-deep', deepOrder.filter(function (k) { return dp[k] > 3; }).map(function (k) { return SC.tag(k) + ' ' + f(dp[k], 1); }).join(', ') + ' mm');
       fill('bat-shallow', f(1.6, 1));
       // ---- depth map, seen from behind (X mirrored): one rect per run of cells in the same band ----
       var bins = [
         [0.6, 'bare board'],
         [1.7, '1.7 mm or less'],
         [3.3, 'ESP32 module' + (dp.U4 ? ' ' + f(dp.U4, 1) : '')],
-        [4.2, 'USB-C' + (dp.J1 ? ' ' + f(dp.J1, 1) : '') + ', L1' + (dp.L1 ? ' ' + f(dp.L1, 1) : '')],
-        [99, 'switches' + (dp.SW7 ? ' ' + f(dp.SW7, 1) : '') + ', J5' + (dp.J5 ? ' ' + f(dp.J5, 1) : '')],
+        [4.2, 'USB-C' + (dp.J1 ? ' ' + f(dp.J1, 1) : '') + ', inductor L1' + (dp.L1 ? ' ' + f(dp.L1, 1) : '')],
+        [99, 'switches' + (dp.SW7 ? ' ' + f(dp.SW7, 1) : '') + ', battery J5' + (dp.J5 ? ' ' + f(dp.J5, 1) : '')],
       ];
       var binOf = function (dd) { for (var i = 0; i < bins.length; i++) if (dd <= bins[i][0]) return i; return bins.length - 1; };
       var host = ctx.q('#battery-map');
@@ -166,7 +166,7 @@ SC.card({
       if (B.plug) rect(B.plug, 'box');
       if (B.j5) rect(B.j5, 'box');
       var tx = function (x, y, s, anchor, cls) { var e = SC.svg('text', { x: X(x), y: Y(y), 'font-size': 2.6, 'text-anchor': anchor || 'start', 'dominant-baseline': 'middle', class: cls || null }, svg); e.textContent = s; };
-      if (B.j5) tx((B.j5[0] + B.j5[1]) / 2, B.j5[3] + 2.2, 'J5', 'middle');
+      if (B.j5) tx((B.j5[0] + B.j5[1]) / 2, B.j5[3] + 2.2, 'battery J5', 'middle');
       tx(BAY[1] - 1.5, BAY[3] - 3, 'battery bay');
       if (B.antenna) tx(B.antenna[1] + 1, (B.antenna[2] + B.antenna[3]) / 2, 'antenna', 'end');
       tx(x1 - 0.5, y0 - 2.5, '\u2190 USB-C side', 'start', 'dim');
@@ -191,7 +191,7 @@ SC.card({
           labAt(a, dBay, 'lid', BB.end_stop.y, BB.end_stop.top - 0.3, 'end stop', BB.end_stop.y - 1.5, r2);
           labAt(a, dBay, 'lid', ym - 6, B.box.z[0] - B.floor_t / 2, f(B.floor_t, 1) + ' floor', ym - 4.5, r1);
           var j7u = (B.j7[2] + B.j7[3]) / 2;
-          labAt(a, dBay, 'j7', j7u, (B.j7[4] + B.j7[5]) / 2, 'J7, ' + f(B.deepest_under_mm, 2) + ' deep', j7u - 9, up);
+          labAt(a, dBay, 'j7', j7u, (B.j7[4] + B.j7[5]) / 2, 'microSD J7, ' + f(B.deepest_under_mm, 2) + ' deep', j7u - 9, up);
           labAt(a, dBay, 'pcb', ym + 8, 0.8, 'board', ym + 5.5, up);
           if (layerOf(dBay, 'pcm')) { var pb = bbox(dBay, 'pcm'); labAt(a, dBay, 'pcm', (pb[0] + pb[1]) / 2, (pb[2] + pb[3]) / 2, 'protection\nboard', pb[1] + 1, up - 0.4); }
         },
@@ -204,20 +204,20 @@ SC.card({
           lab(a, dPl, 'lid', xm, (BB.lip.y[0] + BB.lip.y[1]) / 2, 'lip', 20, -20, { hot: true });
           lab(a, dPl, 'lid', BB.pocket[0] + 3, BB.end_stop.y, 'end stop', -30, 22);
           var jb = bbox(dPl, 'j5') || bbox(dPl, 'j5_beyond');
-          if (jb) lab(a, dPl, layerOf(dPl, 'j5') ? 'j5' : 'j5_beyond', (jb[0] + jb[1]) / 2, (jb[2] + jb[3]) / 2, 'J5', 16, 22);
+          if (jb) lab(a, dPl, layerOf(dPl, 'j5') ? 'j5' : 'j5_beyond', (jb[0] + jb[1]) / 2, (jb[2] + jb[3]) / 2, 'battery J5', 16, 22);
           var lb = bbox(dPl, 'leads') || bbox(dPl, 'leads_beyond');
-          if (lb) lab(a, dPl, layerOf(dPl, 'leads') ? 'leads' : 'leads_beyond', (lb[0] + lb[1]) / 2, lb[3], 'lead to J5', 30, 18);
+          if (lb) lab(a, dPl, layerOf(dPl, 'leads') ? 'leads' : 'leads_beyond', (lb[0] + lb[1]) / 2, lb[3], 'lead to battery J5', 30, 18);
         },
       });
       var LD = B.lead || {};
       var ex = LD.length_by_exit_position_mm || {};
       var exv = Object.keys(ex).map(function (k) { return ex[k]; });
-      ctx.q('#battery-lead').innerHTML = 'It leaves the middle of the pack&rsquo;s top edge, U-turns up over that edge (' + f(LD.min_bend_r, 2) + ' mm bend radius) and crosses to the midplate&rsquo;s bare back above J5, where one strip of tape holds it; from there it runs along the midplate and past the board&rsquo;s round corner into the plug. Any spare coils flat in a well beside the tape. ' +
-        f(LD.routed_length_mm, 1) + ' mm of wire from a centre exit' + (exv.length === 3 ? ', ' + f(exv[2], 1) + ' mm if the lead leaves near the right-hand end (toward J5) and ' + f(exv[0], 1) + ' from the left' : '') +
+      ctx.q('#battery-lead').innerHTML = 'It leaves the middle of the pack&rsquo;s top edge, U-turns up over that edge (' + f(LD.min_bend_r, 2) + ' mm bend radius) and crosses to the midplate&rsquo;s bare back above the battery connector (J5), where one strip of tape holds it; from there it runs along the midplate and past the board&rsquo;s round corner into the plug. Any spare coils flat in a well beside the tape. ' +
+        f(LD.routed_length_mm, 1) + ' mm of wire from a centre exit' + (exv.length === 3 ? ', ' + f(exv[2], 1) + ' mm if the lead leaves near the right-hand end (toward the battery connector) and ' + f(exv[0], 1) + ' from the left' : '') +
         '. These packs ship with about 50 mm of lead: coil the spare in the well, do not wedge it under the pack.';
       var cellsT = [
-        ['503035 behind the board (this)', B.capacity_mAh + ' mAh', f(D.meta.body[2], 1) + ' mm deep, ' + f(D.meta.body[1], 0) + ' tall', 'fits as sold; its lead end is next to J5', true],
-        ['503035 beside the board, top left (the 4.26&Prime;&rsquo;s layout)', '500 mAh', '10.3 deep, 123 tall', 'nothing under it, so only J5 sets the depth; lead 17 mm'],
+        ['503035 behind the board (this)', B.capacity_mAh + ' mAh', f(D.meta.body[2], 1) + ' mm deep, ' + f(D.meta.body[1], 0) + ' tall', 'fits as sold; its lead end is next to the battery connector', true],
+        ['503035 beside the board, top left (the 4.26&Prime;&rsquo;s layout)', '500 mAh', '10.3 deep, 123 tall', 'nothing under it, so only the battery connector sets the depth; lead 17 mm'],
         ['Liter 402050 (20 &times; 50 &times; 3.65) beside the board, across the top', '500 mAh', '10.3 deep, 118 tall', 'a 25 mm lead; over the ESP32 instead it is 12.8 mm'],
         ['LP203180 (2.0 &times; 31 &times; 80) over the ESP32', '800 mAh', '&asymp;10.7 deep, 107 tall', 'battery makers only; one listing gives 3.2 mm with its protection board, which would make it 11.9'],
       ];
@@ -227,7 +227,7 @@ SC.card({
       var ref = B.ref || {};
       nums = [
         row('Cell', B.capacity_mAh + ' mAh', SC.esc(SC.text(ref.name || '503035')) + (ref.size ? ' &middot; ' + ref.size.map(function (v) { return f(v, 2); }).join(' &times; ') + ' mm' : '')),
-        row('Allowance', f(B.envelope_mm, 2) + ' mm', 'a 5.3 mm cell with two layers of tape on each face &middot; ' + f(B.air_under_j7_mm, 2) + ' mm of air under J7'),
+        row('Allowance', f(B.envelope_mm, 2) + ' mm', 'a 5.3 mm cell with two layers of tape on each face &middot; ' + f(B.air_under_j7_mm, 2) + ' mm of air under the microSD socket'),
         row('Pocket', B.pocket_mm.map(function (v) { return f(v, 1); }).join(' &times; ') + ' mm', 'sunk ' + f(B.floor_t, 1) + ' mm into the lid&rsquo;s floor'),
         row('Hold-down', 'lip ' + f(R.lip_over_mm, 1) + ' mm', 'tape on the cell; the lid presses nothing'),
         row('Lead', f(LD.routed_length_mm, 1) + ' mm', 'pack edge to plug, centre exit'),

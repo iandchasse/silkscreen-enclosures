@@ -466,7 +466,7 @@ footer code { font-size: 12.5px; }
     }
   </style>
   <div class="mech-head">
-    <div class="refs"><span class="ref">SW9</span><span class="ref">SW8</span><span class="ref">SW3</span><span class="ref">SW2</span><span class="ref" id="keys-ref-part">TS365ZJ</span><span class="ref" id="keys-ref-crank">crank-T</span></div>
+    <div class="refs"><span class="ref">Back SW9</span><span class="ref">OK SW8</span><span class="ref">Left SW3</span><span class="ref">Right SW2</span><span class="ref" id="keys-ref-part">TS365ZJ</span><span class="ref" id="keys-ref-crank">crank-T</span></div>
     <h2>Bottom keys: a straight key over a bell crank</h2>
     <p class="thesis">The four keys under the page work switches that sit on the board&rsquo;s bottom edge and push sideways. Each key slides straight down in the chin onto the crowned pad of a small bell crank; the crank turns on a length of 1.75&nbsp;mm filament, and its crowned nose pushes the switch&rsquo;s plunger in.</p>
   </div>
@@ -479,7 +479,7 @@ footer code { font-size: 12.5px; }
 
   <figure>
     <div class="dwg-host" id="keys-dwg"></div>
-    <figcaption id="keys-cap">Cut through SW8&rsquo;s centre.</figcaption>
+    <figcaption id="keys-cap">Cut through the centre of the OK key (SW8).</figcaption>
   </figure>
 
   <div class="keys-ctl">
@@ -548,7 +548,7 @@ footer code { font-size: 12.5px; }
   <p class="note">These are design numbers. The parts are still going through independent checks, so details may change before they are printed.</p>
   <div class="btns">
     <button class="btn show3d" type="button" data-show="keys">Show in 3D</button>
-    <span class="keys-hint">The stage cuts through SW8 and follows this drawing while the card is open.</span>
+    <span class="keys-hint">The stage cuts through the OK key (SW8) and follows this drawing while the card is open.</span>
   </div>
 </article>
 <!-- card strip -->
@@ -591,14 +591,14 @@ footer code { font-size: 12.5px; }
     [data-card="strip"] details[open] > summary { margin-bottom: 8px; }
   </style>
   <div class="mech-head">
-    <div class="refs"><span class="ref">J3</span><span class="ref">D1&ndash;D12</span><span class="ref">D13 D14</span></div>
+    <div class="refs"><span class="ref">frontlight J3</span><span class="ref">LEDs D1&ndash;D12</span><span class="ref">diodes D13 D14</span></div>
     <h2>Light strip</h2>
-    <p class="thesis">A flex circuit puts six warm/cool pairs of side-view LEDs along the panel&rsquo;s left edge and plugs into the board&rsquo;s frontlight connector, J3. The light grazes the page from under the bezel. One strip fits both readers; each case size has a light-strip build that makes room for it.</p>
+    <p class="thesis">A flex circuit puts six warm/cool pairs of side-view LEDs along the panel&rsquo;s left edge and plugs into the board&rsquo;s frontlight connector (J3). The light grazes the page from under the bezel. One strip fits both readers; each case size has a light-strip build that makes room for it.</p>
   </div>
   <div class="strip-tags">
     <span>12 &times; XL-4008 &middot; 6 warm 3000 K / 6 cool 6000&ndash;6500 K</span>
     <span>0.11 mm 2-layer flex &middot; black coverlay</span>
-    <span>plugs into J3 &middot; no firmware change</span>
+    <span>plugs into the frontlight connector &middot; no firmware change</span>
     <span class="warn">not built yet</span>
   </div>
 
@@ -679,11 +679,11 @@ footer code { font-size: 12.5px; }
         <h4>Electrical</h4>
         <dl class="strip-kv">
           <dt>Strings</dt><dd>2 &times; 6 LEDs + BAV70W, one lit at a time</dd>
-          <dt>Current</dt><dd>13.3 mA nominal, 13.9 mA max (R37 = 15 &Omega;)</dd>
+          <dt>Current</dt><dd>13.3 mA nominal, 13.9 mA max (set by the board&rsquo;s 15 &Omega; resistor R37)</dd>
           <dt>LED_SW</dt><dd>18.4 V typ &middot; 21.7 V worst (&minus;10 &deg;C, top bin)</dd>
           <dt>Ceiling</dt><dd>22 V design &middot; 24.25 V OVP min</dd>
           <dt>LED_MONIT</dt><dd>lit 1.4&ndash;2.4 V &middot; open &ge; 2.49 V (first second)</dd>
-          <dt>Connector</dt><dd>J3 FH34SRJ: 1 SW &middot; 2 C&minus; &middot; 5 SW &middot; 6 W&minus;</dd>
+          <dt>Connector</dt><dd>frontlight connector J3, FH34SRJ: 1 SW &middot; 2 C&minus; &middot; 5 SW &middot; 6 W&minus;</dd>
         </dl>
       </div>
       <div class="strip-box">
@@ -714,10 +714,10 @@ footer code { font-size: 12.5px; }
     <h2>Side keys: part of the lid</h2>
     <p class="thesis">Each side button is the lid&rsquo;s own side wall, cut free on three sides; from just before the pad it rises past the parting line into a slot in the tub. The lid prints back face down, so every key stands on the bed and no part of it is ever laid over air. The <span data-only="426">4.26&Prime; has five</span><span data-only="368">3.68&Prime; has three</span>.</p>
   </div>
-  <figure><div class="dwg-host" id="dw-sidekeys-side"></div><figcaption><span class="sidekeys-sref">SW1</span>&rsquo;s key from the side, cut through the middle of its wall (x = <span class="sidekeys-sx">63.6</span>): the bar in the lid&rsquo;s wall below the parting line, which bends at the hinge notch by its root, and the block that rises into the tub&rsquo;s slot. Its bottom is the lid&rsquo;s round, cut here partway up it.</figcaption></figure>
+  <figure><div class="dwg-host" id="dw-sidekeys-side"></div><figcaption>Side view of <span class="sidekeys-sref">the right lower page key (SW1)</span>, cut through the middle of its wall (x = <span class="sidekeys-sx">63.6</span>): the bar in the lid&rsquo;s wall below the parting line, which bends at the hinge notch by its root, and the block that rises into the tub&rsquo;s slot. Its bottom is the lid&rsquo;s round, cut here partway up it.</figcaption></figure>
   <div class="dwg-pair">
-    <figure><div class="dwg-host" id="dw-sidekeys-plan"></div><figcaption>Plan at plunger height (<span class="sidekeys-pref">SW10</span>, <span class="sidekeys-prole">power</span>): the key&rsquo;s block in the tub&rsquo;s slot, its nub through the sliver&rsquo;s window, and the switch.</figcaption></figure>
-    <figure><div class="dwg-host" id="dw-sidekeys-elev"></div><figcaption>Across <span class="sidekeys-pref">SW10</span>&rsquo;s key at the plunger. It stands on the lid&rsquo;s back face, where the lid prints: its bottom is the lid&rsquo;s round, on a 45&deg; foot. The pad&rsquo;s lower face and the nub&rsquo;s underside are 45&deg;, because in that print they are overhangs.</figcaption></figure>
+    <figure><div class="dwg-host" id="dw-sidekeys-plan"></div><figcaption>Plan at plunger height (<span class="sidekeys-pref">the power key (SW10)</span><span class="sidekeys-prole"></span>): the key&rsquo;s block in the tub&rsquo;s slot, its nub through the sliver&rsquo;s window, and the switch.</figcaption></figure>
+    <figure><div class="dwg-host" id="dw-sidekeys-elev"></div><figcaption>Across <span class="sidekeys-pref">the power key (SW10)</span> at the plunger. It stands on the lid&rsquo;s back face, where the lid prints: its bottom is the lid&rsquo;s round, on a 45&deg; foot. The pad&rsquo;s lower face and the nub&rsquo;s underside are 45&deg;, because in that print they are overhangs.</figcaption></figure>
   </div>
   <div class="sidekeys-which" role="group" aria-label="Which side key the 3D view presses">
     <span class="sidekeys-lab">Press in 3D</span>
@@ -760,11 +760,11 @@ footer code { font-size: 12.5px; }
     <figcaption><span class="leg"><span><i style="background:var(--mask)"></i>tub tongue in the lid&rsquo;s groove</span><span><i style="background:var(--copper)"></i>latch</span><span><i style="background:var(--ink-3)"></i>wall used by something else at the parting line</span></span> The parting line in plan, seen from the front.</figcaption></figure>
   <div class="dwg-pair">
     <figure><div class="dwg-host" id="dw-joint-tongue"></div><figcaption>Left wall at y = <span class="joint-at-tongue">10</span>: the tub&rsquo;s tongue down in the lid&rsquo;s groove, between the leg and the lip.</figcaption></figure>
-    <figure><div class="dwg-host" id="dw-joint-at-tab"></div><figcaption><span class="joint-tab-wall">Right</span> wall at y = <span class="joint-at-tab">99</span>, across <span class="joint-tab-ref">SW10</span>&rsquo;s side key where it flexes: the tub&rsquo;s whole wall stands over the key, which is the lid&rsquo;s wall below the parting line. The tongue runs down beside it.</figcaption></figure>
+    <figure><div class="dwg-host" id="dw-joint-at-tab"></div><figcaption><span class="joint-tab-wall">Right</span> wall at y = <span class="joint-at-tab">99</span>, across <span class="joint-tab-ref">the power key (SW10)</span> where it flexes: the tub&rsquo;s whole wall stands over the key, which is the lid&rsquo;s wall below the parting line. The tongue runs down beside it.</figcaption></figure>
   </div>
   <div class="dwg-pair">
     <figure><div class="dwg-host" id="dw-joint-top"></div><figcaption>Top wall at x = <span class="joint-at-top">20</span>: the tongue stays inside the wall, clear of the battery.</figcaption></figure>
-    <figure><div class="dwg-host" id="dw-joint-latch"></div><figcaption>A latch on the right wall, over <span class="joint-latch-ref">SW1</span>&rsquo;s key: the arm stands up past the parting line inside the tub&rsquo;s whole wall, and its barb sits in a pocket with solid wall behind it.</figcaption></figure>
+    <figure><div class="dwg-host" id="dw-joint-latch"></div><figcaption>A latch on the right wall, over <span class="joint-latch-ref">the right lower page key (SW1)</span>: the arm stands up past the parting line inside the tub&rsquo;s whole wall, and its barb sits in a pocket with solid wall behind it.</figcaption></figure>
   </div>
   <dl class="nums" id="joint-nums"></dl>
   <div class="body">
@@ -789,8 +789,8 @@ footer code { font-size: 12.5px; }
     <p class="thesis">A recess for the plug&rsquo;s overmold, whose floor is the tub itself: a <span data-k="cards.usb.usb.floor_t" data-d="1"></span> mm wall round the port, with a hole that only shows the port. There is no separate bezel part.</p>
   </div>
   <div class="dwg-pair">
-    <figure><div class="dwg-host" id="dw-usb-sec"></div><figcaption>Section through <span data-k="cards.usb.ref"></span>&rsquo;s centre line, with a typical plug (<span data-k="cards.usb.usb.typical" data-join=" &times; " data-d="1"></span> mm overmold). Tub above the parting line, lid below; the lid&rsquo;s block rises into the floor&rsquo;s notch under the hole.</figcaption></figure>
-    <figure><div class="dwg-host" id="dw-usb-plan"></div><figcaption>Plan at the port&rsquo;s centre height: the floor across <span data-k="cards.usb.ref"></span>&rsquo;s mouth, and <span class="usb-skey">SW1</span>&rsquo;s key root beside the divot.</figcaption></figure>
+    <figure><div class="dwg-host" id="dw-usb-sec"></div><figcaption>Section through the USB-C socket&rsquo;s centre line (<span data-k="cards.usb.ref"></span>), with a typical plug (<span data-k="cards.usb.usb.typical" data-join=" &times; " data-d="1"></span> mm overmold). Tub above the parting line, lid below; the lid&rsquo;s block rises into the floor&rsquo;s notch under the hole.</figcaption></figure>
+    <figure><div class="dwg-host" id="dw-usb-plan"></div><figcaption>Plan at the port&rsquo;s centre height: the floor across the socket&rsquo;s mouth, and the key root of <span class="usb-skey">the right lower page key (SW1)</span> beside the divot.</figcaption></figure>
   </div>
   <div class="scrub">
     <label for="usb-plug">Plug, typical overmold</label>
@@ -798,8 +798,8 @@ footer code { font-size: 12.5px; }
     <output id="usb-out" for="usb-plug">out 3.6 mm</output>
   </div>
   <div class="body">
-    <p>A mated plug&rsquo;s overmold sits <span data-k="cards.usb.usb.spare" data-d="2"></span> mm in front of the receptacle, so whatever surrounds the port can stand only that far in front of <span data-k="cards.usb.ref"></span>&rsquo;s mouth before it starts to hold a plug back. The case face is <span class="usb-depth">2.9</span> mm out, so the port is a recess &mdash; the divot &mdash; sized for typical cables (<strong><span data-k="cards.usb.usb.recess" data-join=" &times; " data-d="1"></span> mm</strong>), with a 45&deg; lead-in at the case face.</p>
-    <p><strong>Its floor is the tub.</strong> Rev F&ndash;H had a printed bezel that had to stay put on the connector by itself during assembly, and it would not stay on the dummy&rsquo;s J1. The catch is where the floor can go. The connector&rsquo;s mouth sits right at the panel&rsquo;s edge, and the panel passes there on its way in, so the tub can reach no closer than the panel&rsquo;s corridor, <span class="usb-corr">0.115</span> mm in front of the mouth. A <span data-k="cards.usb.usb.floor_t" data-d="1"></span> mm floor &mdash; about the thinnest wall a 0.4 mm nozzle lays as one line &mdash; puts its face <strong><span class="usb-face">0.61</span> mm</strong> in front of the mouth. A typical plug therefore seats to within about <strong><span class="usb-short">0.16</span> mm</strong> of full depth. Try your cables on the dummy.</p>
+    <p>A mated plug&rsquo;s overmold sits <span data-k="cards.usb.usb.spare" data-d="2"></span> mm in front of the receptacle, so whatever surrounds the port can stand only that far in front of the socket&rsquo;s mouth before it starts to hold a plug back. The case face is <span class="usb-depth">2.9</span> mm out, so the port is a recess &mdash; the divot &mdash; sized for typical cables (<strong><span data-k="cards.usb.usb.recess" data-join=" &times; " data-d="1"></span> mm</strong>), with a 45&deg; lead-in at the case face.</p>
+    <p><strong>Its floor is the tub.</strong> Rev F&ndash;H had a printed bezel that had to stay put on the connector by itself during assembly, and it would not stay on the dummy&rsquo;s USB-C socket. The catch is where the floor can go. The connector&rsquo;s mouth sits right at the panel&rsquo;s edge, and the panel passes there on its way in, so the tub can reach no closer than the panel&rsquo;s corridor, <span class="usb-corr">0.115</span> mm in front of the mouth. A <span data-k="cards.usb.usb.floor_t" data-d="1"></span> mm floor &mdash; about the thinnest wall a 0.4 mm nozzle lays as one line &mdash; puts its face <strong><span class="usb-face">0.61</span> mm</strong> in front of the mouth. A typical plug therefore seats to within about <strong><span class="usb-short">0.16</span> mm</strong> of full depth. Try your cables on the dummy.</p>
     <p>The hole in the floor is the connector&rsquo;s opening plus 0.1 mm a side, so the plug passes and nothing else of the board shows. Below the hole the floor is open to the parting line &mdash; a notch &mdash; because the tub prints face down and the hole&rsquo;s lower edge would otherwise be a bridge. A block on the lid rises into the notch and closes it, just in front of the connector&rsquo;s shell.</p>
   </div>
   <dl class="nums" id="usb-nums"></dl>
@@ -893,7 +893,7 @@ footer code { font-size: 12.5px; }
   <div class="body">
     <div data-only="426 std">
       <p>Per the drawing&rsquo;s side view, the ribbons leave at three heights. The touch ribbon is flush with the front surface, the frontlight tail is below it, and the EPD ribbon comes off the TFT glass lower still. Each folds over the glass edge on a <span data-k="cards.ribbons.ribbons.bend_r" data-d="2"></span> mm radius and turns in under the panel&rsquo;s bottom border. Then it drops through the slot&rsquo;s centre and turns along the back of the board, over clear board. The tub&rsquo;s pocket wall is open from the frontlight tail to the touch neck, full height, and the four keys sit clear.</p>
-      <p>The drawing&rsquo;s lengths reach their connectors with slack to spare, so you can plug the tails in with the panel already in the tub. <strong>One thing for the board:</strong> the drawing puts the main tail&rsquo;s centre <span class="ribbons-off-main">0.64</span> mm right of J2&rsquo;s centre, and the frontlight tail <span class="ribbons-off-light">0.54</span> mm right of J3&rsquo;s. The touch tail lands within <span class="ribbons-off-touch">0.06</span> mm of J4. The slack lets the tails skew in, but it&rsquo;s worth a look before another spin.</p>
+      <p>The drawing&rsquo;s lengths reach their connectors with slack to spare, so you can plug the tails in with the panel already in the tub. <strong>One thing for the board:</strong> the drawing puts the main tail&rsquo;s centre <span class="ribbons-off-main">0.64</span> mm right of the display connector&rsquo;s (J2&rsquo;s) centre, and the frontlight tail <span class="ribbons-off-light">0.54</span> mm right of the frontlight connector&rsquo;s (J3&rsquo;s). The touch tail lands within <span class="ribbons-off-touch">0.06</span> mm of the touch connector (J4). The slack lets the tails skew in, but it&rsquo;s worth a look before another spin.</p>
     </div>
     <div data-only="426 ls">
       <p>The FPC folds over the glass edge on a <span data-k="cards.ribbons.ribbons.bend_r" data-d="2"></span> mm radius, turns in under the panel&rsquo;s bottom border, drops through the slot&rsquo;s centre and turns along the back of the board, like the FT01C&rsquo;s main ribbon, whose tail it shares: its flat length is <span class="ribbons-len">24.0</span> mm and its tail&rsquo;s centre lands <span class="ribbons-off-main">0.64</span> mm right of <span data-k="cards.ribbons.ribbons.connectors.main.ref"></span>&rsquo;s centre. The slack lets it skew in.</p>
@@ -914,8 +914,8 @@ footer code { font-size: 12.5px; }
 <!-- card battery -->
 <article class="mech" data-card="battery" data-preset="battery">
   <div class="mech-head">
-    <div class="refs" data-only="426"><span class="ref">503035</span><span class="ref">J5</span><span class="ref">J7 microSD</span><span class="ref">lip + 2 snaps</span></div>
-    <div class="refs" data-only="368"><span class="ref"><span data-k="cards.battery.battery.capacity_mAh"></span> mAh</span><span class="ref">503035</span><span class="ref">in the lid</span><span class="ref">J5</span><span class="ref">lip + tape</span></div>
+    <div class="refs" data-only="426"><span class="ref">503035</span><span class="ref">battery J5</span><span class="ref">microSD J7</span><span class="ref">lip + 2 snaps</span></div>
+    <div class="refs" data-only="368"><span class="ref"><span data-k="cards.battery.battery.capacity_mAh"></span> mAh</span><span class="ref">503035</span><span class="ref">in the lid</span><span class="ref">battery J5</span><span class="ref">lip + tape</span></div>
     <h2 data-only="426">Battery: a slot it clicks into, and a way out for the card</h2>
     <h2 data-only="368">Battery: <span data-k="cards.battery.battery.capacity_mAh"></span> mAh in the lid, over the shallow patch of the board</h2>
     <p class="thesis" data-only="426">The cell sits in a slot on the back of the midplate, which stands up through the board&rsquo;s notch. A lip along its left edge and two snaps on its right hold it down, and spare lead winds on two cleats beside it. The slot&rsquo;s bottom stop is low enough that the microSD card, which ejects straight at the cell, can get out once the cell is swung aside.</p>
@@ -924,31 +924,31 @@ footer code { font-size: 12.5px; }
 
   <div data-only="426" class="bat-block">
     <figure><div class="dwg-host" id="dw-battery-lip"></div><figcaption>Across the cell at y = <span class="bat-lip-at">91.5</span>, through a right-hand snap: the lip over its left edge, the snap over its right, both <span data-k="cards.battery.battery.bay.lip.clear_of_back" data-d="1"></span> mm off its back.</figcaption></figure>
-    <figure><div class="dwg-host" id="dw-battery-fence"></div><figcaption>Plan at z = <span class="bat-fence-at">1.5</span> mm, just in front of the board&rsquo;s rear face: rails, the low stop and the cleats cut; the leads and plug (dashed) behind the board, the cleats&rsquo; caps and J7 beyond.</figcaption></figure>
-    <figure><div class="dwg-host" id="dw-battery-card"></div><figcaption>Section down the microSD card&rsquo;s centre line (x = <span class="bat-card-at">18.8</span> mm): J7, the card&rsquo;s way out, the low stop, the cell and the lid&rsquo;s springs.</figcaption></figure>
+    <figure><div class="dwg-host" id="dw-battery-fence"></div><figcaption>Plan at z = <span class="bat-fence-at">1.5</span> mm, just in front of the board&rsquo;s rear face: rails, the low stop and the cleats cut; the leads and plug (dashed) behind the board, the cleats&rsquo; caps and the microSD socket (J7) beyond.</figcaption></figure>
+    <figure><div class="dwg-host" id="dw-battery-card"></div><figcaption>Section down the microSD card&rsquo;s centre line (x = <span class="bat-card-at">18.8</span> mm): the microSD socket (J7), the card&rsquo;s way out, the low stop, the cell and the lid&rsquo;s springs.</figcaption></figure>
     <div class="body">
       <p><strong>The slot.</strong> The left rail stands off the midplate past the cell&rsquo;s back and turns in over its edge: a <strong>lip</strong> <span data-k="cards.battery.battery.bay.lip.over_cell" data-d="1"></span> mm over the cell, all along, <span data-k="cards.battery.battery.bay.lip.clear_of_back" data-d="1"></span> mm off its back. On the right, the two posts either side of the lead&rsquo;s exit are <strong>snaps</strong>: each ends in a 45&deg; barb <span data-k="cards.battery.battery.bay.snaps.over_cell" data-d="1"></span> mm over the cell&rsquo;s other edge, on a post thin enough to flex out of the way. Tuck the cell&rsquo;s left edge under the lip and press the right side down, and it clicks in; or, with the midplate out of the tub, slide it in from the midplate&rsquo;s top edge, where the lip is flared. Once the midplate is in, the tub&rsquo;s top wall closes the slot above the cell, and the lid&rsquo;s two springs press it lightly forward. Every lip&rsquo;s and barb&rsquo;s underside is 45&deg;, so the midplate still prints screen side down with no supports.</p>
-      <p><strong>The cleats.</strong> The first and last right-hand posts stand past the cell&rsquo;s back with caps along their length. A real pack&rsquo;s lead is longer than the run from its exit to J5, so wind the spare round the two cleats, <span class="bat-cleat-gap">18.7</span> mm apart, or over the cell&rsquo;s right edge, where the lid&rsquo;s springs don&rsquo;t reach. They are on the midplate, not the lid, so the lead stays put when the lid comes off.</p>
-      <p><strong>The microSD card.</strong> J7 is a push-push socket on the back of the board whose mouth faces the cell&rsquo;s bottom edge from <span class="bat-mouth">3.4</span> mm away, so the cell has to move before a card can come out. The bottom stop is only <span data-k="cards.battery.battery.bay_p.stop_h" data-d="0"></span> mm tall and sits in front of the board&rsquo;s rear face, clear of where the card travels. With the lid off, unwind the lead from the cleats, lift the cell&rsquo;s right side past its two snaps and swing it out from under the lip (it stays on its lead), push the card, and it ejects and pulls free.</p>
+      <p><strong>The cleats.</strong> The first and last right-hand posts stand past the cell&rsquo;s back with caps along their length. A real pack&rsquo;s lead is longer than the run from its exit to the battery connector (J5), so wind the spare round the two cleats, <span class="bat-cleat-gap">18.7</span> mm apart, or over the cell&rsquo;s right edge, where the lid&rsquo;s springs don&rsquo;t reach. They are on the midplate, not the lid, so the lead stays put when the lid comes off.</p>
+      <p><strong>The microSD card.</strong> The card socket (J7) is a push-push socket on the back of the board whose mouth faces the cell&rsquo;s bottom edge from <span class="bat-mouth">3.4</span> mm away, so the cell has to move before a card can come out. The bottom stop is only <span data-k="cards.battery.battery.bay_p.stop_h" data-d="0"></span> mm tall and sits in front of the board&rsquo;s rear face, clear of where the card travels. With the lid off, unwind the lead from the cleats, lift the cell&rsquo;s right side past its two snaps and swing it out from under the lip (it stays on its lead), push the card, and it ejects and pulls free.</p>
       <p>The pack is the site&rsquo;s 503035 model (cell, wrap and protection board), <span class="bat-dims">37.20 &times; 31.10 &times; 5.18</span> mm. Measure the real pack before printing: the lip and snaps sit <span data-k="cards.battery.battery.bay.lip.clear_of_back" data-d="1"></span> mm off the model&rsquo;s back face, so a pack much thicker than 5.2 mm will not go under them.</p>
     </div>
   </div>
 
   <div data-only="368" class="bat-block">
     <figure><div class="map-wrap" id="battery-map"></div>
-      <figcaption><span class="leg" id="battery-map-leg"></span> The board&rsquo;s back as seen from behind the case: the tallest part over each millimetre. Dashed: the battery bay. Red: the lead to J5. Hatched: the ESP32&rsquo;s antenna end.</figcaption></figure>
+      <figcaption><span class="leg" id="battery-map-leg"></span> The board&rsquo;s back as seen from behind the case: the tallest part over each millimetre. Dashed: the battery bay. Red: the lead to the battery connector. Hatched: the ESP32&rsquo;s antenna end.</figcaption></figure>
     <div class="dwg-pair">
-      <figure><div class="dwg-host" id="dw-battery-bay"></div><figcaption>Down the middle of the cell (x = <span class="bat-bay-at">22.53</span>), through J7: the board&rsquo;s shallow parts, <span data-k="cards.battery.battery.clearance_mm" data-d="1"></span> mm of air, the cell in its pocket and <span data-k="cards.battery.battery.floor_t" data-d="1"></span> mm of floor under it.</figcaption></figure>
-      <figure><div class="dwg-host" id="dw-battery-plan"></div><figcaption>Plan at the cell&rsquo;s mid-thickness (z = <span class="bat-plan-at">-4.2</span>), seen from the front: the lip at the bottom edge, the end stop, and the lead to J5 (dashed: beyond the cut).</figcaption></figure>
+      <figure><div class="dwg-host" id="dw-battery-bay"></div><figcaption>Down the middle of the cell (x = <span class="bat-bay-at">22.53</span>), through the microSD socket: the board&rsquo;s shallow parts, <span data-k="cards.battery.battery.clearance_mm" data-d="1"></span> mm of air, the cell in its pocket and <span data-k="cards.battery.battery.floor_t" data-d="1"></span> mm of floor under it.</figcaption></figure>
+      <figure><div class="dwg-host" id="dw-battery-plan"></div><figcaption>Plan at the cell&rsquo;s mid-thickness (z = <span class="bat-plan-at">-4.2</span>), seen from the front: the lip at the bottom edge, the end stop, and the lead to the battery connector (dashed: beyond the cut).</figcaption></figure>
     </div>
     <div class="body">
-      <p><strong>Why here.</strong> Behind the board only five things are deep: <span class="bat-deep">J5 4.9 mm</span>. Under the bay the deepest part is the microSD socket J7 (<span data-k="cards.battery.battery.deepest_under_mm" data-d="2"></span> mm). The bay runs up past the board&rsquo;s trimmed edge next to J5, so the lead is a short run to the plug. Its bottom-left corner comes within <span data-k="cards.battery.battery.antenna_gap_mm" data-d="2"></span> mm of the antenna end&rsquo;s inner corner (hatched): not over it, but close, so check Wi-Fi range on the first build.</p>
+      <p><strong>Why here.</strong> Behind the board only five things are deep: <span class="bat-deep">battery J5 4.9 mm</span>. Under the bay the deepest part is the microSD socket J7 (<span data-k="cards.battery.battery.deepest_under_mm" data-d="2"></span> mm). The bay runs up past the board&rsquo;s trimmed edge next to the battery connector, so the lead is a short run to the plug. Its bottom-left corner comes within <span data-k="cards.battery.battery.antenna_gap_mm" data-d="2"></span> mm of the antenna end&rsquo;s inner corner (hatched): not over it, but close, so check Wi-Fi range on the first build.</p>
       <p><strong>Retention.</strong> The pack&rsquo;s bottom edge tucks under a lip that reaches <span data-k="cards.battery.battery.retention.lip_over_mm" data-d="1"></span> mm over it, and the cell is taped down; nothing on the lid presses it (there were two hooks until 2026-10-19: they pressed the cell and its lead). Push the pack to the right, and down only until it stops under the lip. A low wall across the top end stops it sliding out from under the lip, which keeps at least <span data-k="cards.battery.battery.retention.end_stop.lip_engagement_min" data-d="1"></span> mm over it. The pocket takes a cell up to <span data-k="cards.battery.battery.envelope_mm" data-d="2"></span> mm thick (the datasheet&rsquo;s 5.3 mm and two layers of tape on each face) and leaves <span data-k="cards.battery.battery.air_under_j7_mm" data-d="2"></span> mm of air under J7 as printed.</p>
       <p><strong>Lead.</strong> <span id="battery-lead"></span></p>
-      <p><strong>Service.</strong> For the microSD card or the battery: screws out, lift the lid from the bottom edge and fold it back toward the top, unplug J5. The pack stays in the lid; peel its tape to take it out.</p>
+      <p><strong>Service.</strong> For the microSD card or the battery: screws out, lift the lid from the bottom edge and fold it back toward the top, unplug the battery. The pack stays in the lid; peel its tape to take it out.</p>
     </div>
     <div class="tbl-wrap"><table class="forces" id="battery-cells"><thead><tr><th>Cell and layout</th><th>Capacity</th><th>Case</th><th>Notes</th></tr></thead><tbody></tbody></table></div>
-    <p class="note">The layouts a search over the board&rsquo;s back found, from the project README: <b>only the 503035 fits behind the board</b> with its lead end within reach of J5. It must measure <span data-k="cards.battery.battery.allowance_mm" data-d="1"></span> mm or less, and check its polarity against J5 before connecting: PH2.0 packs are not all wired the same way.</p>
+    <p class="note">The layouts a search over the board&rsquo;s back found, from the project README: <b>only the 503035 fits behind the board</b> with its lead end within reach of the battery connector (J5). It must measure <span data-k="cards.battery.battery.allowance_mm" data-d="1"></span> mm or less, and check its polarity against the board's connector before connecting: PH2.0 packs are not all wired the same way.</p>
   </div>
 
   <dl class="nums" id="battery-nums"></dl>
@@ -980,7 +980,7 @@ footer code { font-size: 12.5px; }
   <div class="mech-head">
     <div class="refs"><span class="ref">cut at KiCad y <span data-k="cards.boardprep.trim_kicad_y" data-d="2"></span></span><span class="ref">fit <span data-k="cards.boardprep.fit" data-join=" + "></span></span><span class="ref">remove <span data-k="cards.boardprep.remove" data-join=" + "></span></span><span class="ref">leave off <span data-k="cards.boardprep.leave_off"></span></span></div>
     <h2>Board prep: one cut, four resistors, one switch left off</h2>
-    <p class="thesis">The 3.68&Prime; case is shorter than the board. Before anything goes in, the board&rsquo;s upper extension is cut off, power moves to <span data-k="cards.boardprep.power_key"></span>, and <span data-k="cards.boardprep.leave_off"></span> is left off so a post can stand in its place.</p>
+    <p class="thesis">The 3.68&Prime; case is shorter than the board. Before anything goes in, the board&rsquo;s upper extension is cut off, power moves to the left upper page key (<span data-k="cards.boardprep.power_key"></span>), and the left lower page key (<span data-k="cards.boardprep.leave_off"></span>) is left off so a post can stand in its place.</p>
   </div>
   <figure><div class="map-wrap" id="boardprep-plan"></div>
     <figcaption>The board from the front, as it goes into the case. Solid: what stays; hatched: the upper extension that is cut off, with the parts that go with it.</figcaption></figure>
@@ -1017,7 +1017,7 @@ footer code { font-size: 12.5px; }
   <div class="btns"><button class="btn ghost" type="button" id="zstack-other" aria-pressed="false">Put the other size beside it</button><span class="state" id="zstack-state"></span></div>
   <dl class="nums" id="zstack-nums"></dl>
   <div class="body" data-only="426">
-    <p><strong>Behind the board.</strong> The board&rsquo;s rear-side parts are the biggest single item: <strong>J6&rsquo;s header</strong> reaches <span class="zs-rear">5.17</span> mm below the board, with J5 and the side switches close behind. Lowering J6 alone would save little; a real cut needs lower parts for all three, or a board with the battery connector and header beside the cell.</p>
+    <p><strong>Behind the board.</strong> The board&rsquo;s rear-side parts are the biggest single item: <strong>the expansion (dev) header (J6)</strong> reaches <span class="zs-rear">5.17</span> mm below the board, with the battery connector (J5) and the side switches close behind. Lowering the header alone would save little; a real cut needs lower parts for all three, or a board with the battery connector and header beside the cell.</p>
     <p><strong>The battery</strong> does not add to the stack: its slot on the midplate stands up through the board&rsquo;s notch, so the cell sits level with the parts behind the board (the bar drawn beside the stack).</p>
   </div>
   <div class="body" data-only="368">
@@ -1045,15 +1045,15 @@ footer code { font-size: 12.5px; }
     <p class="thesis">The tongue and the latches line the halves up and hold them. The board is the datum the keys and buttons work from, so it clips onto the midplate at <span class="cl-nposts">three</span> points before the lid is anywhere near it. <span class="cl-nscrews-cap">Three</span> screws then close the case<span data-not="cl">, and the lid&rsquo;s rim closes over the small printed gate in the chin&rsquo;s left wall that holds the bottom keys&rsquo; rod</span>.</p>
   </div>
   <div class="dwg-pair">
-    <figure><div class="dwg-host" id="dw-closing-clamp"></div><figcaption><span data-only="426"><span class="cl-clamp-ref">H3</span> clamp: lid boss, board, tub boss. <span class="cl-other-clamp">H4</span> is the same.</span><span data-only="368">The bottom-left screw: through a post in the lid into the solid block in the chin&rsquo;s corner, below the rod. The bottom-right one is its mirror image.</span></figcaption></figure>
-    <figure><div class="dwg-host" id="dw-closing-pin"></div><figcaption><span class="cl-pin-ref">H2</span>: the midplate&rsquo;s snap post through the board, its barb in the lid post&rsquo;s bore. <span class="cl-pin-others">H1 and H6 are the same.</span></figcaption></figure>
+    <figure><div class="dwg-host" id="dw-closing-clamp"></div><figcaption><span data-only="426">The bottom screw at mounting hole <span class="cl-clamp-ref">H3</span> clamps lid boss, board and tub boss. The one at <span class="cl-other-clamp">H4</span> is the same.</span><span data-only="368">The bottom-left screw: through a post in the lid into the solid block in the chin&rsquo;s corner, below the rod. The bottom-right one is its mirror image.</span></figcaption></figure>
+    <figure><div class="dwg-host" id="dw-closing-pin"></div><figcaption>Mounting hole <span class="cl-pin-ref">H2</span>: the midplate&rsquo;s snap post through the board, its barb in the lid post&rsquo;s bore. <span class="cl-pin-others">H1 and H6 are the same.</span></figcaption></figure>
   </div>
-  <figure><div class="dwg-host" id="dw-closing-top"></div><figcaption>Top screw at x = <span class="cl-top-x">40.2</span>: lid straight into the tub<span data-only="426">, between the battery&rsquo;s corner and J6</span><span data-only="368">, in the top-right corner, its boss merged into the right wall beside the panel</span>.<span data-only="368"> The top-left screw is built the same way, in the corner above the power key.</span></figcaption></figure>
+  <figure><div class="dwg-host" id="dw-closing-top"></div><figcaption>Top screw at x = <span class="cl-top-x">40.2</span>: lid straight into the tub<span data-only="426">, between the battery&rsquo;s corner and the expansion (dev) header (J6)</span><span data-only="368">, in the top-right corner, its boss merged into the right wall beside the panel</span>.<span data-only="368"> The top-left screw is built the same way, in the corner above the power key.</span></figcaption></figure>
   <dl class="nums" id="closing-nums"></dl>
   <div class="body">
-    <p><strong>The screws.</strong> All <span class="cl-nscrews">three</span> are <span class="cl-screws">M2 &times; 10 socket head caps (ISO 4762)</span>. They thread-form into their pilots<span class="cl-pilot"></span>, and their heads sit in counterbores<span class="cl-cb"></span>. <span data-only="426">The bottom pair, <span class="cl-clamp-pair">H3 and H4</span>, clamp the board between a lid boss and a tub boss.</span><span data-only="368">The bottom pair sit in the chin&rsquo;s corners, below the rod, each through a post in the lid into a block of the tub that is solid from the parting plane to the pilot&rsquo;s end; the top pair stand in the top corners. None goes through the board: the lid&rsquo;s posts at <span class="cl-pinned">H3 and H4</span> carry a pin into the board&rsquo;s hole instead, the board&rsquo;s X/Y stop at its bottom edge.</span></p>
-    <p><strong>The board clips on first.</strong> The midplate carries a <strong>snap post through <span class="cl-posts">H1, H2 and H6</span></strong>. Each is a <span data-k="cards.closing.board_snap.post_d" data-d="2"></span> mm post in the board&rsquo;s <span data-k="cards.closing.board_snap.hole_d" data-d="1"></span> mm hole, split by one slot into two fingers <span data-k="cards.closing.board_snap.finger_mm" data-d="2"></span> mm long, with a barb that squeezes <span data-k="cards.closing.board_snap.squeeze_mm" data-d="2"></span> mm to pass and catches the rear face just below it: about <span data-k="cards.closing.board_snap.push_on_N_each" data-d="1"></span> N each to press the board on and <span data-k="cards.closing.board_snap.pull_off_N_each" data-d="0"></span> N to take it off, in PLA, at <span data-k="cards.closing.board_snap.root_strain_pct" data-d="2"></span> % strain in the fingers.</p>
-    <p>It <strong>captures, it does not clamp</strong>. The barb&rsquo;s retaining face sits <span data-k="cards.closing.board_snap.board_z_play_mm" data-d="2"></span> mm under the board&rsquo;s rear face, so once the lid is on, the board sits on the lid&rsquo;s posts and the barbs go slack. That matters: the midplate floats with the panel&rsquo;s thickness, and anything that clamped the board to it would bow the board or crush the glass. H5 keeps its locating pin and sets X and Y at the top end.<span data-only="368"> H1 went with the board&rsquo;s cut, so a post in SW5&rsquo;s empty site carries the board&rsquo;s top-left corner instead.</span></p>
+    <p><strong>The screws.</strong> All <span class="cl-nscrews">three</span> are <span class="cl-screws">M2 &times; 10 socket head caps (ISO 4762)</span>. They thread-form into their pilots<span class="cl-pilot"></span>, and their heads sit in counterbores<span class="cl-cb"></span>. <span data-only="426">The bottom pair, at mounting holes <span class="cl-clamp-pair">H3 and H4</span>, clamp the board between a lid boss and a tub boss.</span><span data-only="368">The bottom pair sit in the chin&rsquo;s corners, below the rod, each through a post in the lid into a block of the tub that is solid from the parting plane to the pilot&rsquo;s end; the top pair stand in the top corners. None goes through the board: the lid&rsquo;s posts at <span class="cl-pinned">H3 and H4</span> carry a pin into the board&rsquo;s hole instead, the board&rsquo;s X/Y stop at its bottom edge.</span></p>
+    <p><strong>The board clips on first.</strong> The midplate carries a <strong>snap post through mounting holes <span class="cl-posts">H1, H2 and H6</span></strong>. Each is a <span data-k="cards.closing.board_snap.post_d" data-d="2"></span> mm post in the board&rsquo;s <span data-k="cards.closing.board_snap.hole_d" data-d="1"></span> mm hole, split by one slot into two fingers <span data-k="cards.closing.board_snap.finger_mm" data-d="2"></span> mm long, with a barb that squeezes <span data-k="cards.closing.board_snap.squeeze_mm" data-d="2"></span> mm to pass and catches the rear face just below it: about <span data-k="cards.closing.board_snap.push_on_N_each" data-d="1"></span> N each to press the board on and <span data-k="cards.closing.board_snap.pull_off_N_each" data-d="0"></span> N to take it off, in PLA, at <span data-k="cards.closing.board_snap.root_strain_pct" data-d="2"></span> % strain in the fingers.</p>
+    <p>It <strong>captures, it does not clamp</strong>. The barb&rsquo;s retaining face sits <span data-k="cards.closing.board_snap.board_z_play_mm" data-d="2"></span> mm under the board&rsquo;s rear face, so once the lid is on, the board sits on the lid&rsquo;s posts and the barbs go slack. That matters: the midplate floats with the panel&rsquo;s thickness, and anything that clamped the board to it would bow the board or crush the glass. Mounting hole H5 keeps its locating pin and sets X and Y at the top end.<span data-only="368"> Mounting hole H1 went with the board&rsquo;s cut, so a post in the empty site of the left lower page key (SW5) carries the board&rsquo;s top-left corner instead.</span></p>
     <p data-not="cl"><strong>The rod&rsquo;s gate.</strong> The bottom keys&rsquo; cranks turn on a <span data-k="keys.rod.cut" data-d="2"></span> mm length of <span data-k="keys.rod.d" data-d="2"></span> mm filament, pushed in along a channel in a slot in the chin&rsquo;s left wall and through a <span data-k="keys.rod.hole_d" data-d="1"></span> mm hole. A small printed gate then drops into that slot from the open back: its flange sits behind two lips of the wall, its bevel pushes the rod the last 1.75 mm home, and its flat inner face stops the rod&rsquo;s square tail, so the rod has <span data-k="cards.keys.end_play" data-d="1" data-join="&ndash;"></span> mm of end play and cannot walk out. The lid&rsquo;s rim closes <span data-k="cards.closing.gate.top_clr" data-d="2"></span> mm over the gate&rsquo;s top. A straightened paperclip in its <span data-k="cards.closing.gate.pull_d" data-d="1"></span> mm pull hole lifts it out, and the rod then pushes out to the left; that is how the cranks come out again. No screw.</p>
   </div>
   <div class="btns">
@@ -1123,7 +1123,7 @@ footer code { font-size: 12.5px; }
   <ol class="steps assembly-steps" id="assembly-steps"></ol>
   <p class="assembly-hint" id="assembly-hint">Tap a step to see it on the stage. Play runs the parts in from behind, and the step on the stage is marked here as it goes.</p>
   <p class="note" data-only="426" data-not="cl"><b>Keys before the cranks.</b> At rest height the keys block the cranks&rsquo; way in, so the keys go in first, then the cranks drop in behind them, and the rod slides through from the &minus;X wall; the printed gate then drops into its slot and cams the rod home.</p>
-  <p class="note" data-only="368"><b>Keys before the cranks,</b> as on the 4.26: at rest height the keys block the cranks&rsquo; way in. The cell rides in the lid, so the lid is stood up by the top edge to plug the lead into J5 and then folds down like a book.</p>
+  <p class="note" data-only="368"><b>Keys before the cranks,</b> as on the 4.26: at rest height the keys block the cranks&rsquo; way in. The cell rides in the lid, so the lid is stood up by the top edge to plug the lead into the battery connector (J5) and then folds down like a book.</p>
   <div class="btns">
     <button class="btn show3d" type="button" data-play="1" id="assembly-play">Play it in 3D</button>
     <button class="btn ghost show3d" type="button" data-show="assembly">Show the order in 3D</button>
@@ -1246,7 +1246,7 @@ footer code { font-size: 12.5px; }
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toast-text"></span><button type="button" id="toast-undo" hidden>Undo</button></div>
 
-<script>window.SC_BOOT={"generated":"2026-10-21T19:28:32","manifest":{"schema":"sc/1","generated":"2026-10-21T19:28:32","title":"Silkscreen case","defaults":{"size":"426","build":"std","variant":"T"},"sizes":{"426":{"label":"4.26\"","build_diff":"tub differs","builds":["std","ls","cl","lc"],"build_diff_by":{"cl":"tub + lid differ, no bottom keys","lc":"tub + lid differ, light strip, no bottom keys"},"side_keys":5,"project":"silkscreen-enclosures/enclosures/case-426","adapter_generated":"2026-10-21T19:28:32","zip":"silkscreen-case-4.26.zip","zip_bytes":11559681,"display_nodes":{"std":["panel_epd","panel_light","panel_touch","ribbon_light","ribbon_main","ribbon_touch","ribbon_touch_ic"],"ls":["panel_epd","ribbon_main"],"cl":["panel_epd","panel_light","panel_touch","ribbon_light","ribbon_main","ribbon_touch","ribbon_touch_ic"],"lc":["panel_epd","ribbon_main"]},"panel":{"std":"FT01C touch + frontlight","ls":"GDEY0426T82 (plain)","cl":"FT01C touch + frontlight","lc":"GDEY0426T82 (plain)"}},"368":{"label":"3.68\"","build_diff":"tub + 4 keys differ","builds":["std","ls"],"side_keys":3,"project":"silkscreen-enclosures/enclosures/case-368","adapter_generated":"2026-10-21T19:26:53","zip":"silkscreen-case-3.68.zip","zip_bytes":6197864,"display_nodes":{"std":["panel_epd","ribbon_main"],"ls":["panel_epd","ribbon_main"]},"panel":{"std":"3.68&#x2033; EPD (bare)","ls":"3.68&#x2033; EPD + light strip"}}},"builds":{"std":{"label":"Standard","dir":"standard","tokens":["std"]},"ls":{"label":"Light strip","dir":"light-strip","note":"in development, not released","tokens":["ls"]},"cl":{"label":"Chinless","dir":"chinless","note":"touch, no bottom keys","tokens":["cl","std"]},"lc":{"label":"Light-strip chinless","dir":"light-strip-chinless","note":"in development, not released; no touch, no bottom keys","tokens":["lc","ls","cl"]}},"variants":{"T":"crank-T + SHOU HAN TS365ZJ (every JLC board)","M":"crank-M + APEM MJTP1117 boards"},"groups":[{"id":"tub","label":"Tub","match":["tub"]},{"id":"keys","label":"Keys","match":["key_*"],"builds":["std","ls"]},{"id":"rod","label":"Rod + cranks","match":["rod","gate","crank_*"],"builds":["std","ls"]},{"id":"display","label":"Panel + ribbons","match":["panel_*","ribbon_*","screen"]},{"id":"midplate","label":"Midplate","match":["midplate"]},{"id":"pcba","label":"PCBA","match":["pcba_*","nub_*","swbody_*","sw_T_*"]},{"id":"battery","label":"Battery","match":["battery_*"]},{"id":"lid","label":"Lid + side keys","match":["lid","skey_*"]},{"id":"screws","label":"Screws","match":["screw_*"]},{"id":"strip","label":"Light strip","match":["strip_*"],"builds":["ls","lc"]},{"id":"dummy","label":"PCBA dummy","match":["dummy_pcba"],"off":true,"lazy":true},{"id":"compare","label":"X4 + retro case","match":["cmp_*"],"off":true,"lazy":true}],"cards":[{"id":"glance","order":10,"title":"At a glance","preset":"home"},{"id":"keys","order":20,"title":"Bottom keys: a straight key over a bell crank","preset":"keys","away_builds":{"cl":"std","lc":"ls"},"away_note":"The chinless builds have no bottom keys."},{"id":"strip","order":25,"title":"Light strip","preset":"strip","enter_build":"ls","home_builds":["ls","lc"]},{"id":"sidekeys","order":30,"title":"Side keys","preset":"tabs"},{"id":"joint","order":40,"title":"Tub to lid joint","preset":"joint"},{"id":"usb","order":50,"title":"USB-C","preset":"usb"},{"id":"reset","order":55,"title":"Reset","preset":"reset"},{"id":"screen","order":60,"title":"Screen stack","preset":"stack"},{"id":"detent","order":65,"title":"Stack detents","preset":"detent"},{"id":"ribbons","order":70,"title":"Display ribbons","preset":"ribbons"},{"id":"battery","order":80,"title":"Battery","preset":"battery"},{"id":"boardprep","order":85,"title":"Board prep","preset":"boardprep","sizes":["368"]},{"id":"zstack","order":90,"title":"Front to back","preset":"zstack"},{"id":"closing","order":100,"title":"Closing up","preset":"close"},{"id":"edges","order":110,"title":"Edges and logo","preset":"edges"},{"id":"compare","order":115,"title":"Next to the X4","preset":"compare"},{"id":"assembly","order":120,"title":"Assembly order","preset":"assembly"},{"id":"checks","order":130,"title":"What's been checked","preset":null},{"id":"files","order":140,"title":"Model files","preset":"dummy"}],"files":{"core-426.json":{"bytes":4945806,"kind":"core","sha1":"ff47a1385ae01dbaf223a94ab3626199fc843d6c","size":"426"},"extras-426.json":{"bytes":3745166,"kind":"extras","sha1":"b6abc2f9096953e4ea98acae7865576825925d4b","size":"426"},"models-426.js":{"bytes":15413026,"kind":"models","sha1":"9c66e881dbe8018c8409018e1d650aae294dd02e","size":"426"},"build-426-std.json":{"bytes":1194812,"kind":"build","sha1":"0f2e8e34e172307125dcb7efb9ec8b57d5e15f77","size":"426","build":"std"},"build-426-ls.json":{"bytes":1073035,"kind":"build","sha1":"4b3437950463f7d40c5d5d1c07a47b9d063c51cb","size":"426","build":"ls"},"build-426-cl.json":{"bytes":1289057,"kind":"build","sha1":"ac942417f52e239ee279397f33518bdbd6354832","size":"426","build":"cl"},"build-426-lc.json":{"bytes":1167261,"kind":"build","sha1":"7611fcba38b6fd659def758350b96796a1f8250b","size":"426","build":"lc"},"data-426-std.json":{"bytes":191706,"kind":"data","sha1":"cd23f6b45d6a2e8fb7ca3b74f3364f34a67b8300","size":"426","build":"std"},"data-426-ls.json":{"bytes":204105,"kind":"data","sha1":"6965caf8af6a5a7f1a21f25b890399b16db75773","size":"426","build":"ls"},"data-426-cl.json":{"bytes":140964,"kind":"data","sha1":"08a601179c6b3de91eccf98b875f5484175f041f","size":"426","build":"cl"},"data-426-lc.json":{"bytes":153710,"kind":"data","sha1":"08d37a7bba453a1a13a4fe6e95e03460767ee36b","size":"426","build":"lc"},"core-368.json":{"bytes":5134486,"kind":"core","sha1":"7f450fedbdd7a20ab797c94c189cc50dde3d751f","size":"368"},"extras-368.json":{"bytes":3660388,"kind":"extras","sha1":"e0d153bab126d78028611b4cc8f3f9c87c5efd18","size":"368"},"models-368.js":{"bytes":8263916,"kind":"models","sha1":"d72815f474dcfea59d94697d49a830d90a9fe1d2","size":"368"},"build-368-std.json":{"bytes":901013,"kind":"build","sha1":"d41ffe8b18c17374118d156ae5b6c72ba53002eb","size":"368","build":"std"},"build-368-ls.json":{"bytes":901400,"kind":"build","sha1":"96b2cd9ff7ba98265fe03aff1bc0dea246494de2","size":"368","build":"ls"},"data-368-std.json":{"bytes":195929,"kind":"data","sha1":"0fa3141473080aaf6cb5ebf70758a10850a4d9f0","size":"368","build":"std"},"data-368-ls.json":{"bytes":213163,"kind":"data","sha1":"8e415b838651be156e593a9b7535919fc8a86201","size":"368","build":"ls"},"strip.json":{"bytes":33678,"kind":"asset","sha1":"637561a40d2d05d72f1fb7cafa6cd8c5d3b6f311"},"optics_heatmaps.png":{"bytes":222273,"kind":"asset","sha1":"5a108553e61a2c3006b07f00c5bd4b3752b5bf41"}},"load":{"426":{"core":"core-426.json","extras":"extras-426.json","models":"models-426.js","build":{"std":"build-426-std.json","ls":"build-426-ls.json","cl":"build-426-cl.json","lc":"build-426-lc.json"},"data":{"std":"data-426-std.json","ls":"data-426-ls.json","cl":"data-426-cl.json","lc":"data-426-lc.json"}},"368":{"core":"core-368.json","extras":"extras-368.json","models":"models-368.js","build":{"std":"build-368-std.json","ls":"build-368-ls.json"},"data":{"std":"data-368-std.json","ls":"data-368-ls.json"}}},"nodes":{"426":{"core":["battery_cell","battery_leads","battery_plug","crank_M","crank_T","gate","key_SW2","key_SW3","key_SW8","key_SW9","lid","midplate","nub_SW1","nub_SW10","nub_SW11","nub_SW2","nub_SW3","nub_SW4","nub_SW5","nub_SW7","nub_SW8","nub_SW9","pcba_connector","pcba_header","pcba_ic","pcba_module","pcba_passive","pcba_pcb","pcba_switch","pcba_usb","rod","screw_H3","screw_H4","screw_top","skey_SW1","skey_SW10","skey_SW4","skey_SW5","skey_SW7","sw_T_body","sw_T_nub","swbody_SW2","swbody_SW3","swbody_SW8","swbody_SW9"],"extras":["cmp_retro_back_lower","cmp_retro_back_upper","cmp_retro_frame","cmp_x4","dummy_pcba"],"build":{"std":["panel_epd","panel_light","panel_touch","ribbon_light","ribbon_main","ribbon_touch","ribbon_touch_ic","tub"],"ls":["panel_epd","ribbon_main","tub"],"cl":["lid","panel_epd","panel_light","panel_touch","ribbon_light","ribbon_main","ribbon_touch","ribbon_touch_ic","tub"],"lc":["lid","panel_epd","ribbon_main","tub"]},"absent":{"cl":["crank_M","crank_T","gate","key_SW2","key_SW3","key_SW8","key_SW9","nub_SW2","nub_SW3","nub_SW8","nub_SW9","rod","sw_T_body","sw_T_nub","swbody_SW2","swbody_SW3","swbody_SW8","swbody_SW9"],"lc":["crank_M","crank_T","gate","key_SW2","key_SW3","key_SW8","key_SW9","nub_SW2","nub_SW3","nub_SW8","nub_SW9","rod","sw_T_body","sw_T_nub","swbody_SW2","swbody_SW3","swbody_SW8","swbody_SW9"]}},"368":{"core":["battery_cell","battery_leads","battery_pcm","battery_plug","crank_M","crank_T","gate","lid","midplate","nub_SW1","nub_SW11","nub_SW2","nub_SW3","nub_SW4","nub_SW7","nub_SW8","nub_SW9","panel_epd","pcba_connector","pcba_ic","pcba_module","pcba_passive","pcba_pcb","pcba_switch","pcba_usb","ribbon_main","rod","screw_bottom_left","screw_bottom_right","screw_top","screw_top_left","skey_SW1","skey_SW4","skey_SW7","sw_T_body","sw_T_nub","swbody_SW2","swbody_SW3","swbody_SW8","swbody_SW9"],"extras":["cmp_retro_back_lower","cmp_retro_back_upper","cmp_retro_frame","cmp_x4","dummy_pcba"],"build":{"std":["key_SW2","key_SW3","key_SW8","key_SW9","tub"],"ls":["key_SW2","key_SW3","key_SW8","key_SW9","tub"]}}},"parts":{"426":{"shared":["coupon-chin","coupon-gate","crank-M","crank-T","crank_SW2","crank_SW3","crank_SW8","crank_SW9","gate","key-426","key_SW2","key_SW3","key_SW8","key_SW9","lid","lid_body","midplate","skey_SW1","skey_SW10","skey_SW4","skey_SW5","skey_SW7"],"per_build":["tub"]},"368":{"shared":["crank-M","crank-T","crank_SW2","crank_SW3","crank_SW8","crank_SW9","gate","lid","lid_body","midplate","skey_SW1","skey_SW4","skey_SW7"],"per_build":["key_SW2","key_SW3","key_SW8","key_SW9","tub"]}},"assets":{"strip":"strip.json","optics":"optics_heatmaps.png"},"first_paint_bytes":{"426":{"std":6332324,"ls":6222946,"cl":6375827,"lc":6266777},"368":{"std":6231428,"ls":6249049}}}};</script>
+<script>window.SC_BOOT={"generated":"2026-10-21T23:16:10","manifest":{"schema":"sc/1","generated":"2026-10-21T23:16:10","title":"Silkscreen case","defaults":{"size":"426","build":"std","variant":"T"},"sizes":{"426":{"label":"4.26\"","build_diff":"tub differs","builds":["std","ls","cl","lc"],"build_diff_by":{"cl":"tub + lid differ, no bottom keys","lc":"tub + lid differ, light strip, no bottom keys"},"side_keys":5,"project":"silkscreen-enclosures/enclosures/case-426","adapter_generated":"2026-10-21T23:16:10","zip":"silkscreen-case-4.26.zip","zip_bytes":11559706,"display_nodes":{"std":["panel_epd","panel_light","panel_touch","ribbon_light","ribbon_main","ribbon_touch","ribbon_touch_ic"],"ls":["panel_epd","ribbon_main"],"cl":["panel_epd","panel_light","panel_touch","ribbon_light","ribbon_main","ribbon_touch","ribbon_touch_ic"],"lc":["panel_epd","ribbon_main"]},"panel":{"std":"FT01C touch + frontlight","ls":"GDEY0426T82 (plain)","cl":"FT01C touch + frontlight","lc":"GDEY0426T82 (plain)"}},"368":{"label":"3.68\"","build_diff":"tub + 4 keys differ","builds":["std","ls"],"side_keys":3,"project":"silkscreen-enclosures/enclosures/case-368","adapter_generated":"2026-10-21T23:13:12","zip":"silkscreen-case-3.68.zip","zip_bytes":6197858,"display_nodes":{"std":["panel_epd","ribbon_main"],"ls":["panel_epd","ribbon_main"]},"panel":{"std":"3.68&#x2033; EPD (bare)","ls":"3.68&#x2033; EPD + light strip"}}},"builds":{"std":{"label":"Standard","dir":"standard","tokens":["std"]},"ls":{"label":"Light strip","dir":"light-strip","note":"in development, not released","tokens":["ls"]},"cl":{"label":"Chinless","dir":"chinless","note":"touch, no bottom keys","tokens":["cl","std"]},"lc":{"label":"Light-strip chinless","dir":"light-strip-chinless","note":"in development, not released; no touch, no bottom keys","tokens":["lc","ls","cl"]}},"variants":{"T":"crank-T + SHOU HAN TS365ZJ (every JLC board)","M":"crank-M + APEM MJTP1117 boards"},"groups":[{"id":"tub","label":"Tub","match":["tub"]},{"id":"keys","label":"Keys","match":["key_*"],"builds":["std","ls"]},{"id":"rod","label":"Rod + cranks","match":["rod","gate","crank_*"],"builds":["std","ls"]},{"id":"display","label":"Panel + ribbons","match":["panel_*","ribbon_*","screen"]},{"id":"midplate","label":"Midplate","match":["midplate"]},{"id":"pcba","label":"PCBA","match":["pcba_*","nub_*","swbody_*","sw_T_*"]},{"id":"battery","label":"Battery","match":["battery_*"]},{"id":"lid","label":"Lid + side keys","match":["lid","skey_*"]},{"id":"screws","label":"Screws","match":["screw_*"]},{"id":"strip","label":"Light strip","match":["strip_*"],"builds":["ls","lc"]},{"id":"dummy","label":"PCBA dummy","match":["dummy_pcba"],"off":true,"lazy":true},{"id":"compare","label":"X4 + retro case","match":["cmp_*"],"off":true,"lazy":true}],"cards":[{"id":"glance","order":10,"title":"At a glance","preset":"home"},{"id":"keys","order":20,"title":"Bottom keys: a straight key over a bell crank","preset":"keys","away_builds":{"cl":"std","lc":"ls"},"away_note":"The chinless builds have no bottom keys."},{"id":"strip","order":25,"title":"Light strip","preset":"strip","enter_build":"ls","home_builds":["ls","lc"]},{"id":"sidekeys","order":30,"title":"Side keys","preset":"tabs"},{"id":"joint","order":40,"title":"Tub to lid joint","preset":"joint"},{"id":"usb","order":50,"title":"USB-C","preset":"usb"},{"id":"reset","order":55,"title":"Reset","preset":"reset"},{"id":"screen","order":60,"title":"Screen stack","preset":"stack"},{"id":"detent","order":65,"title":"Stack detents","preset":"detent"},{"id":"ribbons","order":70,"title":"Display ribbons","preset":"ribbons"},{"id":"battery","order":80,"title":"Battery","preset":"battery"},{"id":"boardprep","order":85,"title":"Board prep","preset":"boardprep","sizes":["368"]},{"id":"zstack","order":90,"title":"Front to back","preset":"zstack"},{"id":"closing","order":100,"title":"Closing up","preset":"close"},{"id":"edges","order":110,"title":"Edges and logo","preset":"edges"},{"id":"compare","order":115,"title":"Next to the X4","preset":"compare"},{"id":"assembly","order":120,"title":"Assembly order","preset":"assembly"},{"id":"checks","order":130,"title":"What's been checked","preset":null},{"id":"files","order":140,"title":"Model files","preset":"dummy"}],"files":{"core-426.json":{"bytes":4945806,"kind":"core","sha1":"ff47a1385ae01dbaf223a94ab3626199fc843d6c","size":"426"},"extras-426.json":{"bytes":3745166,"kind":"extras","sha1":"b6abc2f9096953e4ea98acae7865576825925d4b","size":"426"},"models-426.js":{"bytes":15413062,"kind":"models","sha1":"8736eee8800c34481c2ecac9cf36eb787e9c84a9","size":"426"},"build-426-std.json":{"bytes":1194812,"kind":"build","sha1":"0f2e8e34e172307125dcb7efb9ec8b57d5e15f77","size":"426","build":"std"},"build-426-ls.json":{"bytes":1073035,"kind":"build","sha1":"4b3437950463f7d40c5d5d1c07a47b9d063c51cb","size":"426","build":"ls"},"build-426-cl.json":{"bytes":1289057,"kind":"build","sha1":"ac942417f52e239ee279397f33518bdbd6354832","size":"426","build":"cl"},"build-426-lc.json":{"bytes":1167261,"kind":"build","sha1":"7611fcba38b6fd659def758350b96796a1f8250b","size":"426","build":"lc"},"data-426-std.json":{"bytes":192472,"kind":"data","sha1":"7f02cbd2dc59cca758eff904f8cc444ece584368","size":"426","build":"std"},"data-426-ls.json":{"bytes":205037,"kind":"data","sha1":"8bc46184c1db2bce722527e3c0cfbb3d80d4b135","size":"426","build":"ls"},"data-426-cl.json":{"bytes":141848,"kind":"data","sha1":"5cda059c517e2cca8d40c8570c9dc0699a023d66","size":"426","build":"cl"},"data-426-lc.json":{"bytes":154820,"kind":"data","sha1":"866680fc4ba199a6ce9474f10a068e6a80cc16c0","size":"426","build":"lc"},"core-368.json":{"bytes":5134486,"kind":"core","sha1":"2c0349cc5b13498f83de512adc082c57e55fff9c","size":"368"},"extras-368.json":{"bytes":3660388,"kind":"extras","sha1":"e0d153bab126d78028611b4cc8f3f9c87c5efd18","size":"368"},"models-368.js":{"bytes":8263908,"kind":"models","sha1":"ca381c7bacbed68d62a7b1f2f825dd6f9c1c6abd","size":"368"},"build-368-std.json":{"bytes":901013,"kind":"build","sha1":"d41ffe8b18c17374118d156ae5b6c72ba53002eb","size":"368","build":"std"},"build-368-ls.json":{"bytes":901400,"kind":"build","sha1":"96b2cd9ff7ba98265fe03aff1bc0dea246494de2","size":"368","build":"ls"},"data-368-std.json":{"bytes":196631,"kind":"data","sha1":"7834b445eb4291c418c7dda8a503bac1d1cd75a4","size":"368","build":"std"},"data-368-ls.json":{"bytes":213973,"kind":"data","sha1":"5e1a89c90b5f0e9bd20f3b510bc924da9c20d33a","size":"368","build":"ls"},"strip.json":{"bytes":33678,"kind":"asset","sha1":"637561a40d2d05d72f1fb7cafa6cd8c5d3b6f311"},"optics_heatmaps.png":{"bytes":222273,"kind":"asset","sha1":"5a108553e61a2c3006b07f00c5bd4b3752b5bf41"}},"load":{"426":{"core":"core-426.json","extras":"extras-426.json","models":"models-426.js","build":{"std":"build-426-std.json","ls":"build-426-ls.json","cl":"build-426-cl.json","lc":"build-426-lc.json"},"data":{"std":"data-426-std.json","ls":"data-426-ls.json","cl":"data-426-cl.json","lc":"data-426-lc.json"}},"368":{"core":"core-368.json","extras":"extras-368.json","models":"models-368.js","build":{"std":"build-368-std.json","ls":"build-368-ls.json"},"data":{"std":"data-368-std.json","ls":"data-368-ls.json"}}},"nodes":{"426":{"core":["battery_cell","battery_leads","battery_plug","crank_M","crank_T","gate","key_SW2","key_SW3","key_SW8","key_SW9","lid","midplate","nub_SW1","nub_SW10","nub_SW11","nub_SW2","nub_SW3","nub_SW4","nub_SW5","nub_SW7","nub_SW8","nub_SW9","pcba_connector","pcba_header","pcba_ic","pcba_module","pcba_passive","pcba_pcb","pcba_switch","pcba_usb","rod","screw_H3","screw_H4","screw_top","skey_SW1","skey_SW10","skey_SW4","skey_SW5","skey_SW7","sw_T_body","sw_T_nub","swbody_SW2","swbody_SW3","swbody_SW8","swbody_SW9"],"extras":["cmp_retro_back_lower","cmp_retro_back_upper","cmp_retro_frame","cmp_x4","dummy_pcba"],"build":{"std":["panel_epd","panel_light","panel_touch","ribbon_light","ribbon_main","ribbon_touch","ribbon_touch_ic","tub"],"ls":["panel_epd","ribbon_main","tub"],"cl":["lid","panel_epd","panel_light","panel_touch","ribbon_light","ribbon_main","ribbon_touch","ribbon_touch_ic","tub"],"lc":["lid","panel_epd","ribbon_main","tub"]},"absent":{"cl":["crank_M","crank_T","gate","key_SW2","key_SW3","key_SW8","key_SW9","nub_SW2","nub_SW3","nub_SW8","nub_SW9","rod","sw_T_body","sw_T_nub","swbody_SW2","swbody_SW3","swbody_SW8","swbody_SW9"],"lc":["crank_M","crank_T","gate","key_SW2","key_SW3","key_SW8","key_SW9","nub_SW2","nub_SW3","nub_SW8","nub_SW9","rod","sw_T_body","sw_T_nub","swbody_SW2","swbody_SW3","swbody_SW8","swbody_SW9"]}},"368":{"core":["battery_cell","battery_leads","battery_pcm","battery_plug","crank_M","crank_T","gate","lid","midplate","nub_SW1","nub_SW11","nub_SW2","nub_SW3","nub_SW4","nub_SW7","nub_SW8","nub_SW9","panel_epd","pcba_connector","pcba_ic","pcba_module","pcba_passive","pcba_pcb","pcba_switch","pcba_usb","ribbon_main","rod","screw_bottom_left","screw_bottom_right","screw_top","screw_top_left","skey_SW1","skey_SW4","skey_SW7","sw_T_body","sw_T_nub","swbody_SW2","swbody_SW3","swbody_SW8","swbody_SW9"],"extras":["cmp_retro_back_lower","cmp_retro_back_upper","cmp_retro_frame","cmp_x4","dummy_pcba"],"build":{"std":["key_SW2","key_SW3","key_SW8","key_SW9","tub"],"ls":["key_SW2","key_SW3","key_SW8","key_SW9","tub"]}}},"parts":{"426":{"shared":["coupon-chin","coupon-gate","crank-M","crank-T","crank_SW2","crank_SW3","crank_SW8","crank_SW9","gate","key-426","key_SW2","key_SW3","key_SW8","key_SW9","lid","lid_body","midplate","skey_SW1","skey_SW10","skey_SW4","skey_SW5","skey_SW7"],"per_build":["tub"]},"368":{"shared":["crank-M","crank-T","crank_SW2","crank_SW3","crank_SW8","crank_SW9","gate","lid","lid_body","midplate","skey_SW1","skey_SW4","skey_SW7"],"per_build":["key_SW2","key_SW3","key_SW8","key_SW9","tub"]}},"assets":{"strip":"strip.json","optics":"optics_heatmaps.png"},"first_paint_bytes":{"426":{"std":6333090,"ls":6223878,"cl":6376711,"lc":6267887},"368":{"std":6232130,"ls":6249859}}}};</script>
 <script>
 (function () {
   'use strict';
@@ -1284,6 +1284,25 @@ footer code { font-size: 12.5px; }
     }
     return cur;
   };
+  // Plain names for the main board's parts (silkscreen-pcb README, docs/HARDWARE.md). Text names a part in words
+  // first and keeps its reference, printed on the board's back, as the label: SC.part('J5') gives
+  // 'the battery connector (J5)', SC.tag('J5') gives 'battery J5' (chips and drawing labels). Unknown refs pass through.
+  SC.PART = {
+    J1: 'USB-C socket', J2: 'display connector', J3: 'frontlight connector', J4: 'touch connector',
+    J5: 'battery connector', J6: 'expansion (dev) header', J7: 'microSD socket', U4: 'ESP32 module', L1: 'display inductor',
+    SW1: 'right lower page key', SW4: 'right upper page key', SW5: 'left lower page key', SW7: 'left upper page key',
+    SW2: 'Right key', SW3: 'Left key', SW8: 'OK key', SW9: 'Back key', SW10: 'power key', SW11: 'reset button',
+    H1: 'mounting hole', H2: 'mounting hole', H3: 'mounting hole', H4: 'mounting hole', H5: 'locating-pin hole',
+    H6: 'mounting hole'
+  };
+  SC.TAG = {
+    J1: 'USB-C', J2: 'display', J3: 'frontlight', J4: 'touch', J5: 'battery', J6: 'expansion header', J7: 'microSD',
+    U4: 'ESP32', L1: 'inductor', SW1: 'right-down', SW4: 'right-up', SW5: 'left-down', SW7: 'left-up', SW2: 'Right',
+    SW3: 'Left', SW8: 'OK', SW9: 'Back', SW10: 'power', SW11: 'reset', H1: 'hole', H2: 'hole', H3: 'hole', H4: 'hole',
+    H5: 'pin hole', H6: 'hole'
+  };
+  SC.part = function (ref) { var n = SC.PART[ref]; return n ? 'the ' + n + ' (' + SC.esc(ref) + ')' : SC.esc(ref); };
+  SC.tag = function (ref) { var n = SC.TAG[ref]; return n ? n + ' ' + SC.esc(ref) : SC.esc(ref); };
   SC.esc = function (s) {
     return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; });
   };
@@ -2054,7 +2073,7 @@ SC.card({
       var nb = (sz.builds || []).length, words = { 3: 'Three', 4: 'Four', 5: 'Five' };
       ctx.q('#glance-diff').textContent = byB;
       ctx.q('#glance-builds').innerHTML = '<b>' + (words[nb] || 'Several') + ' builds of this size.</b> ' +
-        (D.cards.glance.against || ('Against the standard build, the ' + SC.esc(byB) + '; the midplate, the side keys and the panel are the same, and the board leaves SW9, SW8, SW3 and SW2 off.')) +
+        (D.cards.glance.against || ('Against the standard build, the ' + SC.esc(byB) + '; the midplate, the side keys and the panel are the same, and the board leaves the four bottom-row buttons (SW9, SW8, SW3, SW2) off.')) +
         ' The size and build buttons above the 3D view switch the whole page; every card follows.';
       return;
     }
@@ -2443,7 +2462,7 @@ SC.card({
     var K = R.K, v = variant(), sw = K.switches[v], dr = SC.drawing('key'), M = SC.manifest;
     var S = SC.state, sizeL = M && M.sizes[S.size] ? M.sizes[S.size].label : S.size, bL = M && M.builds[S.build] ? M.builds[S.build].label.toLowerCase() : S.build;
     var x = dr && dr.notes && dr.notes.x != null ? dr.notes.x : K.x[K.draw_ref];
-    R.ctx.q('#keys-cap').innerHTML = 'Cut through ' + SC.esc(K.draw_ref) + '&rsquo;s centre (X ' + f(x, 2) + ') of the ' + SC.esc(sizeL) + ' ' + SC.esc(bL) +
+    R.ctx.q('#keys-cap').innerHTML = 'Cut through the centre of ' + SC.part(K.draw_ref) + ' (X ' + f(x, 2) + ') of the ' + SC.esc(sizeL) + ' ' + SC.esc(bL) +
       ' build, seen from the right: ' + SC.esc(sw.crank) + ' on a ' + SC.esc(sw.part) + '. Hatched: tub and lid. Pale, dashed: the crank&rsquo;s cheek behind the cut, the rod rail&rsquo;s ring beside the crank and the key&rsquo;s +X hook. ' +
       'Tub, lid, key, crank and rod are sections of the built parts; the ' + (v === 'M' ? 'MJTP1117 is the board model&rsquo;s own' : 'TS365ZJ is a drawn envelope of the switch') + '.';
   }
@@ -2675,7 +2694,7 @@ var STRIP_DWG = {
   },
   strip_holddown: function (dr) { return 'Between two pairs, at Y ' + SC.fmt(dr.at, 2) + ': a hold-down pad in the tub presses the bar onto the plain panel.'; },
   strip_fold: function (dr) { return 'Through the folded top pair, at Y ' + SC.fmt(dr.at, 2) + ': it lies under the bar with its LEDs facing the back, where the tub\u2019s frame is cut away and the midplate is notched.'; },
-  strip_neck: function (dr) { return 'Along the neck, at X ' + SC.fmt(dr.at, 2) + ': over the bottom glass edge, down the board\u2019s slot and onto the back to J3.'; },
+  strip_neck: function (dr) { return 'Along the neck, at X ' + SC.fmt(dr.at, 2) + ': over the bottom glass edge, down the board\u2019s slot and onto the back to the frontlight connector.'; },
 };
 var STRIP_DWG_ORDER = ['strip_led', 'strip_holddown', 'strip_fold', 'strip_neck'];
 function stripAnnotate(dr, g) {
@@ -2734,14 +2753,14 @@ function stripDrawFlat(svg, G) {
   label(50.0, 137.2, P(0, 128)[0], 212, 'foot', 'var(--ink-3)');
   label(55.2, 146.5, P(0, 146.5)[0], 22, 'bend zone: keep free', 'var(--ink-3)');
   label(55.2, 158.0, P(0, 159)[0], 212, 'diodes + S/C/W pads (PI behind)', 'var(--ink-3)');
-  label(54.2, 165.6, P(0, 165)[0], 22, 'contacts into J3', 'var(--gold)');
+  label(54.2, 165.6, P(0, 165)[0], 22, 'contacts into the frontlight connector', 'var(--gold)');
 }
 var STRIP_TAPE = [
   ['<span class="tag tape">3M 9077</span>factory', 'Back of the top-pair piece and of the bar + foot',
    '4.26&Prime;: holds the strip on the panel border. 3.68&Prime;: holds the folded pair to the bar (tape to tape) and the foot to the panel; the rest of the bar&rsquo;s liner stays on'],
   ['<span class="tag kapton">Kapton</span>you add', 'Both edges of the board&rsquo;s FPC slot, where the neck passes', 'Routed FR4 edges would scuff the neck'],
-  ['<span class="tag kapton">Kapton</span>you add', 'SW9&rsquo;s left lug lead (4.26&Prime;, trimmed flush first) or pin (3.68&Prime;), just below the slot', 'The neck&rsquo;s U or loop passes within 0.1 mm of it'],
-  ['<span class="tag kapton">Kapton</span>you add', 'A strap across the stiffened back run, onto the board&rsquo;s back', 'J3 holds only about 3 N; the tape takes any pull'],
+  ['<span class="tag kapton">Kapton</span>you add', 'The Back key&rsquo;s (SW9&rsquo;s) left lug lead (4.26&Prime;, trimmed flush first) or pin (3.68&Prime;), just below the slot', 'The neck&rsquo;s U or loop passes within 0.1 mm of it'],
+  ['<span class="tag kapton">Kapton</span>you add', 'A strap across the stiffened back run, onto the board&rsquo;s back', 'The frontlight connector holds only about 3 N; the tape takes any pull'],
   ['<span class="tag free">none</span>', 'The hinge and the bend zone', 'They have to bend freely; tape or stiffener there would crack the copper'],
 ];
 // standard vs light strip, from the manifest: a part differs when one of its nodes is in parts[S].per_build
@@ -2979,13 +2998,14 @@ SC.card({
     };
 
     // ---- head, captions, numbers in the text
-    ctx.q('#sidekeys-refs').innerHTML = S.refs.map(function (r) { return '<span class="ref">' + SC.esc(r) + '</span>'; }).join('');
+    ctx.q('#sidekeys-refs').innerHTML = S.refs.map(function (r) { return '<span class="ref">' + SC.tag(r) + '</span>'; }).join('');
     var P = by[S.draw.plan] || S.tabs[0], SD = by[S.draw.side] || S.tabs[0], EL = by[S.draw.elev] || P;
     var dside = SC.drawing('key_side');
-    fill('sidekeys-sref', SC.esc(SD.ref));
+    fill('sidekeys-sref', SC.part(SD.ref));
     fill('sidekeys-sx', dside ? f(dside.at, 1) : f(SD.root[0], 1));
-    fill('sidekeys-pref', SC.esc(P.ref));
-    fill('sidekeys-prole', SC.esc(role(P)));
+    fill('sidekeys-pref', SC.part(P.ref));
+    // the plain name already carries the key's place; add the role only where the name would not say it (the power key on the x3 board)
+    fill('sidekeys-prole', role(P) === 'power' && !/power/.test(SC.PART[P.ref] || '') ? ', used as the power key' : '');
     fill('sidekeys-backr', f(E.back_r != null ? E.back_r : 2, 1));
     fill('sidekeys-footgap', f(TG.foot_gap ? TG.foot_gap[0] : 0.75, 2));
     fill('sidekeys-footgap2', f(TG.foot_gap ? TG.foot_gap[1] : 1.2, 1));
@@ -3276,7 +3296,7 @@ SC.card({
     });
     if (JT.usb_y) tx(W.right - 2, (JT.usb_y[0] + JT.usb_y[1]) / 2, 'USB-C', 'end');
     if (JT.reset_y != null) tx(W.right - 2, JT.reset_y - 3.2, 'reset pin', 'end');
-    if (JT.j6_x) tx((JT.j6_x[0] + JT.j6_x[1]) / 2, W.top - 2.6, 'J6', 'middle');
+    if (JT.j6_x) tx((JT.j6_x[0] + JT.j6_x[1]) / 2, W.top - 2.6, 'expansion header J6', 'middle');
     if (JT.top_screw) tx(JT.top_screw[0] - 2.5, JT.top_screw[1] - 2.6, 'top screw', 'end');
     xtra.forEach(function (q) { if (q[0] === 'top-left') tx(q[1] + 2.5, q[2] - 2.6, 'top-left screw'); });
     tx((W.left + W.right) / 2, W.bottom + 2.6, D.meta.bottom_keys && !D.meta.bottom_keys.length ? 'chin wall, no keys' : 'bottom keys and their ledge', 'middle');
@@ -3288,9 +3308,9 @@ SC.card({
     fill('joint-at-tab', f(dA.at, 1).replace(/\.0$/, ''));
     fill('joint-at-top', f(dP.at, 0));
     var tabRef = (dA.notes && dA.notes.ref) || '', tab = tabs.filter(function (t) { return t.ref === tabRef; })[0];
-    fill('joint-tab-ref', SC.esc(tabRef));
+    fill('joint-tab-ref', SC.part(tabRef));
     fill('joint-tab-wall', !tab || tab.side > 0 ? 'Right' : 'Left');
-    fill('joint-latch-ref', SC.esc((dL.notes && dL.notes.ref) || 'SW1'));
+    fill('joint-latch-ref', SC.part((dL.notes && dL.notes.ref) || 'SW1'));
     var z = D.meta.z;
     ctx.Drawing('joint_tongue', 'dw-joint-tongue', {
       label: 'Section through the tongue on the left wall', order: ['tub', 'lid', 'pcb'],
@@ -3390,7 +3410,7 @@ SC.card({
     var dplan = SC.drawing('usb_plan');
     var sref = (dplan && dplan.notes && dplan.notes.skey) || 'SW1';
     ((D.cards.sidekeys && D.cards.sidekeys.tabs) || []).forEach(function (t) { if (t.ref === sref) skey = t; });
-    fill('usb-skey', SC.esc(sref));
+    fill('usb-skey', SC.part(sref));
     fill('usb-depth', f(U.x1 - U.mouth_x, 1));
     fill('usb-corr', f(U.insert_x - U.mouth_x, 3));
     fill('usb-face', r2(U.face_to_mouth));
@@ -3962,12 +3982,12 @@ SC.card({
           lab(a, dF, 'midplate', (BY.cleat_x[0] + BY.cleat_x[1]) / 2, BY.cleats_y[1], 'cleats: wind\nspare lead', 16, 26, { hot: true });
           lab(a, dF, 'midplate', 12.0, (BY.stop_y[0] + BY.stop_y[1]) / 2, 'stop, ' + f(B.bay_p.stop_h, 0) + ' mm tall', -16, -26, { hot: true });
           lab(a, dF, 'cell', (B.box.x[0] + B.box.x[1]) / 2, (B.box.y[0] + B.box.y[1]) / 2, '503035 cell', 24, 30);
-          lab(a, dF, 'j7', B.j7[0] + 1.0, (B.j7[2] + B.j7[3]) / 2, 'J7 microSD,\nbehind the board', -30, -10);
+          lab(a, dF, 'j7', B.j7[0] + 1.0, (B.j7[2] + B.j7[3]) / 2, 'microSD J7,\nbehind the board', -30, -10);
           var cx = (C.x[0] + C.x[1]) / 2;
           a.arrow(cx, C.mouth_y + 0.2, cx, C.out_y, true);
           a.label(cx, (C.mouth_y + C.out_y) / 2, 'card out,\ncell swung out', 20, -12, { hot: true });
           var j5 = bbox(dF, 'j5');
-          if (j5) lab(a, dF, 'j5', (j5[0] + j5[1]) / 2, (j5[2] + j5[3]) / 2, 'J5', 20, -30);
+          if (j5) lab(a, dF, 'j5', (j5[0] + j5[1]) / 2, (j5[2] + j5[3]) / 2, 'battery J5', 20, -30);
         },
       });
       var wB = widen(dB, 5, 2.5);
@@ -3978,7 +3998,7 @@ SC.card({
           var r1 = d.v0 + 3.1, r2 = d.v0 + 1.2, up = d.v1 - 1.3;
           labAt(a, dB, 'lid', B.springs_y[0], bz - 0.2, 'lid springs', 88, r1);
           labAt(a, dB, 'cell', (B.box.y[0] + B.box.y[1]) / 2 + 4, (B.box.z[0] + B.box.z[1]) / 2, '503035 cell', 104.5, r1);
-          labAt(a, dB, 'j7', (B.j7[2] + B.j7[3]) / 2, (B.j7[4] + B.j7[5]) / 2, 'J7', 64, r2);
+          labAt(a, dB, 'j7', (B.j7[2] + B.j7[3]) / 2, (B.j7[4] + B.j7[5]) / 2, 'microSD J7', 64, r2);
           a.arrow(C.mouth_y + 0.1, cz, C.out_y, cz, true);
           a.label(C.mouth_y + 1.2, cz, 'card out, once the cell is out', (76 - C.mouth_y - 1.2) / a.px, (r2 - cz) / a.px, { hot: true });
           labAt(a, dB, 'midplate', (BY.stop_y[0] + BY.stop_y[1]) / 2, (BY.stop_z[0] + BY.stop_z[1]) / 2, 'low stop', 84, up, { hot: true });
@@ -3989,22 +4009,22 @@ SC.card({
         row('Slot', 'rails ' + f(BY.rail_z[1] - BY.rail_z[0], 1) + ' mm, stop ' + f(B.bay_p.stop_h, 0) + ' mm', f(F.clr, 2) + ' mm off the cell; click in, or slide in from the top edge'),
         row('Hold-down', 'lip ' + f(BY.lip.over_cell, 1) + ', 2 snaps ' + f(BY.snaps.over_cell, 1), 'over the cell&rsquo;s back edges, ' + f(BY.lip.clear_of_back, 1) + ' off it; 45&deg; undersides, no supports'),
         row('Cleats', '2, ' + f(BY.cleat_z[1] - BY.cleat_z[0], 1) + ' mm tall', f(BY.cleats_y[1] - BY.cleats_y[0], 1) + ' mm apart, capped, for spare lead'),
-        row('Card path', 'clear', 'J7&rsquo;s mouth is ' + f(B.box.y[0] - C.mouth_y, 1) + ' mm from the cell; the stop is ' + f(BY.stop_z[0] - C.z[1], 2) + ' mm in front of the card'),
+        row('Card path', 'clear', 'The microSD socket&rsquo;s mouth is ' + f(B.box.y[0] - C.mouth_y, 1) + ' mm from the cell; the stop is ' + f(BY.stop_z[0] - C.z[1], 2) + ' mm in front of the card'),
         row('Pack model', f(B.box.x[1] - B.box.x[0], 2) + ' &times; ' + f(B.box.y[1] - B.box.y[0], 2) + ' &times; ' + f(B.box.z[1] - B.box.z[0], 2), 'site 503035 with wrap and protection board'),
       ];
       if (bd['+0.0mm_pack']) nums.push(row('Springs', f(bd['+0.0mm_pack'].force_N, 2) + ' N each', f(bd['-0.3mm_pack'].force_N, 2) + '&ndash;' + f(bd['+0.3mm_pack'].force_N, 2) + ' N over &plusmn;0.3 mm pack thickness'));
     } else {
       var DM = D.cards.battery.depth_map, dp = B.deep_parts || {};
       var deepOrder = Object.keys(dp).sort(function (p, q) { return dp[q] - dp[p]; });
-      fill('bat-deep', deepOrder.filter(function (k) { return dp[k] > 3; }).map(function (k) { return k + ' ' + f(dp[k], 1); }).join(', ') + ' mm');
+      fill('bat-deep', deepOrder.filter(function (k) { return dp[k] > 3; }).map(function (k) { return SC.tag(k) + ' ' + f(dp[k], 1); }).join(', ') + ' mm');
       fill('bat-shallow', f(1.6, 1));
       // ---- depth map, seen from behind (X mirrored): one rect per run of cells in the same band ----
       var bins = [
         [0.6, 'bare board'],
         [1.7, '1.7 mm or less'],
         [3.3, 'ESP32 module' + (dp.U4 ? ' ' + f(dp.U4, 1) : '')],
-        [4.2, 'USB-C' + (dp.J1 ? ' ' + f(dp.J1, 1) : '') + ', L1' + (dp.L1 ? ' ' + f(dp.L1, 1) : '')],
-        [99, 'switches' + (dp.SW7 ? ' ' + f(dp.SW7, 1) : '') + ', J5' + (dp.J5 ? ' ' + f(dp.J5, 1) : '')],
+        [4.2, 'USB-C' + (dp.J1 ? ' ' + f(dp.J1, 1) : '') + ', inductor L1' + (dp.L1 ? ' ' + f(dp.L1, 1) : '')],
+        [99, 'switches' + (dp.SW7 ? ' ' + f(dp.SW7, 1) : '') + ', battery J5' + (dp.J5 ? ' ' + f(dp.J5, 1) : '')],
       ];
       var binOf = function (dd) { for (var i = 0; i < bins.length; i++) if (dd <= bins[i][0]) return i; return bins.length - 1; };
       var host = ctx.q('#battery-map');
@@ -4038,7 +4058,7 @@ SC.card({
       if (B.plug) rect(B.plug, 'box');
       if (B.j5) rect(B.j5, 'box');
       var tx = function (x, y, s, anchor, cls) { var e = SC.svg('text', { x: X(x), y: Y(y), 'font-size': 2.6, 'text-anchor': anchor || 'start', 'dominant-baseline': 'middle', class: cls || null }, svg); e.textContent = s; };
-      if (B.j5) tx((B.j5[0] + B.j5[1]) / 2, B.j5[3] + 2.2, 'J5', 'middle');
+      if (B.j5) tx((B.j5[0] + B.j5[1]) / 2, B.j5[3] + 2.2, 'battery J5', 'middle');
       tx(BAY[1] - 1.5, BAY[3] - 3, 'battery bay');
       if (B.antenna) tx(B.antenna[1] + 1, (B.antenna[2] + B.antenna[3]) / 2, 'antenna', 'end');
       tx(x1 - 0.5, y0 - 2.5, '\u2190 USB-C side', 'start', 'dim');
@@ -4063,7 +4083,7 @@ SC.card({
           labAt(a, dBay, 'lid', BB.end_stop.y, BB.end_stop.top - 0.3, 'end stop', BB.end_stop.y - 1.5, r2);
           labAt(a, dBay, 'lid', ym - 6, B.box.z[0] - B.floor_t / 2, f(B.floor_t, 1) + ' floor', ym - 4.5, r1);
           var j7u = (B.j7[2] + B.j7[3]) / 2;
-          labAt(a, dBay, 'j7', j7u, (B.j7[4] + B.j7[5]) / 2, 'J7, ' + f(B.deepest_under_mm, 2) + ' deep', j7u - 9, up);
+          labAt(a, dBay, 'j7', j7u, (B.j7[4] + B.j7[5]) / 2, 'microSD J7, ' + f(B.deepest_under_mm, 2) + ' deep', j7u - 9, up);
           labAt(a, dBay, 'pcb', ym + 8, 0.8, 'board', ym + 5.5, up);
           if (layerOf(dBay, 'pcm')) { var pb = bbox(dBay, 'pcm'); labAt(a, dBay, 'pcm', (pb[0] + pb[1]) / 2, (pb[2] + pb[3]) / 2, 'protection\nboard', pb[1] + 1, up - 0.4); }
         },
@@ -4076,20 +4096,20 @@ SC.card({
           lab(a, dPl, 'lid', xm, (BB.lip.y[0] + BB.lip.y[1]) / 2, 'lip', 20, -20, { hot: true });
           lab(a, dPl, 'lid', BB.pocket[0] + 3, BB.end_stop.y, 'end stop', -30, 22);
           var jb = bbox(dPl, 'j5') || bbox(dPl, 'j5_beyond');
-          if (jb) lab(a, dPl, layerOf(dPl, 'j5') ? 'j5' : 'j5_beyond', (jb[0] + jb[1]) / 2, (jb[2] + jb[3]) / 2, 'J5', 16, 22);
+          if (jb) lab(a, dPl, layerOf(dPl, 'j5') ? 'j5' : 'j5_beyond', (jb[0] + jb[1]) / 2, (jb[2] + jb[3]) / 2, 'battery J5', 16, 22);
           var lb = bbox(dPl, 'leads') || bbox(dPl, 'leads_beyond');
-          if (lb) lab(a, dPl, layerOf(dPl, 'leads') ? 'leads' : 'leads_beyond', (lb[0] + lb[1]) / 2, lb[3], 'lead to J5', 30, 18);
+          if (lb) lab(a, dPl, layerOf(dPl, 'leads') ? 'leads' : 'leads_beyond', (lb[0] + lb[1]) / 2, lb[3], 'lead to battery J5', 30, 18);
         },
       });
       var LD = B.lead || {};
       var ex = LD.length_by_exit_position_mm || {};
       var exv = Object.keys(ex).map(function (k) { return ex[k]; });
-      ctx.q('#battery-lead').innerHTML = 'It leaves the middle of the pack&rsquo;s top edge, U-turns up over that edge (' + f(LD.min_bend_r, 2) + ' mm bend radius) and crosses to the midplate&rsquo;s bare back above J5, where one strip of tape holds it; from there it runs along the midplate and past the board&rsquo;s round corner into the plug. Any spare coils flat in a well beside the tape. ' +
-        f(LD.routed_length_mm, 1) + ' mm of wire from a centre exit' + (exv.length === 3 ? ', ' + f(exv[2], 1) + ' mm if the lead leaves near the right-hand end (toward J5) and ' + f(exv[0], 1) + ' from the left' : '') +
+      ctx.q('#battery-lead').innerHTML = 'It leaves the middle of the pack&rsquo;s top edge, U-turns up over that edge (' + f(LD.min_bend_r, 2) + ' mm bend radius) and crosses to the midplate&rsquo;s bare back above the battery connector (J5), where one strip of tape holds it; from there it runs along the midplate and past the board&rsquo;s round corner into the plug. Any spare coils flat in a well beside the tape. ' +
+        f(LD.routed_length_mm, 1) + ' mm of wire from a centre exit' + (exv.length === 3 ? ', ' + f(exv[2], 1) + ' mm if the lead leaves near the right-hand end (toward the battery connector) and ' + f(exv[0], 1) + ' from the left' : '') +
         '. These packs ship with about 50 mm of lead: coil the spare in the well, do not wedge it under the pack.';
       var cellsT = [
-        ['503035 behind the board (this)', B.capacity_mAh + ' mAh', f(D.meta.body[2], 1) + ' mm deep, ' + f(D.meta.body[1], 0) + ' tall', 'fits as sold; its lead end is next to J5', true],
-        ['503035 beside the board, top left (the 4.26&Prime;&rsquo;s layout)', '500 mAh', '10.3 deep, 123 tall', 'nothing under it, so only J5 sets the depth; lead 17 mm'],
+        ['503035 behind the board (this)', B.capacity_mAh + ' mAh', f(D.meta.body[2], 1) + ' mm deep, ' + f(D.meta.body[1], 0) + ' tall', 'fits as sold; its lead end is next to the battery connector', true],
+        ['503035 beside the board, top left (the 4.26&Prime;&rsquo;s layout)', '500 mAh', '10.3 deep, 123 tall', 'nothing under it, so only the battery connector sets the depth; lead 17 mm'],
         ['Liter 402050 (20 &times; 50 &times; 3.65) beside the board, across the top', '500 mAh', '10.3 deep, 118 tall', 'a 25 mm lead; over the ESP32 instead it is 12.8 mm'],
         ['LP203180 (2.0 &times; 31 &times; 80) over the ESP32', '800 mAh', '&asymp;10.7 deep, 107 tall', 'battery makers only; one listing gives 3.2 mm with its protection board, which would make it 11.9'],
       ];
@@ -4099,7 +4119,7 @@ SC.card({
       var ref = B.ref || {};
       nums = [
         row('Cell', B.capacity_mAh + ' mAh', SC.esc(SC.text(ref.name || '503035')) + (ref.size ? ' &middot; ' + ref.size.map(function (v) { return f(v, 2); }).join(' &times; ') + ' mm' : '')),
-        row('Allowance', f(B.envelope_mm, 2) + ' mm', 'a 5.3 mm cell with two layers of tape on each face &middot; ' + f(B.air_under_j7_mm, 2) + ' mm of air under J7'),
+        row('Allowance', f(B.envelope_mm, 2) + ' mm', 'a 5.3 mm cell with two layers of tape on each face &middot; ' + f(B.air_under_j7_mm, 2) + ' mm of air under the microSD socket'),
         row('Pocket', B.pocket_mm.map(function (v) { return f(v, 1); }).join(' &times; ') + ' mm', 'sunk ' + f(B.floor_t, 1) + ' mm into the lid&rsquo;s floor'),
         row('Hold-down', 'lip ' + f(R.lip_over_mm, 1) + ' mm', 'tape on the cell; the lid presses nothing'),
         row('Lead', f(LD.routed_length_mm, 1) + ' mm', 'pack edge to plug, centre exit'),
@@ -4150,32 +4170,32 @@ SC.card({
       tx(xy[0] + (dx || 2.2), xy[1], s, anchor || 'start', null, 2.4);
     };
     (BP.snap_posts || []).forEach(function (h) { if (H[h]) post(H[h], 2.2, h + ' snap post'); });
-    if (H.H5) post(H.H5, 1.9, 'H5 pin', 'end', -2.2);
+    if (H.H5) post(H.H5, 1.9, 'H5 locating pin', 'end', -2.2);
     if (BP.support_post) {
       var sp = BP.support_post;
       SC.svg('circle', { cx: sp[0], cy: -sp[1], r: (sp[2] || 3) / 2 + 1.1, class: 'off' }, svg);
       SC.svg('circle', { cx: sp[0], cy: -sp[1], r: (sp[2] || 3) / 2, class: 'post' }, svg);
-      tx(sp[0] + 3.4, sp[1] + 2.4, (BP.leave_off || []).join(', ') + ' left off: a post', 'start', 'hot', 2.4);
+      tx(sp[0] + 3.4, sp[1] + 2.4, (BP.leave_off || []).map(SC.tag).join(', ') + ' left off: a post', 'start', 'hot', 2.4);
       tx(sp[0] + 3.4, sp[1] - 0.6, 'carries this corner', 'start', 'hot', 2.4);
     }
     var j5 = D.cards.battery.battery.j5;
-    if (j5) { SC.svg('rect', { x: j5[0], y: -j5[3], width: j5[1] - j5[0], height: j5[3] - j5[2], class: 'part' }, svg); tx(j5[0] - 1, (j5[2] + j5[3]) / 2, 'J5', 'end'); }
+    if (j5) { SC.svg('rect', { x: j5[0], y: -j5[3], width: j5[1] - j5[0], height: j5[3] - j5[2], class: 'part' }, svg); tx(j5[0] - 1, (j5[2] + j5[3]) / 2, 'battery J5', 'end'); }
     var roles = D.meta.roles || {};
     (D.cards.sidekeys.tabs || []).forEach(function (t) {
       var y = (t.pad_y[0] + t.pad_y[1]) / 2, x = t.side > 0 ? bx1 : bx0;
       SC.svg('rect', { x: x - 1.8, y: -(y + 2), width: 3.6, height: 4, class: 'part' }, svg);
-      var lab = t.ref + (t.ref === BP.power_key ? ' power' : '');
+      var lab = t.ref === BP.power_key ? 'power ' + t.ref : SC.tag(t.ref);
       tx(x + (t.side > 0 ? 2.8 : -2.8), y, lab, t.side > 0 ? 'start' : 'end', t.ref === BP.power_key ? 'hot' : null, 2.4);
     });
 
     var fv = BP.fit_values || {};
     var steps = [
       '<b>Cut the board</b> across the upper extension at KiCad y ' + f(BP.trim_kicad_y, 2) + ' (y ' + f(ty, 2) + ' in the case frame) and dress the edge. ' +
-        (gone.length ? 'Everything above goes with it: ' + gone.join(', ') + '.' : ''),
+        (gone.length ? 'Everything above goes with it: ' + gone.map(SC.tag).join(', ') + '.' : ''),
       '<b>Power rework.</b> Fit ' + BP.fit.map(function (r) { return r + (fv[r] ? ' (' + fv[r] + ')' : ''); }).join(' and ') + '; remove ' + BP.remove.join(' and ') +
-        '. The power key moves to <b>' + SC.esc(BP.power_key || '') + '</b>' + (roles[BP.power_key] ? ', ' + SC.esc(roles[BP.power_key]) : '') + '.',
-      '<b>Leave ' + BP.leave_off.join(', ') + ' off.</b> H2&rsquo;s lid post would stand in the battery bay, so a post in the empty site carries the board&rsquo;s top-left corner instead; the midplate&rsquo;s ' + (BP.snap_posts || []).join(' and ') + ' snap posts still clip the board.',
-      '<b>Trim</b> J5&rsquo;s through-hole leads and the switches&rsquo; pins to ' + f(BP.lead_trim_mm, 2) + ' mm proud of the front, so the midplate&rsquo;s springs keep their room.',
+        '. The power key moves to <b>' + SC.part(BP.power_key || '') + '</b>' + (roles[BP.power_key] ? ', ' + SC.esc(roles[BP.power_key]) : '') + '.',
+      '<b>Leave ' + BP.leave_off.map(SC.part).join(', ') + ' off.</b> The lid post at mounting hole H2 would stand in the battery bay, so a post in the empty site carries the board&rsquo;s top-left corner instead; the midplate&rsquo;s ' + (BP.snap_posts || []).join(' and ') + ' snap posts still clip the board.',
+      '<b>Trim</b> the battery connector&rsquo;s (J5&rsquo;s) through-hole leads and the switches&rsquo; pins to ' + f(BP.lead_trim_mm, 2) + ' mm proud of the front, so the midplate&rsquo;s springs keep their room.',
     ];
     ctx.q('#boardprep-steps').innerHTML = steps.map(function (s) { return '<li>' + s + '</li>'; }).join('');
     var row = function (t, v, s) { return '<div><dt>' + t + '</dt><dd>' + v + '<small>' + s + '</small></dd></div>'; };
@@ -4183,8 +4203,8 @@ SC.card({
       row('Cut', 'y ' + f(ty, 2), 'KiCad y ' + f(BP.trim_kicad_y, 2) + ' &middot; board ' + f(bx1 - bx0, 1) + ' &times; ' + f(ty - by0, 2) + ' mm after'),
       row('Fit', BP.fit.join(', '), BP.fit.map(function (r) { return fv[r] || ''; }).join(', ')),
       row('Remove', BP.remove.join(', '), 'before powering up'),
-      row('Leave off', BP.leave_off.join(', '), 'a post stands in its site'),
-      row('Pins', f(BP.lead_trim_mm, 2) + ' mm', 'proud of the front, J5 and the switches'),
+      row('Leave off', BP.leave_off.map(SC.tag).join(', '), 'a post stands in its site'),
+      row('Pins', f(BP.lead_trim_mm, 2) + ' mm', 'proud of the front, the battery connector and the switches'),
     ].join('');
   },
 });
@@ -4377,7 +4397,7 @@ SC.card({
     fill('cl-nposts', words[posts.length] || String(posts.length));
     fill('cl-posts', list(posts));
     var scrRefs = (CL.screw_list || [{ id: 'top', label: 'top screw' }]).filter(function (s) { return !Hs[s.id]; });
-    ctx.q('#closing-refs').innerHTML = Object.keys(Hs).sort().map(function (h) { return '<span class="ref">' + h + '</span>'; }).join('')
+    ctx.q('#closing-refs').innerHTML = Object.keys(Hs).sort().map(function (h) { return '<span class="ref">' + SC.tag(h) + '</span>'; }).join('')
       + scrRefs.map(function (s) { return '<span class="ref">' + SC.esc(s.label) + '</span>'; }).join('') + (G ? '<span class="ref">rod gate</span>' : '');
     var SL = CL.screw_list || [], nS = SL.length || 3, HD = CL.head || {}, CB = CL.cb_depth;
     var nw = words[nS] || String(nS);
@@ -5047,7 +5067,7 @@ SC.card({
       (touch.length ? 'The dummy touches no printed part but ' + touch.join(', ') + ', the same designed contact as the real board. ' : '') +
       (dm.small_parts_left_out && dm.small_parts_left_out.length ? 'Left out of the dummy: ' + SC.esc(dm.small_parts_left_out.join(', ')) + '.' : '');
     var u = dm.usb_mock;
-    ctx.q('#files-usb').innerHTML = u ? '<strong>J1 that prints.</strong> A real USB-C receptacle is ' + fmt(u.real_wall_mm, 1) + '&nbsp;mm of steel, thinner than a 0.4&nbsp;mm nozzle can lay, so the dummy&rsquo;s shell is ' +
+    ctx.q('#files-usb').innerHTML = u ? '<strong>A USB-C socket (J1) that prints.</strong> A real USB-C receptacle is ' + fmt(u.real_wall_mm, 1) + '&nbsp;mm of steel, thinner than a 0.4&nbsp;mm nozzle can lay, so the dummy&rsquo;s shell is ' +
       fmt(u.body_w, 2) + '&nbsp;mm wide with ' + fmt(u.side_wall_mm, 2) + '&nbsp;mm side walls. Its bore is ' + u.bore.map(function (x) { return fmt(x, 2); }).join(' &times; ') + '&nbsp;mm and ' +
       fmt(u.bore_depth_mm, 1) + '&nbsp;mm deep, ' + u.plug_clearance_mm.map(function (x) { return fmt(x, 2); }).join(' / ') + '&nbsp;mm a side round a plug at the spec&rsquo;s ' +
       fmt(u.spec_insertion_mm, 2) + '&nbsp;mm insertion, so a cable shows at once how far your plugs seat.' : '';

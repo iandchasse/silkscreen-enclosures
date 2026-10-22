@@ -24,7 +24,7 @@ SC.card({
       var nb = (sz.builds || []).length, words = { 3: 'Three', 4: 'Four', 5: 'Five' };
       ctx.q('#glance-diff').textContent = byB;
       ctx.q('#glance-builds').innerHTML = '<b>' + (words[nb] || 'Several') + ' builds of this size.</b> ' +
-        (D.cards.glance.against || ('Against the standard build, the ' + SC.esc(byB) + '; the midplate, the side keys and the panel are the same, and the board leaves SW9, SW8, SW3 and SW2 off.')) +
+        (D.cards.glance.against || ('Against the standard build, the ' + SC.esc(byB) + '; the midplate, the side keys and the panel are the same, and the board leaves the four bottom-row buttons (SW9, SW8, SW3, SW2) off.')) +
         ' The size and build buttons above the 3D view switch the whole page; every card follows.';
       return;
     }

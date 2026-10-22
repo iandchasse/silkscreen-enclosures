@@ -10,8 +10,8 @@ lets the blade's corner get under the rod to lift it out.
            5 min in the jig on the bed at 60 C); press it into the groove and let it cool (half a minute);
            cut at both slots while it is still warm; lift it out; taper one end in a pencil sharpener.
 
-Writes the repo's print/rod-jig.stl (print pose) and print/rod-jig.step; make_plates.py puts the STL on plate 3 of
-both plate files, so rerun it after this. Run from this folder (enclosures/) with a Python 3.11 virtual environment made from
+Writes the repo's print/rod-jig.stl (print pose) and print/rod-jig.step; make_plates.py puts the STL on plate 1 of
+both public plate files (plate 3 of the author's CC2 files), so rerun it after this. Run from this folder (enclosures/) with a Python 3.11 virtual environment made from
 either case's requirements.txt:
 
     python -B rod_jig.py

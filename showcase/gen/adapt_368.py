@@ -217,7 +217,7 @@ def worker_drawings(B, M):
                 ('hook', 'key', M[f'key_{C.DRAW_REF}'], kx + sum(P.KEY_HOOK['dx']) / 2)],
         notes={'ref': C.DRAW_REF, 'x': r4(kx), 'cheek_x': r4(kx - 4.5), 'hook_x': r4(kx + sum(P.KEY_HOOK['dx']) / 2),
                'ring_x': r4(ring), 'face_z': r3(P.Z_FRONT), 'chin_wall_y': r3(P.BOT_IN), 'slot_back_y': r3(P.KEY_SLOT['back']),
-               'rail_y': [r3(v) for v in P.RAIL_Y], 'theta': 0.0, 'what': 'section through SW8, crank at theta 0'})
+               'rail_y': [r3(v) for v in P.RAIL_Y], 'theta': 0.0, 'what': 'section through the OK button (SW8), crank at theta 0'})
     rr = L.rings(L.cut(tub, 'x', ring, rail))          # the rail's ring beside the crank, dashed on the page
     if rr:
         d['beyond'].append({'id': 'rail', 'role': 'case', 'at': r3(ring), 'polys': rr})
@@ -568,7 +568,7 @@ def presets_block(B):
         'keys': {'cam': v(kx + 58, -34, 26), 'tgt': v(kx, -1.5, 0.5), 'sec': ['x', r4(kx), False],
                  'focus': ['keys', 'rod', 'tub', 'pcba', 'lid'], 'press': C.DRAW_REF, 'highlight': ['key_*', 'crank_*'],
                  'tag': 'Bottom keys',
-                 'cap': '<b>Bottom keys.</b> Cut through SW8. The key slides straight down onto the crank&rsquo;s crowned pad; '
+                 'cap': '<b>Bottom keys.</b> Cut through the OK button (SW8). The key slides straight down onto the crank&rsquo;s crowned pad; '
                         'the crank turns on the filament rod and its nose pushes the switch plunger along the board.'},
         'tabs': {'cam': v(96, sw4[1] - 42, 42), 'tgt': v(61, sw4[1], -2), 'sec': ['z', r4(sw4[2]), False],
                  'focus': ['tub', 'pcba', 'lid'], 'press': True, 'highlight': ['skey_*'], 'tag': 'Side keys',
@@ -581,10 +581,10 @@ def presets_block(B):
         'usb': {'cam': v(125, u['yc'] - 29, 22), 'tgt': v(62, u['yc'], -2), 'focus': ['tub', 'lid', 'pcba'], 'press': 'usb',
                 'tag': 'USB-C',
                 'cap': '<b>USB-C.</b> A divot for the plug&rsquo;s overmold, floored by the tub itself: a 0.5 mm wall round the '
-                       'port, 0.62 mm in front of J1&rsquo;s mouth.'},
+                       'port, 0.62 mm in front of the USB-C socket&rsquo;s (J1) mouth.'},
         'reset': {'cam': v(118, rs[1] - 24, 16), 'tgt': v(61, rs[1], rs[2]), 'focus': ['tub', 'lid', 'pcba'],
                   'press': hw.RESET, 'tag': 'Reset',
-                  'cap': f'<b>Reset.</b> The countersunk 1.2 mm pinhole sits {u["yc"] - rs[1]:.0f} mm below the port, straight onto SW11.'},
+                  'cap': f'<b>Reset.</b> The countersunk 1.2 mm pinhole sits {u["yc"] - rs[1]:.0f} mm below the port, straight onto the reset button (SW11).'},
         'stack': {'cam': v(-34, 44, 22), 'tgt': v(-1, 60, 2.8), 'sec': ['y', 60.0, True],
                   'focus': ['midplate', 'display', 'pcba', 'tub'] + (['strip'] if ls else []), 'tag': 'Screen stack',
                   'cap': '<b>Screen stack.</b> Cut at y = 60 across the left border: the midplate&rsquo;s springs keep the '
@@ -596,14 +596,14 @@ def presets_block(B):
         'ribbons': {'cam': v(90, -30, 14), 'tgt': v(28, 9, -0.5), 'sec': ['x', 28.0, False],
                     'focus': ['display', 'pcba', 'tub', 'midplate', 'lid'], 'tag': 'Display FPC',
                     'cap': '<b>Display FPC.</b> Cut through the panel&rsquo;s one ribbon: over the glass edge, straight down '
-                           'the board&rsquo;s slot and along the back into J2.'},
+                           'the board&rsquo;s slot and along the back into the display connector (J2).'},
         'battery': {'cam': v(bx, by - 60, -95), 'tgt': v(bx, by, -3), 'focus': ['battery', 'pcba'], 'hide': ['lid', 'screws'],
                     'tag': 'Battery',
                     'cap': '<b>Battery.</b> From the back with the lid off: the 500 mAh cell lies over the one patch of '
-                           'board where nothing stands taller than 1.6 mm, its lead a short run to J5. It rides in the lid.'},
+                           'board where nothing stands taller than 1.6 mm, its lead a short run to the battery connector (J5). It rides in the lid.'},
         'boardprep': {'cam': v(30, 18, -110), 'tgt': v(30, 55, -1), 'up': [0, 1, 0], 'show': ['pcba'], 'tag': 'Board prep',
-                      'cap': f'<b>Board prep.</b> The board is cut above J5 (y {hw.PCB_CUT_Y:g} here, KiCad y 62.00), power '
-                             'moves to SW7, and SW5 is left off.'},
+                      'cap': f'<b>Board prep.</b> The board is cut above the battery connector (J5) (y {hw.PCB_CUT_Y:g} here, KiCad y 62.00), power '
+                             'moves to the left upper page key (SW7), and the left lower page key (SW5) is left off.'},
         'edges': {'cam': v(96, -52, 44), 'tgt': v(52, 2, 1), 'tag': 'Edges',
                   'cap': f'<b>Edges and logo.</b> {P.FRONT_EDGE_R:g} mm front and {P.BACK_EDGE_R:g} mm back rounds, a '
                          f'{P.SEAM_CHAMFER:g} mm V at the parting line (the lid&rsquo;s half only, on the chin under the '
@@ -618,7 +618,7 @@ def presets_block(B):
                          'closed groove in the lid&rsquo;s rim; twelve latch arms stand up inside it.'},
         'latch': {'cam': v(71, lat - 23.5, -3.5), 'tgt': v(61.4, lat, -1.4), 'sec': ['y', r3(lat), True],
                   'show': ['tub', 'lid', 'pcba', 'midplate'], 'focus': ['tub', 'lid'], 'tag': 'Latch',
-                  'cap': '<b>Latch.</b> One of twelve, over SW1&rsquo;s key. The arm reaches up past the key&rsquo;s slot, so '
+                  'cap': '<b>Latch.</b> One of twelve, over the right lower page key (SW1). The arm reaches up past the key&rsquo;s slot, so '
                          'its barb catches in a pocket with solid wall behind it.'},
         'compare': {'cam': v(32, -265, 250), 'tgt': v(32, yc, -2), 'fit': True,
                     'show': ['tub', 'keys', 'display', 'lid', 'screws', 'compare'], 'tag': 'Comparison',
@@ -660,10 +660,10 @@ def explode_block(B):
                'along the channel in the gate&rsquo;s slot, through the rail and every crank; the printed gate drops '
                'into the slot and closes it.',
         'midplate': 'Midplate onto the back of the panel; it clicks in at its four detents.',
-        'pcba': 'The trimmed board: FPC through the slot into J2, then press it onto the H2 and H6 snap posts. Each '
+        'pcba': 'The trimmed board: FPC through the slot into the display connector (J2), then press it onto the snap posts at the upper-left and centre mounting holes (H2, H6). Each '
                 'bottom switch&rsquo;s plunger slides past its crank&rsquo;s nose.',
         'battery': 'The cell rides in the lid: bottom edge under the lip, pushed right (and down only until it stops under the lip) and taped. Stand '
-                   'the lid up by the top edge and plug the lead into J5.',
+                   'the lid up by the top edge and plug the lead into the battery connector (J5).',
         'lid': 'Fold the lid down like a book: the three side keys slide up their slots, the tongue drops into its '
                'groove and twelve latches click.',
         'screws': f'Four M2 &times; {P.SCREW_L:g} socket head caps from the back.',
@@ -685,7 +685,7 @@ def assembly_block(B):
                  'and stops level, 2.5 mm proud; nothing is chosen from it.'},
         {'id': 'prep', 'title': 'Before you start', 'groups': ['pcba'], 'preset': 'boardprep',
          'text': f'Cut the board at the upper extension (y {hw.PCB_CUT_Y:g} in the CAD frame, KiCad y 62.00). Do the power '
-                 'rework: fit R72 (10 k&Omega;) and R74 (0 &Omega;), remove R36 and R73. Leave SW5 off. Trim J5&rsquo;s '
+                 'rework: fit R72 (10 k&Omega;) and R74 (0 &Omega;), remove R36 and R73 (the left upper key&rsquo;s ladder resistor and ground jumper). Leave the left lower page key (SW5) off. Trim the battery connector&rsquo;s (J5) '
                  f'through-hole leads and the switches&rsquo; pins to 0.65 mm proud. Measure the cell: at most '
                  f'{P.BATT_T_MAX:g} mm thick and 31.7 &times; 37.9 mm.'},
         {'id': 'rodprep', 'title': 'Rod and cranks', 'groups': ['rod'],
@@ -727,11 +727,11 @@ def assembly_block(B):
         {'id': 'midplate', 'title': 'Midplate', 'groups': ['midplate'], 'preset': 'detent',
          'text': 'Onto the back of the panel; it clicks in at its four detents.'},
         {'id': 'pcba', 'title': 'Board', 'groups': ['pcba'], 'preset': 'ribbons',
-         'text': 'Feed the FPC through the board&rsquo;s slot and plug it into J2. Press the board onto the H2 and H6 snap '
-                 'posts until it clicks; the plungers slide past the cranks&rsquo; noses.'},
+         'text': 'Feed the FPC through the board&rsquo;s slot and plug it into the display connector (J2). Press the board onto the snap posts at the upper-left and centre mounting holes (H2, H6) '
+                 'until it clicks; the plungers slide past the cranks&rsquo; noses.'},
         {'id': 'battery', 'title': 'Battery, in the lid', 'groups': ['battery', 'lid'], 'preset': 'battery',
          'text': 'Tuck the cell&rsquo;s bottom edge under the lid&rsquo;s lip, push it right, and down only until it stops under the lip, and tape it down. '
-                 'Stand the lid up beside the case&rsquo;s top edge and plug the lead into J5.'},
+                 'Stand the lid up beside the case&rsquo;s top edge and plug the lead into the battery connector (J5).'},
         {'id': 'close', 'title': 'Close', 'groups': ['lid', 'screws'], 'preset': 'close',
          'text': f'Fold the lid down like a book; the side keys slide up their slots, the tongue drops into its groove '
                  f'and the latches click. Four M2 &times; {P.SCREW_L:g} socket head caps from the back (a pan head also fits). The lid&rsquo;s rim '
@@ -877,7 +877,7 @@ def strip_block(B):
     KX = 23.4975
     P = B.P
     up, ls_depth = strip_over_std(P), P.Z_FRONT_STRIP - P.Z_BACK
-    key_step = ('<p>Cut through SW8, seen from the side: the board runs up, the face is to the right. A straight key '
+    key_step = ('<p>Cut through the OK button (SW8), seen from the side: the board runs up, the face is to the right. A straight key '
                 '(slate) slides down in the chin and presses the pad of a bell crank (amber), which turns on a 1.75 mm '
                 'filament rod (blue) and pushes the switch plunger sideways.</p>')
     steps = [
@@ -885,9 +885,9 @@ def strip_block(B):
         {'t': 'As it arrives', 'cam': [[-30, -40, 150], [8, 44, 3]], 'f': 0, 'b': '<p>The same strip as the 4.26\u2033. Diode-test, solder and bench-test it the same way.</p>'},
         {'t': 'Fold the top pair back', 'cam': [[-20, 72, 16], [0, 86, 3]], 'f': 0.25, 'tape': True, 'b': '<p>Score the bar&rsquo;s liner 16 mm below the hinge and where the bar meets the foot. Peel the top piece&rsquo;s liner and the bar&rsquo;s above the score, then fold the top pair 180&deg; backward, <span class="tag tape">3M 9077</span> tape to tape. The hinge forms an open loop; never crease it. The folded LEDs face the back.</p>'},
         {'t': 'Into the tub, then the panel', 'cam': [[-26, -18, 44], [2, 22, 3]], 'f': 0.3, 'tape': True, 'b': '<p>The strip goes into the tub before the panel. With the tub face down, drop the bar in 0.5 mm right of its place, LEDs toward the skin, and slide it left under the seat against the six small ribs. The folded pair drops into the fold zone.</p><p><span class="tag tape">3M 9077</span>Leave the rest of the bar&rsquo;s liner on; peel only the foot&rsquo;s, then fit the panel against its two corner stops.</p>'},
-        {'t': 'Kapton on the path', 'cam': [[-24, -34, 18], [10, 6, 1]], 'f': 0.3, 'kapton': True, 'b': '<p><span class="tag kapton">Kapton</span> on both slot edges where the neck passes, and on SW9&rsquo;s pin just below the slot.</p>'},
+        {'t': 'Kapton on the path', 'cam': [[-24, -34, 18], [10, 6, 1]], 'f': 0.3, 'kapton': True, 'b': '<p><span class="tag kapton">Kapton</span> on both slot edges where the neck passes, and on the Back button&rsquo;s (SW9) pin just below the slot.</p>'},
         {'t': 'Over the edge and down', 'cam': [[-26, -30, 20], [10, 6, 2]], 'f': 0.8, 'b': '<p>Fold the neck over the glass edge straight into the slot. This reader leaves 4&ndash;5.6 mm of spare tail: a small loop can sit in the chin, and the rest stands as a loop on the board&rsquo;s back before the stiffened end.</p>'},
-        {'t': 'Into J3', 'cam': [[-16, -6, -40], [11, 16, -1]], 'f': 1, 'kapton': True, 'b': '<p>Contacts away from the board, fully home, lever closed. <span class="tag kapton">Kapton</span> strap over the stiffened end only; leave the loop of spare tail free.</p>'},
+        {'t': 'Into the frontlight connector', 'cam': [[-16, -6, -40], [11, 16, -1]], 'f': 1, 'kapton': True, 'b': '<p>Contacts away from the board, fully home, lever closed. <span class="tag kapton">Kapton</span> strap over the stiffened end only; leave the loop of spare tail free.</p>'},
         {'t': 'Close the case', 'cam': [[-3.5, 31.2, 7.4], [1.2, 49.7, 3.6]], 'cutY': 49.7, 'f': 1, 'caseOn': True, 'cut': True, 'drawing': 'strip_led', 'b': f'<p>Cut through LED D4. The light-strip front shell stands {up:g} mm higher than the standard build&rsquo;s (its skin is {P.Z_FRONT_STRIP - P.LIP:.1f} mm) so its skin clears the LED tops, with a channel for the bar beside the panel and the light path under the skin to the window.</p>'},
         {'t': 'The fold, in the case', 'cam': [[-3.5, 61.0, 6.6], [0.8, 79.5, 2.8]], 'cutY': 79.5, 'f': 1, 'caseOn': True, 'cut': True, 'drawing': 'strip_fold', 'b': '<p>Cut through the folded pair. It lies under the bar, LEDs facing the back, where the front shell&#x2019;s frame is cut away and the midplate is notched through.</p>'},
         {'t': 'The bottom keys', 'cam': [[KX - 30, -14, 10], [KX, -3.6, 1.2]], 'cutX': KX, 'f': 1, 'caseOn': True, 'cut': True, 'b': key_step},
@@ -908,7 +908,7 @@ def strip_block(B):
         {'part': 'Lid, midplate', 'same': True, 'text': 'Shared'},
         {'part': 'Cranks, rod, gate', 'same': True, 'text': 'Shared'},
         {'part': 'Panel and FPC (not printed)', 'same': True,
-         'text': 'The same bare 3.68&#x2033; panel in both; the light strip adds its bar beside it and its tail in J3'}]
+         'text': 'The same bare 3.68&#x2033; panel in both; the light strip adds its bar beside it and its tail in the frontlight connector'}]
     sp = json.loads((PROJ / 'out' / 'shared-parts.json').read_text())
     out = {'case_cards': case_cards, 'diff': diff,
            'shared_parts': sorted(k for k, v in sp['parts'].items() if v.get('same_files') or v.get('same_solid')),
@@ -952,7 +952,7 @@ def cards_block(B, M, K):
     uf = tubm.usb_features()
     G = {}
     G['glance'] = {'bullets': [
-        '3.68&#x2033; 528 &times; 792 e-paper on Ian&rsquo;s board, trimmed above J5 (power moves to SW7).',
+        '3.68&#x2033; 528 &times; 792 e-paper on Ian&rsquo;s board, trimmed above the battery connector (J5), with power moved to the left upper page key (SW7).',
         f'{P.X1 - P.X0:.1f} &times; {P.Y1 - P.Y0:.1f} &times; {P.Z_FRONT - P.Z_BACK:.1f} mm; '
         f'{B.json["summary"]["with_keys_mm"]:.1f} over the bottom keys.',
         '500 mAh 503035 cell in the lid, over the one patch of the board where nothing stands taller than 1.6 mm.',
@@ -1176,7 +1176,7 @@ def checks_block(B, K):
     if 'strip' in inter:
         sb = [r for r in inter['strip'] if not r['expected']]
         C_.append({'id': 'strip_interference', 'label': 'The light strip (nominal, tight fold, against the wall) touches '
-                   'only where it is meant to (the neck on the glass ledge, the tail in J3)', 'ok': not sb,
+                   'only where it is meant to (the neck on the glass ledge, the tail in the frontlight connector)', 'ok': not sb,
                    'value': len(sb), 'source': 'interference.json strip'})
     hits = {k: v['hits'] for k, v in ins.items() if not k.startswith('_')}
     C_.append({'id': 'insertion', 'label': 'The panel (at its largest) and the midplate go into the face-down tub '
@@ -1258,16 +1258,16 @@ def measure_block(B, cards, K):
     gate_fit = (P.GATE_SLOT['mouth'][1] - P.GATE_SLOT['mouth'][0] - P.GATE['web_y'][1] + P.GATE['web_y'][0]) / 2  # a side
     out = [
         '<b>The battery pack.</b> A 503035, at most 5.3&nbsp;mm thick with up to two layers of tape on each face. Push it '
-        'to the right, and down only until it stops under the lip, and tape it down; check where its lead leaves and its polarity at J5.',
+        'to the right, and down only until it stops under the lip, and tape it down; check where its lead leaves and its polarity at the battery connector (J5).',
         f'<b>The pack against the microSD socket.</b> At {f2(ba["envelope_mm"])}&nbsp;mm (the cell with two layers of tape '
-        f'on each face) the pack clears J7, the deepest part over it ({f2(ba["deepest_under_mm"])}&nbsp;mm), by '
+        f'on each face) the pack clears the microSD socket (J7), the deepest part over it ({f2(ba["deepest_under_mm"])}&nbsp;mm), by '
         f'{f2(ba["air_under_j7_mm"])}&nbsp;mm as printed. A charged or aged pack swells: check it still leaves a gap '
         'after a full charge.',
         f'<b>The panel&rsquo;s thickness</b> ({f2(hw.PANEL_T)} &plusmn;{f2(hw.PANEL_T_TOL)}&nbsp;mm in its drawing; the '
         f'midplate&rsquo;s springs take up the range) and <b>the switches&rsquo; travel</b> ({f2(T["travel"]["click"])}'
         f'&nbsp;mm to the click, {f2(T["travel"]["bottom"])} to the bottom in the model).',
         f'<b>The FPC.</b> Its folds over the glass edge assume R{f2(panel.BEND_R)}; the drawing gives none, so check it '
-        'folds that tightly without creasing. Check its contact side against J2, too: the drawing does not say.',
+        'folds that tightly without creasing. Check its contact side against the display connector (J2), too: the drawing does not say.',
         f'<b>USB-C cables.</b> The recess takes overmolds up to {f2(P.USB_RECESS[0])} &times; {f2(P.USB_RECESS[1])}&nbsp;mm, '
         f'and a typical plug seats about {f2(us["plug_short_mm"])}&nbsp;mm short of full depth: try your cables on the '
         'PCBA dummy.',

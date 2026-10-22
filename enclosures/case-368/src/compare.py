@@ -202,7 +202,7 @@ def main():
     import refs
     deepest = min(hw.bounds(r)[4] for r in hw.solids() if r != 'PCB')
     budget = [('front skin', P.Z_FRONT - P.LIP), ('panel', hw.PANEL_T), ('midplate', P.MID_T), ('air to board', P.MID_REAR - P.PCB_FRONT),
-              ('PCB', P.PCB_FRONT), ('rear parts (J6 header)', -deepest), ('clearance', deepest - P.LID_FLOOR_IN), ('back', P.LID_T)]
+              ('PCB', P.PCB_FRONT), ('rear parts (expansion header, J6)', -deepest), ('clearance', deepest - P.LID_FLOOR_IN), ('back', P.LID_T)]
 
     # silhouettes in the device frame: screen centre at (0, 0), front face at z = 0
     o_front = silhouette([tub, lid], (0, 1))

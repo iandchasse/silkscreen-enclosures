@@ -376,7 +376,7 @@
     var K = R.K, v = variant(), sw = K.switches[v], dr = SC.drawing('key'), M = SC.manifest;
     var S = SC.state, sizeL = M && M.sizes[S.size] ? M.sizes[S.size].label : S.size, bL = M && M.builds[S.build] ? M.builds[S.build].label.toLowerCase() : S.build;
     var x = dr && dr.notes && dr.notes.x != null ? dr.notes.x : K.x[K.draw_ref];
-    R.ctx.q('#keys-cap').innerHTML = 'Cut through ' + SC.esc(K.draw_ref) + '&rsquo;s centre (X ' + f(x, 2) + ') of the ' + SC.esc(sizeL) + ' ' + SC.esc(bL) +
+    R.ctx.q('#keys-cap').innerHTML = 'Cut through the centre of ' + SC.part(K.draw_ref) + ' (X ' + f(x, 2) + ') of the ' + SC.esc(sizeL) + ' ' + SC.esc(bL) +
       ' build, seen from the right: ' + SC.esc(sw.crank) + ' on a ' + SC.esc(sw.part) + '. Hatched: tub and lid. Pale, dashed: the crank&rsquo;s cheek behind the cut, the rod rail&rsquo;s ring beside the crank and the key&rsquo;s +X hook. ' +
       'Tub, lid, key, crank and rod are sections of the built parts; the ' + (v === 'M' ? 'MJTP1117 is the board model&rsquo;s own' : 'TS365ZJ is a drawn envelope of the switch') + '.';
   }
