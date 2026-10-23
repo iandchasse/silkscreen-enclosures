@@ -279,7 +279,7 @@ def screw_bosses():
     add.append(zcyl(tx, ty, P.SEAM, P.LIP + 0.01, P.TOP_BOSS_D))
     cut.append(zcyl(tx, ty, P.SEAM - 0.1, P.Z_FRONT - 0.55, P.M2_PILOT))
     # the top screw's relief (2026-10-23): an M2_CLEAR bore from the rim to TOP_SCREW_CLEAR_TO, so the screw thread-forms only the
-    # last 3.8 of the pilot (3.6 as printed), as H3 / H4 do; it had 9.0 and stripped heads. 1.6 is a layer line of the face-down tub
+    # last 3.8 of the pilot (3.6 as printed), as H3 / H4 do; it had 9.0, which the community member reports stripped heads. 1.6 is a layer line of the face-down tub
     cut.append(zcyl(tx, ty, P.SEAM - 0.1, P.TOP_SCREW_CLEAR_TO, P.M2_CLEAR))
     return add, cut
 

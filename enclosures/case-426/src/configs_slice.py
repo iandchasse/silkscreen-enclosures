@@ -550,7 +550,15 @@ def glyph_polygons(stl, z=0.1):
     if sec is None:
         return []
     flat, _ = sec.to_planar(to_2D=np.eye(4), check=False)
-    return [p for p in flat.polygons_full if p.area > 0.02]
+    # polygons_full needs rtree (not in the venvs): each closed loop is a filled polygon, and the glyphs are their even-odd
+    # XOR (a loop inside another is a hole, a loop inside that an island again)
+    xor = None
+    for q in flat.polygons_closed:
+        q = q if q.is_valid else q.buffer(0)
+        xor = q if xor is None else xor.symmetric_difference(q)
+    if xor is None or xor.is_empty:
+        return []
+    return [g for g in getattr(xor, 'geoms', [xor]) if g.geom_type == 'Polygon' and g.area > 0.02]
 
 
 def lid_object(entry):

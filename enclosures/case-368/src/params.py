@@ -238,7 +238,7 @@ LOGO = None                              # the chin is plain since 2026-10-23 (t
 # The wordmark on the back above the grip grooves (2026-10-23, Ian, after a community member's edit), mirrored so it
 # reads right from behind. depth 0.4 set here (two whole layers on the back; the light-strip chin's 0.3 is a mid-plane):
 # the floor there is LID_T 1.0, so 0.6 is left. Ink 7.11 tall, 40.0 wide: y 4.95, ink 1.40..8.51, 2.6 above the top
-# groove's edge, clear of the corner counterbores and 27 mm below the icon.
+# groove's edge, clear of the corner counterbores and 28 mm below the icon.
 LOGO_BACK_WORDMARK = dict(LOGO_CHIN, depth=0.4, mirror=True, x=(X0 + X1) / 2, y=max(GRIP_GROOVES_Y) + 6.55)
 
 # ---- display ribbon: see panel.py ----------------------------------------------------------

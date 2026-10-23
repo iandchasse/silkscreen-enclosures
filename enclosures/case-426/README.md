@@ -422,7 +422,7 @@ The standard build's FT01C touch panel with **no bottom keys**, and the shortest
   -0.6 is as short as it safely goes.
 - **The wordmark** is on the back since 2026-10-23, like every build's: `LOGO_BACK_WORDMARK` y 12.55 (ink y 9.00-16.11), above
   its grip grooves (at y 2 / 4 / 6, a groove's top edge at 6.4), and the chin face is plain. The back icon follows the
-  case's centre (y 56.9, was 53.1), 46 mm above the wordmark. (Until then the wordmark was engraved on the face below the
+  case's centre (y 56.9, was 53.1), 44 mm above the wordmark's centre (31 mm clear of its ink). (Until then the wordmark was engraved on the face below the
   window, centred: `LOGO` y 6.605, computed from the 35-degree bevel; the light-strip chinless builds' y 6.95.)
 - No keys, cranks, rod, gate, rail, key openings, hook slots or rim relief: the rim is square along the chin (there is no seam V since 2026-10-23). It
   needs no rod, no gate, no coupons and no `ROD.txt` steps. The five side keys are part of the lid, as in every build.
@@ -743,7 +743,7 @@ credited as "a community member" until Ian gives a name and permission. Every ro
 main's built parts first and failed there (§8).
 
 - **Top screw relief, all 32 configurations.** The top screw thread-formed through a Ø1.70 pilot from the rim to
-  the front, 9.0 mm as printed (8.7 with the lid 0.3 open), which stripped heads. It now has an M2_CLEAR (Ø2.4)
+  the front, 9.0 mm as printed (8.7 with the lid 0.3 open); the community member reports it stripped heads. It now has an M2_CLEAR (Ø2.4)
   clearance bore from the rim to z 1.6 (`params.TOP_SCREW_CLEAR_TO` = `PCB_FRONT`, a layer line of the face-down tub:
   the 1.4-1.6 layer is clearance and the 1.6-1.8 layer is pilot), so the screw bites the last 3.8 mm of the pilot:
   **3.6 mm in the pilot as printed, 3.3 with the lid 0.3 open**, the same as H3 / H4, which bite on Ian's prints. The
@@ -776,7 +776,7 @@ main's built parts first and failed there (§8).
 - **The wordmark on the back, above the grip grooves.** `LOGO_BACK_WORDMARK`: 40.0 mm wide, 7.11 tall, 0.4 deep,
   mirrored so it reads from behind, centred on x 30, `y = max(GRIP_GROOVES_Y) + 6.55`: **y 4.95 on the keyed
   builds (ink y 1.40-8.51, 2.6 above the top groove's edge), y 12.55 on the chinless builds (ink 9.00-16.11)**. It is
-  4.15 clear of the H3 / H4 counterbores and 34 / 30 mm below the book icon (keyed / chinless). The back is solid to
+  4.1 clear of the H3 / H4 counterbores and 35 / 31 mm below the book icon (keyed / chinless). The back is solid to
   +1.2 under it (0.8 of floor left). The chin is plain (`LOGO = None`, the old place kept as `LOGO_CHIN` for the
   checks); the grip grooves stay.
 - **The parting line is square** on both halves (`SEAM_CHAMFER` = 0; it was a 0.4 x 45 degree V on each half, left

@@ -407,8 +407,13 @@ def project_settings(printer='cc2', filaments=1):
         out['prime_tower_width'] = str(TOWER_WIDTH)
         out['wipe_tower_x'] = [f'{TOWER_XY[0]:g}'] * TOWER_PLATES
         out['wipe_tower_y'] = [f'{TOWER_XY[1]:g}'] * TOWER_PLATES
+        # the supports (the lid's side-key enforcers) stay filament 1: with 0 ("the current filament") layer 1 lays them in
+        # whichever filament is loaded then, and that is the logo's (the black ink would then be under the key hinges)
+        out['support_filament'] = '1'
+        out['support_interface_filament'] = '1'
         out['different_settings_to_system'][0] = ';'.join(sorted({*changed, 'enable_prime_tower', 'prime_tower_width',
-                                                              'wipe_tower_x', 'wipe_tower_y'}))
+                                                              'wipe_tower_x', 'wipe_tower_y', 'support_filament',
+                                                              'support_interface_filament'}))
     # OrcaSlicer reads these without a check: present, one entry per filament
     short = [k for k in ('filament_colour', 'filament_ids', 'filament_type', 'filament_diameter', 'filament_settings_id') if len(out[k]) != nf]
     if short or set(dump) - set(out):
@@ -1046,11 +1051,11 @@ def lay_out(case):
                 p.enforcers = side_key_enforcers(p.side_keys)
                 p.key_zones = side_key_zones(p.side_keys)
                 p.key_bases = side_key_bases(p.side_keys)
-            if p.inlay_files:
-                p.inlays = load_inlays(p)
                 for n, m in p.enforcers:         # inside the part's own box, so the layout's gaps still hold
                     if (m.bounds[0][:2] < 0).any() or (m.bounds[1][:2] > p.mesh.extents[:2]).any():
                         errs.append(f'{p.name}: {n} is outside the part')
+            if p.inlay_files:
+                p.inlays = load_inlays(p)
         for p in parts:
             if p.spin and (p.enforcers or p.turned):
                 errs.append(f'{p.name}: spun and turned, or spun with enforcers')

@@ -624,11 +624,11 @@ the repo). What reaches the 3.68, all read back by `community.py` (build time, `
   in Y each (±0.36 of play in the 2.2 hole), the same as the 4.26's; the pins lay 1.89 round and locate the board to
   ±0.155. **The PCBA no longer clicks onto the midplate before the lid goes on**: keep the stack face down until the lid is
   on. The lid's Ø3.0 bore (floor -1.40) is unchanged under the tip at -1.00.
-- **Side pads 1.2 proud** (`TAB_PAD_PROUD`, was 1.5): 0.80 (+X, SW1) / 0.70 (-X, SW5 and SW7) proud at the click.
+- **Side pads 1.2 proud** (`TAB_PAD_PROUD`, was 1.5): 0.80 (SW1, SW4) / 0.70 (SW7) proud at the click.
 - **The wordmark on the back, above the grip grooves, and a plain chin.** `LOGO_BACK_WORDMARK`: 40.0 wide, 7.11 tall, **0.4
   deep** (set here: the light strip's chin wordmark was 0.3, a layer's mid-plane), mirrored, centred on x 30 at y 4.95 (ink
   y 1.40-8.51, 2.6 above the top groove's edge). The back is solid under it (0.6 of floor left: `crank_checks.logo_back_floor`),
-  clear of the corner counterbores (x at most 4.1 / at least 55.9, y at most -3.15) and 27 mm below the book icon. `LOGO` is None:
+  clear of the corner counterbores (x at most 4.1 / at least 55.9, y at most -3.15) and 28 mm below the book icon. `LOGO` is None:
   the chin is plain (the chin web stays, it also carries the keys' rail).
 - **The parting line is square** (`SEAM_CHAMFER` = 0; it was a 0.4 V, left off the tub's half over the key row). The
   key bars lost their V with it (`TAB_BAR_V`).

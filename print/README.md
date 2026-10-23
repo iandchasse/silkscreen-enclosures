@@ -278,7 +278,7 @@ sample needs it.
 the 4.26 standard case in Onshape and Ian took six of the changes, made here in both cases where they apply.
 - **Top screw (4.26, every configuration; the tub):** a 2.4 clearance bore from the rim to the board's front face, so the screw
   bites the last 3.8 mm of its pilot, 3.6 mm as printed (3.3 with the lid 0.3 open) like the two bottom screws, instead of 9.0
-  (it stripped heads). The 3.68's screws are unchanged.
+  (the community member reports it stripped heads). The 3.68's screws are unchanged.
 - **The wordmark is on the lid's back, above the grip grooves** (the lid), and the chin is plain (the tub). On the 4.26 it
   sits 2.6 mm above the top groove (the chinless case: above its grooves at 2 / 4 / 6); on the 3.68 the same distance. The
   book icon stays in the centre.

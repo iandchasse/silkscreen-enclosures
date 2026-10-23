@@ -595,7 +595,7 @@ TOP_BOSS_D = 3.4
 # below it: 2.0 deep, 10 layers on the layer grid (until 2026-10-13 1.8, 9 layers, sized for a pan head, so a socket
 # head stood 0.2 proud of the back). One layer deeper puts each screw 0.2 further in: H3 / H4 3.6 mm in the pilot (3.3
 # with the lid 0.3 open), the tip 0.2 short of the pilot's end and 0.8 from the front face; the top screw 3.6 (3.3)
-# since 2026-10-23: it had 9.0 (8.7) of thread-forming, which stripped heads, until TOP_SCREW_CLEAR_TO gave it a clearance
+# since 2026-10-23: it had 9.0 (8.7) of thread-forming, which the community member reports stripped heads, until TOP_SCREW_CLEAR_TO gave it a clearance
 # bore in front of its pilot (slice_check.as_printed reads all three on every build, as sliced).
 SCREW_L = 10.0
 M2_HEAD_CB = 4.2                          # counterbore for the head (dk 4.0 max)
