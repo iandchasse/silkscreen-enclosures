@@ -544,6 +544,19 @@ def main():
         cr = crank_checks.run(shapes)
         (OUT / 'crank.json').write_text(json.dumps(cr, indent=1))
         print('\n' + crank_checks.summary(cr))
+        community_check()
+
+
+def community_check():
+    """The 2026-10-23 changes (community.py): no seam V, pads 1.2 proud, plain pins, the wordmark on the back, a plain chin,
+    the two-colour inlays that fill their recesses -> out/<variant>/community.json. Asserts."""
+    import community
+    t0 = time.time()
+    print('\ncommunity changes (community.py):', flush=True)
+    rep, ok = community.check(OUT, out_json=OUT / 'community.json')
+    print(f'  ({time.time() - t0:.0f}s) -> out/{OUT.name}/community.json', flush=True)
+    assert all(ok.values()), f'community_check: {[k for k, v in ok.items() if not v]}'
+    return rep
 
 
 def _step_text(path):

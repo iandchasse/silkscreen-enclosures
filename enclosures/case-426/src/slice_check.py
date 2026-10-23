@@ -1417,6 +1417,22 @@ def key_fit_table(kf):
     return '\n'.join(L)
 
 
+def community_readback(name, gcode):
+    """The read-backs of the 2026-10-23 changes (community.py): the midplate's pins as laid (R2), the lid's back wordmark
+    open and the tub's chin plain as laid (R3). Rows marked 'community' stop the run (exit 1) like the screws do."""
+    import community
+    if name == 'midplate':
+        rows = [community.pins_laid(device_layers(name, gcode, ends='round'))]
+    elif name == 'lid':
+        rows = [community.logo_laid(device_layers(name, gcode), P.LOGO_BACK_WORDMARK, 'lid back wordmark', engraved=True)]
+    elif name == 'tub':
+        rows = [community.logo_laid(device_layers(name, gcode), P.LOGO_CHIN, "tub chin (the old wordmark's place)", engraved=False,
+                                    bed_high=True)]
+    else:
+        return []
+    return [{**r, 'community': True} for r in rows]
+
+
 def as_printed(report):
     """The screws as printed (2026-10-13, asprinted.py, the same module as the 3.68's): the lid's home on the tub, then
     each screw (H3, H4, the top screw) read from this build's lid and tub as sliced, put together where they meet: in
@@ -1435,7 +1451,14 @@ def as_printed(report):
     screws = {'H3': tuple(fps['H3']['cad'][:2]), 'H4': tuple(fps['H4']['cad'][:2]), 'top': P.TOP_SCREW}
     sc = [A.screw(n, x, y, L['lid'], L['tub'], h['dz'], P.SCREW_L, P.Z_BACK) for n, (x, y) in screws.items()]
     usb = usb_fit(report, h['dz'], posts)
-    return {'ok': bool(h['dz'] is not None and all(s['ok'] for s in sc) and usb['ok']), 'home': h, 'screws': sc, 'usb': usb}
+    # the top screw's relief (2026-10-23, R1): the M2_CLEAR bore from the rim to TOP_SCREW_CLEAR_TO (1.6), so the pilot as
+    # laid starts there, not at the rim (the screw then thread-forms 3.6, not 9.0)
+    top = next(s for s in sc if s['screw'] == 'top')
+    to = 1.6                                                  # Ian's number, not params: the check must not follow a change of it
+    relief = {'what': f'top screw: the pilot starts at the end of the clearance bore ({to}), not at the rim',
+              'pilot': top.get('pilot'), 'ok': bool(top.get('pilot') and top['pilot'][0] >= to - 0.05)}
+    return {'ok': bool(h['dz'] is not None and all(s['ok'] for s in sc) and usb['ok'] and relief['ok']), 'home': h, 'screws': sc,
+            'usb': usb, 'top_relief': relief}
 
 
 def usb_fit(report, dz, posts):
@@ -1495,6 +1518,7 @@ if __name__ == '__main__':
                 rb.append(side_wall_no_support(name, g))
             if name == 'lid':
                 rb.append(latch_no_support(name, g))
+            rb += community_readback(name, g)
             info['readback'] = rb
             bad = [r for r in rb if not r['ok']]
             print(f"  read-back: {len(rb) - len(bad)}/{len(rb)} ok" + ''.join(f'\n    FAIL {r}' for r in bad), flush=True)
@@ -1519,4 +1543,7 @@ if __name__ == '__main__':
         plot_layers(hw.ROOT / report['crank-M']['gcode'], [0.2, 4.0, 6.0], OUT / 'toolpath-crank.png', 'crank')
     if 'tub' in report and report['tub']['gcode']:
         plot_layers(hw.ROOT / report['tub']['gcode'], [0.2, 4.0, 7.0], OUT / 'toolpath-tub.png', 'tub')
-    sys.exit(0 if ap is None or ap['ok'] else 1)     # the as-printed screws stop the run (the read-backs above are read)
+    comm_bad = [r['what'] for v in report.values() if isinstance(v, dict) for r in v.get('readback', []) if r.get('community') and not r['ok']]
+    for w in comm_bad:
+        print(f'FAIL (community) {w}', flush=True)
+    sys.exit(0 if (ap is None or ap['ok']) and not comm_bad else 1)     # the as-printed screws stop the run (the read-backs above are read)

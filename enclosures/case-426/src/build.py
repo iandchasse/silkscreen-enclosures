@@ -2339,6 +2339,18 @@ def sides_check(shapes):
     return rep
 
 
+def community_check():
+    """The 2026-10-23 changes (community.py): no seam V, pads 1.2 proud, plain pins, the wordmark on the back, a plain chin,
+    the two-colour inlays that fill their recesses, the top screw's relief -> out/<build>/community.json. Asserts."""
+    import community
+    t0 = time.time()
+    print('\ncommunity changes (community.py):', flush=True)
+    rep, ok = community.check(OUT, out_json=OUT / 'community.json')
+    print(f'  ({time.time() - t0:.0f}s) -> out/{OUT.name}/community.json', flush=True)
+    assert all(ok.values()), f'community_check: {[k for k, v in ok.items() if not v]}'
+    return rep
+
+
 def build_variants(argv):
     """The print builds (params.PRINT_BUILDS), one process each, side by side, each logged to out/<build>/build.log;
     then the shared-part check and print/4.26/ (finish). With --only a,b: just those builds (any slugs), then each
@@ -2389,7 +2401,7 @@ def finish(builds, only):
 # The checks a build runs after build_all, by name: every one, unless SILKSCREEN_CHECKS (pipeline.py --quick) names
 # the ones to run (a quick iteration: the parts are the same, the checks' numbers can differ in their last digit,
 # since a check sees what the skipped ones did to the shapes; pipeline.py marks such a build quick).
-CHECKS = ('insertion', 'moves', 'lid_close', 'interference', 'bottom_keys', 'strip', 'chin', 'header', 'sides')
+CHECKS = ('insertion', 'moves', 'lid_close', 'interference', 'bottom_keys', 'strip', 'chin', 'header', 'sides', 'community')
 
 
 def _want(check):
@@ -2495,6 +2507,8 @@ def build_variant():
     if P.SIDES != 'all' and _want('sides'):
         print(f'\nside keys left out ({P.SIDES}; sides_check):', flush=True)
         sides_check(shapes)
+    if '--no-check' not in sys.argv and _want('community'):
+        community_check()
     if '--no-share' not in sys.argv:
         share_check()
 

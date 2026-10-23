@@ -1632,10 +1632,15 @@ def as_printed(report):
     import bayread
     bay = bayread.run(L, h['dz'])
     usb = usb_fit(report, h['dz'], posts)
+    # the 2026-10-23 changes as laid (community.py): the pins on H2 / H6, the back wordmark open, the chin plain
+    import community
+    comm = [community.pins_laid(device_layers('midplate', report['midplate'], ends='round')),
+            community.logo_laid(L['lid'], P.LOGO_BACK_WORDMARK, 'lid back wordmark', engraved=True),
+            community.logo_laid(L['tub'], P.LOGO_CHIN, "tub chin (the old wordmark's place)", engraved=False, bed_high=True)]
     ok = bool(h['dz'] is not None and all(s['ok'] for s in screws) and ov['ok'] and all(l['ok'] for l in latches)
-              and bay['ok'] and board['ok'] and usb['ok'])
+              and bay['ok'] and board['ok'] and usb['ok'] and all(c['ok'] for c in comm))
     return {'ok': ok, 'home': h, 'screws': screws, 'board': board, 'overlap': ov, 'latches': latches, 'bay': bay,
-            'usb': usb, 'expected_home_dz': P.LID_HOME_DZ}
+            'usb': usb, 'community': comm, 'expected_home_dz': P.LID_HOME_DZ}
 
 
 def usb_fit(report, dz, posts):

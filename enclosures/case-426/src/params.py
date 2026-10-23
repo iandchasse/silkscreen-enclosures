@@ -181,7 +181,7 @@ WINDOW_FACE_W = WINDOW_CHAMFER if LIGHT_STRIP else WINDOW_BEVEL_W
 # centre is y + 0.003): 6.605. The light-strip chinless builds keep Rev K's window, face to 13.9, and y 6.95. Keyed:
 # y stays 6.29 (set by the keys below it, not centred).
 _CHIN_FACE = (Y0 + FRONT_EDGE_R, hw.ACTIVE_CY - hw.ACTIVE_H / 2 - WINDOW_MARGIN - WINDOW_FACE_W)
-LOGO = dict(svg='hardware/logo/silkscreen-logo.svg', part='wordmark', width=40.0, depth=0.4, x=30.0,
+LOGO_CHIN = dict(svg='hardware/logo/silkscreen-logo.svg', part='wordmark', width=40.0, depth=0.4, x=30.0,
             y=6.29 if BOTTOM_KEYS else 6.95 if LIGHT_STRIP else round(sum(_CHIN_FACE) / 2 - 0.003, 3),
             min_feature=0.24, bold=0.055)
 # The site's book icon engraved in the centre of the back (the lid prints on it, like the chin
@@ -195,6 +195,11 @@ LOGO_BACK = dict(svg='hardware/logo/silkscreen-icon.svg', painter=True, mirror=T
 # -5.599999999999999 in floats
 GRIP_GROOVES_Y = (-5.6, -3.6, -1.6) if BOTTOM_KEYS else (2.0, 4.0, 6.0)
 GRIP_GROOVE = dict(x=(8.0, 52.0), width=0.8, depth=0.35)
+LOGO = LOGO_CHIN
+# The wordmark on the back above the grip grooves (2026-10-23, Ian, after a community member's edit), mirrored so it
+# reads right from behind. Ink 7.11 tall, 40.0 wide: keyed y 4.95 (ink 1.40..8.51, 2.6 above the top groove's edge),
+# chinless y 12.55 (ink 9.00..16.11; the grooves are at 2 / 4 / 6).
+LOGO_BACK_WORDMARK = dict(LOGO_CHIN, mirror=True, x=(X0 + X1) / 2, y=max(GRIP_GROOVES_Y) + 6.55)
 
 # ---- display ribbons: see panel.py (drawn 1:1 from the FT01C drawing) ----------------------
 FPC_GAP_CLR = 0.5                         # tub clearance around each ribbon where it folds past the glass edge
@@ -579,6 +584,7 @@ BOARD_SNAP_BORE = (3.0, -1.40)            # clearance bore in the lid's post for
 # of R56/C34 on the new board, which is what lets its post grow at all (Rev G 4.0).
 BOARD_POST_D = {'H1': 4.4, 'H2': 4.4, 'H5': 4.3, 'H6': 5.0}
 TOP_SCREW = (40.2, 112.8)                 # between the battery's corner and J6; boss clears the screen pocket
+TOP_SCREW_CLEAR_TO = PCB_FRONT              # 1.6: an M2_CLEAR bore from the rim to here, so the top screw thread-forms only the last 3.8 of its pilot, as H3/H4 do (2026-10-23)
 TOP_BOSS_D = 3.4
 # The screws: three M2 x 10 (SCREW_L, under the head), socket head caps (ISO 4762 / DIN 912: dk 3.8, k 2.0 max; Ian's,
 # 2026-10-13) or pan heads (ISO 7045: dk 4.0, k 1.6 max). The counterbores take either head flush with the back or

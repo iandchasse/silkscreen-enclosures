@@ -153,7 +153,8 @@ CHECK_PARTS = {'insertion': ('tub', 'midplate', 'ref_*'),
                'strip': ('tub', 'midplate', 'lid', 'lid_body', 'skey_*', 'ref_*'),
                'chin': ('tub', 'lid', 'lid_body'),
                'header': ('tub', 'lid', 'lid_body'),
-               'sides': ('tub', 'lid', 'lid_body', 'skey_*')}
+               'sides': ('tub', 'lid', 'lid_body', 'skey_*'),
+               'community': ('tub', 'lid', 'midplate', 'inlay_*')}
 
 
 def cross_reads(build):
@@ -221,8 +222,8 @@ def with_twins(builds):
     return sorted(need, key=PRIORITY.get)
 
 
-CHECKS = ('insertion', 'moves', 'lid_close', 'interference', 'bottom_keys', 'strip', 'chin', 'header', 'sides')   # = build.CHECKS
-CHECK_CODE = ('build', 'lid_close', 'mechanics', 'refs', 'panel', 'hw')   # a change here: every check (--quick)
+CHECKS = ('insertion', 'moves', 'lid_close', 'interference', 'bottom_keys', 'strip', 'chin', 'header', 'sides', 'community')   # = build.CHECKS
+CHECK_CODE = ('build', 'lid_close', 'mechanics', 'refs', 'panel', 'hw', 'community')   # a change here: every check (--quick)
 
 
 def log(msg):

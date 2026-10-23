@@ -55,7 +55,9 @@ SCREW_MIN_IN = 3.0         # mm of screw in the hole (1.5 d, thread-forming into
 SCREW_STANDOFF = 0.3       # and still that much with the lid left this far open
 SCREW_FACE_MIN = 0.8       # tip to the front face (four layers)
 SCREW_PILOT_MAX = 1.75     # the pilot as laid (1.7 drawn; a wider one bites less)
-PILOT_R = (0.5, 1.2)       # a layer is pilot if the axis is free by this much (0: solid cap; past it: air)
+PILOT_R = (0.5, 1.0)       # a layer is pilot if the axis is free by this much (0: solid cap; past it: air). 1.0, not 1.2
+                           # (2026-10-23): the pilot lays at r 0.85 and an M2_CLEAR bore at r 1.19, so past 1.0 a layer is
+                           # clearance, not pilot; at 1.2 the 4.26's top-screw relief read as pilot and failed on its laid 2.388
 LAYER = 0.2
 BOARD_PLUS = 0.16          # a board this much thicker than nominal (PCB_T +-10 %)
 BOARD_ROOM_MIN = 0.20      # the least board-to-boss room at H3/H4 with that board
@@ -434,6 +436,11 @@ def show(r):
               + ('' if not bad else '  ' + '; '.join(f"{l['latch']}: {', '.join(l['fails'])}" for l in bad)))
     print(f"  as printed, screws (an M2x{r['screws'][0]['L']:g} socket head cap or pan head): "
           f"{'PASS' if all(s['ok'] for s in r['screws']) else 'FAIL'}")
+    if 'top_relief' in r:
+        t = r['top_relief']
+        print(f"  as printed, {t['what']}: pilot {t['pilot']}  {'PASS' if t['ok'] else 'FAIL'}")
+    for c in r.get('community', []):
+        print(f"  as printed, {c['what']}: {'PASS' if c['ok'] else 'FAIL'}")
     if 'usb' in r:
         show_usb(r['usb'])
 

@@ -221,7 +221,7 @@ WINDOW_CORNER_R = 0.0 if LIGHT_STRIP else 0.4
 # back. The chin's skin is thickened inside (tub.chin_web), so a 0.3 engraving still leaves >= 1 mm there.
 # depth: 0.3 puts the ink's floor on a layer's mid-plane; as sliced, x3's printed 0.4 deep (two layers), but on the
 # raised standard face 0.3 sliced to one layer (0.2). The standard's is 0.4, on the layer grid: two layers again
-LOGO = dict(svg='hardware/logo/silkscreen-logo.svg', part='wordmark', width=40.0, depth=0.3 if LIGHT_STRIP else 0.4,
+LOGO_CHIN = dict(svg='hardware/logo/silkscreen-logo.svg', part='wordmark', width=40.0, depth=0.3 if LIGHT_STRIP else 0.4,
             x=30.0, y=5.6,
             min_feature=0.24, bold=0.055)
 LOGO_BACK = dict(svg='hardware/logo/silkscreen-icon.svg', painter=True, mirror=True, width=26.0, depth=0.2,   # 0.3 was a
@@ -233,6 +233,12 @@ KEY_EDGE_CHAMFER = 0.3                    # key openings' front edge (both build
                                           # tub's face, so the light strip's 45-degree wells are gone)
 GRIP_GROOVES_Y = (-5.6, -3.6, -1.6)       # shallow grooves across the back's lower edge
 GRIP_GROOVE = dict(x=(8.0, 52.0), width=0.8, depth=0.2)    # was 0.3, a mid-plane (as LOGO_BACK)
+LOGO = LOGO_CHIN
+# The wordmark on the back above the grip grooves (2026-10-23, Ian, after a community member's edit), mirrored so it
+# reads right from behind. depth 0.4 set here (two whole layers on the back; the light-strip chin's 0.3 is a mid-plane):
+# the floor there is LID_T 1.0, so 0.6 is left. Ink 7.11 tall, 40.0 wide: y 4.95, ink 1.40..8.51, 2.6 above the top
+# groove's edge, clear of the corner counterbores and 27 mm below the icon.
+LOGO_BACK_WORDMARK = dict(LOGO_CHIN, depth=0.4, mirror=True, x=(X0 + X1) / 2, y=max(GRIP_GROOVES_Y) + 6.55)
 
 # ---- display ribbon: see panel.py ----------------------------------------------------------
 FPC_GAP_CLR = 0.5                         # tub clearance round the FPC where it folds past the glass edge
