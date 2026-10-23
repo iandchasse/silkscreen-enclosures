@@ -263,7 +263,7 @@ lid too.** Board Rev 1.02 puts a surface-mount USB-C socket where Rev 1.0 has a 
 0.14 mm nearer the board. As printed, a plug in it touched the port hole's board-side edge in both sizes (in the 3.68 a
 Rev 1.0 plug was also close to the lid's port block on the other side). The hole now reaches one layer further toward the board
 (the edge moves one layer, 0.2 mm as printed, onto a layer line in both tubs), the divot moves with it (it is 0.16 mm taller in
-the 4.26, 0.23 mm in the 3.68, on the board side only), and in the 3.68 the lid's port block is one layer (0.1 mm) lower.
+the 4.26, 0.23 mm in the 3.68, on the board side only), and in the 3.68 the lid's port block is one layer lower (0.2 mm as printed; 0.1 drawn).
 **Reprint the tub you use (4.26: `4.26/tub-*` for your configuration, every configuration's tub changes the same way; 3.68:
 `3.68/tub-standard` or `3.68/tub-light-strip`), and for the 3.68 also `3.68/lid`.** The 4.26 lid, the midplates, keys, cranks,
 gate and rod are unchanged, and in the plate files only those objects changed. The new tub fits a Rev 1.0 board too: a

@@ -580,7 +580,7 @@ over the lid's back, exactly on a mid-plane, and printed one layer high.
 | | was | now | whole layers from |
 |---|---|---|---|
 | the hole's board-side edge (z) | −0.575, printed −0.53 | **−0.33** | the tub's face (standard 4.47, light strip 5.27): 24 / 28 |
-| the divot's board-side edge (z) | 1.045, printed 1.00 | **1.27** | the tub's face: 16 / 20 |
+| the divot's board-side edge (z) | 1.045, printed 1.07 | **1.27** | the tub's face: 16 / 20 |
 | the lid's port block top (z) | −3.335, printed −3.235 | **−3.435** | the lid's back (−8.435): 25 |
 
 The hole keeps its width (8.54) and corner radius (1.1): now 8.54 × 3.105 mm, z −3.435 to −0.33. The divot is 11.5 × 6.225
