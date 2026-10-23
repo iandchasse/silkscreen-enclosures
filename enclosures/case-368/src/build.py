@@ -47,7 +47,8 @@ SIDE_KEYS = [f'skey_{r}' for r in P.TAB_ROOTS]
 # (shared_check asserts it), and the lid's split bodies as well. The crank keys (2026-09-26) stand a fixed height over
 # their own tub's face, so the bottom keys are tub-specific too: a light-strip owner prints the tub and four keys.
 TUB_SPECIFIC = ['tub', *(f'key_{r}' for r in P.KEY_REFS)]
-SHARED = [p for p in PARTS if p not in TUB_SPECIFIC] + CRANKS
+INLAYS = {'inlay_wordmark': P.LOGO_BACK_WORDMARK, 'inlay_icon': P.LOGO_BACK}   # the two-colour logo's parts (logo.inlay)
+SHARED = [p for p in PARTS if p not in TUB_SPECIFIC] + CRANKS + list(INLAYS)
 PRINT_DIR = hw.ROOT.parents[1] / 'print' / '3.68'    # committed, at the repo root (write_print)
 
 
@@ -64,6 +65,15 @@ def build_all():
         if n != 1:
             print(f'  WARNING: {pid} is {n} separate solids', flush=True)
     printed_lid = shapes['lid']
+    # the two-colour logo (2026-10-23): the bodies that fill the lid's two engravings, each its own part (not in PARTS or
+    # shapes: they touch the lid by faces and would show in the interference pairs). plates.py puts them in the lid's
+    # print frame; make_plates.py's -2colour projects print them as filament 2.
+    import logo
+    for name, cfg in INLAYS.items():
+        wp = logo.inlay(cfg)
+        cq.exporters.export(wp, str(OUT / f'{name}.stl'), tolerance=0.02, angularTolerance=0.1)
+        cq.exporters.export(wp, str(OUT / f'{name}.step'))
+        print(f'{name:14s} solids={len(wp.solids().vals())} vol={wp.val().Volume():8.2f} mm3  ({cfg["depth"]:g} deep)', flush=True)
     shapes['lid'] = lid.build(keys=False)
     cq.exporters.export(shapes['lid'], str(OUT / 'lid_body.stl'), tolerance=0.02, angularTolerance=0.1)
     for r in P.TAB_ROOTS:
@@ -678,11 +688,11 @@ def write_print(dirs):
     import trimesh, plates
     PRINT_DIR.mkdir(parents=True, exist_ok=True)
     items = ([(f'tub-{v}', dirs[v], 'tub') for v in variant.VARIANTS] + [(KEY_FILES[v], dirs[v], KEY_FILES[v]) for v in variant.VARIANTS]
-             + [(p, dirs['light-strip'], p) for p in SHARED if not p.startswith('crank_')]
+             + [(p if p not in INLAYS else 'lid-' + p.replace('_', '-'), dirs['light-strip'], p) for p in SHARED if not p.startswith('crank_')]
              + [(f"{c}-{KEY_FILES[v].split('-')[1]}", dirs[v], c) for v in variant.VARIANTS for c in COUPONS])
     made = {'ROD.txt'}
     for name, d, part in items:
-        plates.orient(trimesh.load(d / f'{part}.stl'), part).export(PRINT_DIR / f'{name}.stl')
+        (plates.inlay_printed(part, d) if part in INLAYS else plates.orient(trimesh.load(d / f'{part}.stl'), part)).export(PRINT_DIR / f'{name}.stl')
         dest = PRINT_DIR / f'{name}.step'
         src = d / f'{part}.step'
         if part == 'gate':                                   # its STEP in the print pose, as its STL

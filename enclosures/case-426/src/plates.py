@@ -63,6 +63,19 @@ def oriented(name, out=OUT):
     return m
 
 
+INLAYS = ('inlay_wordmark', 'inlay_icon')      # build.py's two-colour logo parts: they print as the lid's own first layers
+
+
+def inlay_printed(name, out=OUT):
+    """An inlay (out/<build>/inlay_*.stl, CAD frame) in the lid's print frame: the lid prints as it is drawn (ORIENT: no
+    turn) moved to its min corner, so the inlay moves by the same shift (never oriented(), which would put it at its own
+    min corner)."""
+    lid = trimesh.load(out / 'lid.stl')
+    m = trimesh.load(out / f'{name}.stl')
+    m.apply_translation(-lid.bounds[0])
+    return m
+
+
 def overhangs(m, limit_deg=45.0, bed_tol=0.25):
     n = m.face_normals
     z = m.triangles_center[:, 2]
@@ -130,6 +143,12 @@ if __name__ == '__main__':
                         'volume_mm3': round(float(m.volume), 1), 'mass_g_PLA': round(float(m.volume) * 1.24e-3, 2),
                         **overhangs(m)}
         m.export(PRINT / f'{name}.stl')
+    for name in INLAYS:                                  # the two-colour logo, in the lid's frame (not on the fit-check plate)
+        m = inlay_printed(name)
+        report[name] = {'size_mm': [round(v, 2) for v in m.extents], 'watertight': bool(m.is_watertight),
+                        'volume_mm3': round(float(m.volume), 1), 'mass_g_PLA': round(float(m.volume) * 1.24e-3, 3), 'overhang_mm2': 0.0,
+                        'largest_regions': []}
+        m.export(PRINT / f'{name}.stl')
     placed = layout({k: meshes[k].copy() for k in PLATE})
     bounds = np.array([m.bounds for m in placed.values()])
     lo, hi = bounds[:, 0, :].min(axis=0), bounds[:, 1, :].max(axis=0)
@@ -138,13 +157,13 @@ if __name__ == '__main__':
                         'parts': list(placed), 'fits': bool(lo[0] >= 0 and lo[1] >= 0 and hi[0] <= BED and hi[1] <= BED)}
     report['_checks'] = {f'{k} overhang {report[k]["overhang_mm2"]} <= {KEY_OVERHANG_MAX} mm2':
                          report[k]['overhang_mm2'] <= KEY_OVERHANG_MAX for k in KEYS}
-    report['_checks'].update({f'{k} watertight': report[k]['watertight'] for k in ORIENT})
+    report['_checks'].update({f'{k} watertight': report[k]['watertight'] for k in (*ORIENT, *INLAYS)})
     report['_checks']['plate fits'] = report['_plate']['fits']
     (PRINT / 'print-report.json').write_text(json.dumps(report, indent=1))
     # parts this build no longer makes (Rev K's rocker keys, key_SW*) would otherwise linger here, and so
     # would the one-plate 3MF and STL this script wrote until 2026-09-28 (make_plates.py's plate file replaces it)
     for f in [*PRINT.glob('*.stl'), *PRINT.glob('*.3mf')]:
-        if f.stem not in ORIENT:
+        if f.stem not in ORIENT and f.stem not in INLAYS:
             f.unlink()
             print('removed stale', f.name)
     for k, v in report.items():

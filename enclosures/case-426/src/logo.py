@@ -137,7 +137,7 @@ WHITE = ('#fff', '#ffffff', 'white')
 def outline(path=None, painter=False):
     """Logo as a shapely geometry in SVG units (y down), plus the viewBox. With painter=True the
     shapes are composited in document order (black adds, white cuts away) instead of unioned."""
-    src = (hw.ROOT / (path or P.LOGO['svg'])).read_text(encoding='utf-8')
+    src = (hw.ROOT / (path or P.LOGO_CHIN['svg'])).read_text(encoding='utf-8')
     vb = [float(v) for v in NUM.findall(re.search(r'viewBox="([^"]+)"', src).group(1))]
     shapes, ink = [], None
     stack = [(np.eye(3), '#000')]                            # transform and inherited fill
@@ -181,9 +181,10 @@ def outline(path=None, painter=False):
 
 
 def placed(cfg=None):
-    """Logo in CAD XY (mm), sized and centred per params.LOGO, thin features removed.
-    With cfg['part'] == 'wordmark' only the lettering is used (the icon sits right of x=2990)."""
-    cfg = cfg or P.LOGO
+    """Logo in CAD XY (mm), sized and centred per cfg (params.LOGO_BACK, LOGO_BACK_WORDMARK or the old LOGO_CHIN), thin
+    features removed. With cfg['part'] == 'wordmark' only the lettering is used (the icon sits right of x=2990)."""
+    if cfg is None:
+        raise ValueError('logo.placed: pass the logo dict (params.LOGO is None since the wordmark moved to the back)')
     g, vb = outline(cfg['svg'], painter=cfg.get('painter', False))
     if cfg.get('part') == 'wordmark':
         g = so.unary_union([p for p in getattr(g, 'geoms', [g]) if p.bounds[2] < 2990])
@@ -217,8 +218,18 @@ def solid(z0, z1, cfg=None):
     return cq.Workplane(obj=cq.Compound.makeCompound(prisms))
 
 
+def inlay(cfg):
+    """The body that exactly fills cfg's engraving in the lid's back (2026-10-23): the placed logo's prisms from the back
+    face (Z_BACK) to the engraving's floor, inside the outer body. A second-colour part (make_plates' two-colour
+    projects: it prints with the lid, as the lid's first layers in filament 2); the lid itself is unchanged. The depth
+    must be whole layers, so the inlay is whole layers of filament 2."""
+    import body
+    assert abs(cfg['depth'] / P.LAYER - round(cfg['depth'] / P.LAYER)) < 1e-9, ('inlay depth not whole layers', cfg['depth'])
+    return solid(P.Z_BACK - 0.2, P.Z_BACK + cfg['depth'], cfg).intersect(body.outer_body())
+
+
 if __name__ == '__main__':
-    g = placed()
+    g = placed(P.LOGO_BACK_WORDMARK)
     print('logo polygons', len(getattr(g, 'geoms', [g])), 'bounds', [round(v, 2) for v in g.bounds], 'area', round(g.area, 1))
     import matplotlib
     matplotlib.use('Agg')

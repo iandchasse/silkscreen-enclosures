@@ -25,8 +25,11 @@ def _outline_sketch(inset):
 def seam_chamfer(upper):
     """Cutter for a 45-degree chamfer on the outer edge at the parting plane, on the tub
     (upper=True) or the lid side. Together they form a small V that makes the parting line
-    deliberate and hides a tenth of misalignment."""
+    deliberate and hides a tenth of misalignment. None when params.SEAM_CHAMFER is 0 (since 2026-10-23 both halves
+    are square at the parting line)."""
     c = P.SEAM_CHAMFER
+    if c <= 0:
+        return None
     e = 0.02                                   # the frustum overruns the slab so no sliver is left
     cx, cy = (P.X0 + P.X1) / 2, (P.Y0 + P.Y1) / 2
     if upper:

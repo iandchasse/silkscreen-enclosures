@@ -258,8 +258,11 @@ def rim_chamfer():
     into them in the V over every key. Over the key row the tub's rim meets the lid's chamfer square; the step at each
     end is vertical."""
     from body import seam_chamfer
+    v = seam_chamfer(upper=True)
+    if v is None:                                            # no V at all since 2026-10-23
+        return None
     x0, x1 = rim_relief()
-    return seam_chamfer(upper=True).cut(box(x0, x1, P.Y0 - 3.0, P.Y0 + 1.0, P.SEAM - 1.0, P.SEAM + 1.0))
+    return v.cut(box(x0, x1, P.Y0 - 3.0, P.Y0 + 1.0, P.SEAM - 1.0, P.SEAM + 1.0))
 
 
 def screw_bosses():
@@ -275,6 +278,9 @@ def screw_bosses():
     tx, ty = P.TOP_SCREW
     add.append(zcyl(tx, ty, P.SEAM, P.LIP + 0.01, P.TOP_BOSS_D))
     cut.append(zcyl(tx, ty, P.SEAM - 0.1, P.Z_FRONT - 0.55, P.M2_PILOT))
+    # the top screw's relief (2026-10-23): an M2_CLEAR bore from the rim to TOP_SCREW_CLEAR_TO, so the screw thread-forms only the
+    # last 3.8 of the pilot (3.6 as printed), as H3 / H4 do; it had 9.0 and stripped heads. 1.6 is a layer line of the face-down tub
+    cut.append(zcyl(tx, ty, P.SEAM - 0.1, P.TOP_SCREW_CLEAR_TO, P.M2_CLEAR))
     return add, cut
 
 
@@ -452,11 +458,13 @@ def build():
             *u['tub_cuts'], reset_hole(), *([header_opening()] if P.DEV_HEADER else []), *joint.tub_cuts(), *detent_pockets()]
     if P.LIGHT_STRIP:
         cut += strip_cuts()
-    if keyed:
-        cut.append(rim_chamfer())
+    if keyed:                                                # the seam's V (None: square since 2026-10-23)
+        v = rim_chamfer()
     else:                                                    # no key row: the seam's full V all round
         from body import seam_chamfer
-        cut.append(seam_chamfer(upper=True))
+        v = seam_chamfer(upper=True)
+    if v is not None:
+        cut.append(v)
     for c in cut:
         tub = tub.cut(c)
     if P.LIGHT_STRIP:

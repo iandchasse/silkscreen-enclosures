@@ -82,6 +82,7 @@ def stale_files():
     return sorted(set(out))
 
 
+INLAYS = {'inlay_wordmark': P.LOGO_BACK_WORDMARK, 'inlay_icon': P.LOGO_BACK}   # the two-colour logo's parts (logo.inlay)
 PRINTED_LID = []        # build_all: the printed lid (with its keys) as built; shapes['lid'] is its body (sides_check)
 
 
@@ -100,6 +101,15 @@ def build_all():
         print(f'{pid:10s} solids={n} vol={wp.val().Volume():8.1f} mm3  {time.time() - t0:5.1f}s', flush=True)
     printed_lid = shapes['lid']
     PRINTED_LID[:] = [printed_lid]
+    # the two-colour logo (2026-10-23): the bodies that fill the lid's two engravings, each its own part (not in PARTS or
+    # shapes: they touch the lid by faces and would show in the interference pairs). plates.py puts them in the lid's
+    # print frame; make_plates.py's -2colour projects print them as filament 2.
+    import logo
+    for name, cfg in INLAYS.items():
+        wp = logo.inlay(cfg)
+        cq.exporters.export(wp, str(OUT / f'{name}.stl'), tolerance=0.02, angularTolerance=0.1)
+        cq.exporters.export(wp, str(OUT / f'{name}.step'))
+        print(f'{name:14s} solids={len(wp.solids().vals())} vol={wp.val().Volume():8.2f} mm3  ({cfg["depth"]:g} deep)', flush=True)
     shapes['lid'] = lid.build(keys=False)
     cq.exporters.export(shapes['lid'], str(OUT / 'lid_body.stl'), tolerance=0.02, angularTolerance=0.1)
     for r in P.TAB_ROOTS:
@@ -1502,7 +1512,7 @@ def bottom_keys_summary(rep):
 # builds have the face at 6.00 - crank-M, crank-T and the chin and gate coupons, whose pieces of the tub are cut
 # away from anything the light strip changes) and the side gate. Both have all four page keys, so all five side keys,
 # whatever layout this process builds.
-SHARED = ['lid', 'lid_body', *[f'skey_{r}' for r in P.TAB_ROOTS_ALL], 'midplate',
+SHARED = ['lid', 'lid_body', *INLAYS, *[f'skey_{r}' for r in P.TAB_ROOTS_ALL], 'midplate',
           *[f'{k}_{r}' for k in ('key', 'crank') for r in hw.BOTTOM_SWITCHES], 'gate', *BOTTOM_KEY_PRINT_PARTS]
 # What each option changes: an option build shares every other part with the build without that option (its twin).
 #   nodev     the tub and the lid (their top wall: the header opening closed, the top tongue and the lid's groove for it)
@@ -1523,7 +1533,7 @@ def part_files(build):
     c = variants.parse(build)
     bk = ([*[f'{k}_{r}' for k in ('key', 'crank') for r in hw.BOTTOM_SWITCHES], 'gate', *BOTTOM_KEY_PRINT_PARTS]
           if c.bottom_keys else [])
-    return ['tub', 'lid', 'midplate', *bk, 'lid_body', *side_key_files(build)]
+    return ['tub', 'lid', 'midplate', *bk, 'lid_body', *INLAYS, *side_key_files(build)]
 
 
 def shares(build):
@@ -1731,10 +1741,12 @@ def _step_text(path):
 # once, from the standard build, and each build's own parts. Declared, so print/4.26/ is exactly these files: a
 # print build is added here and to PRINT_BUILDS together, and the default run (which builds every print build)
 # makes them all.
-PRINT_JOBS = {'standard': [(n, n) for n in ('lid', 'midplate', *BOTTOM_KEY_PRINT_PARTS, 'gate')] + [('tub', 'tub-standard')],
+PRINT_JOBS = {'standard': [(n, n) for n in ('lid', 'midplate', *BOTTOM_KEY_PRINT_PARTS, 'gate')] + [('tub', 'tub-standard'),
+                                                                                                 ('inlay_wordmark', 'lid-inlay-wordmark'), ('inlay_icon', 'lid-inlay-icon')],
               'light-strip': [('tub', 'tub-light-strip')],
               # chinless: its own tub and lid; the midplate (and the side keys, part of the lid) are the shared ones
-              'chinless': [('tub', 'tub-chinless'), ('lid', 'lid-chinless')],
+              'chinless': [('tub', 'tub-chinless'), ('lid', 'lid-chinless'), ('inlay_wordmark', 'lid-chinless-inlay-wordmark'),
+                           ('inlay_icon', 'lid-chinless-inlay-icon')],
               # light-strip chinless (2026-10-07): only its tub; it prints the chinless lid (share_check: the lid never
               # depends on the panel) and the shared midplate
               'light-strip-chinless': [('tub', 'tub-light-strip-chinless')]}
@@ -1763,7 +1775,7 @@ def write_print(built):
     jobs = [(part, v, name) for v in P.PRINT_BUILDS for part, name in PRINT_JOBS[v]]
     made = set()
     for part, v, name in jobs:
-        plates.oriented(part, src[v]).export(PRINT / f'{name}.stl')
+        (plates.inlay_printed(part, src[v]) if part in INLAYS else plates.oriented(part, src[v])).export(PRINT / f'{name}.stl')
         step, dest = src[v] / f'{part}.step', PRINT / f'{name}.step'
         if part == 'gate':                                  # its STEP in the print pose, as its STL
             step = src[v] / 'gate-print.step'
@@ -1853,17 +1865,18 @@ def chin_check(shapes):
       side walls    beside the chin as they are above it
       corners       the -X lower corner is the +X one mirrored: no rod hole, gate slot (mouth, cavity, floor,
                     chamfers, lead-in) or gate notch in the tongue
-      seam          the seam's V runs the chin's whole width (no rim relief over a key row)
+      seam          the rim is square along the chin's whole width (a V along it, without the rim relief over a key
+                    row, until 2026-10-23)
       tongues       both side tongues start at TONGUE_RUNS and are whole to y 9 (no gate notch)
       tub           the same as its keyed twin's tub above y 11 (variants.twin(BUILD, 'chin'): the same panel, side
                     keys and dev header, with bottom keys; standard for chinless, light-strip for light-strip-chinless)
       lid           the H3 / H4 bosses run into the chin wall, the tray between them is empty, the grip grooves are at
-                    GRIP_GROOVES_Y, and the printed lid is the keyed twin's away from the chin and the back icon
-                    (y 8-40 and 72-Y1)
+                    GRIP_GROOVES_Y, and the printed lid is the keyed twin's away from the chin, the back wordmark and
+                    the back icon (above both wordmarks' ink to y 40, and 72-Y1)
                     The twin's tub.step and lid.step must be there (pipeline.py's cross_reads bring the twin into the
                     run): when they are not, these two FAIL; they are never skipped.
-      wordmark      the engraved ink centred on the face below the window (the front round's tangent Y0 + FRONT_EDGE_R
-                    to the window's bevel on the face, WIN_Y0 - WINDOW_FACE_W), as cut in the tub; the back icon
+      wordmark      the chin face is plain since 2026-10-23 (the old wordmark's place is solid in the tub); the wordmark is
+                    on the back above the grip grooves (community.py reads it); the back icon
                     centred on the back
       board edge    the board's bottom edge to the tub's chin (board at 0 / -0.2 / -0.4 in Y; the routed outline is
                     +-0.2 more): >= 0.15 at -0.4
@@ -1895,10 +1908,16 @@ def chin_check(shapes):
     empty = {'chin cavity empty: no rail, rings, seats, slot strips or webs': (6.0, 54.0, P.BOT_IN + 0.05, y1, P.SEAM + 0.05, P.LIP - 0.02),
              'chin cavity empty below the screw bosses': (0.2, 59.8, P.BOT_IN + 0.05, y1, P.SEAM + 0.05, P.PCB_FRONT - 0.05),
              'chin cavity empty out to the side walls': (LOW_X0 + 0.06, LOW_X1 - 0.06, P.BOT_IN + 1.55, y1, P.SEAM + 0.05, P.PCB_FRONT - 0.05),
-             "seam's V along the whole chin": (1.0, 59.0, P.Y0 - 0.01, P.Y0 + 0.15, P.SEAM, P.SEAM + 0.2)}
+             }
+    if P.SEAM_CHAMFER > 0:
+        empty["seam's V along the whole chin"] = (1.0, 59.0, P.Y0 - 0.01, P.Y0 + 0.15, P.SEAM, P.SEAM + 0.2)
     for k, b in empty.items():
         rep[k] = _empty(T, b)
         ok[k] = rep[k][1]
+    if P.SEAM_CHAMFER <= 0:                                  # no V (2026-10-23): the rim runs square along the whole chin
+        k = 'seam square along the whole chin'
+        rep[k] = _full(T, (1.0, 59.0, P.Y0 + 0.01, P.Y0 + 0.15, P.SEAM + 0.01, P.SEAM + 0.2))
+        ok[k] = rep[k][2]
     # the lower corners: the -X one (rod hole, gate slot, gate notch) against the +X one mirrored. The board's H3 and H4
     # are 0.005 off a mirror pair (x 3.7475 / 56.2475: 0.13 mm3 at their bosses and pilots), so the boss over H3 and
     # the mirror of H4's are left out of both (the rod's hole is below them, the gate's slot outside them)
@@ -1990,7 +2009,10 @@ def chin_check(shapes):
                 d = [float('nan')] * 2
             return va, vc, d
 
-        for y0, y1 in ((8.0, 40.0), (72.0, 95.0), (95.0, 105.0), (105.0, P.Y1 + 1.0)):
+        import logo                                          # the first band starts above this build's back wordmark and the keyed twin's
+        ink_top = max(logo.placed(P.LOGO_BACK_WORDMARK).bounds[3],
+                      logo.placed(dict(P.LOGO_BACK_WORDMARK, y=-1.6 + (P.LOGO_BACK_WORDMARK['y'] - max(P.GRIP_GROOVES_Y)))).bounds[3])
+        for y0, y1 in ((round(ink_top + 0.5, 3), 40.0), (72.0, 95.0), (95.0, 105.0), (105.0, P.Y1 + 1.0)):
             va, vc, d = band(y0, y1)
             row = {'mm3': [round(va, 4), round(vc, 4)], 'differences_mm3': [round(x, 5) for x in d]}
             if not max(d) < 1e-3 and abs(va - vc) < 1e-3:       # a failed cut: split the band and try again
@@ -2007,19 +2029,16 @@ def chin_check(shapes):
     else:
         rep[key] = not_built if not std_lid.exists() else f'NOT BUILT: out/{OUT.name}/lid.step'
         ok[f'printed lid = the {ref} lid away from the chin and the back icon'] = False
-    # the wordmark as engraved in the tub (its 0.4 deep ink, read 0.2 under the face), on the face below the window
-    f0, f1 = P.Y0 + P.FRONT_EDGE_R, P.WIN_Y0 - P.WINDOW_FACE_W
-    ink = box(6.0, 54.0, f0 + 0.01, f1 - 0.01, P.Z_FRONT - 0.3, P.Z_FRONT - 0.1).val().cut(T).BoundingBox()
-    m0, m1 = ink.ymin - f0, f1 - ink.ymax
-    rep['wordmark (front face below the window; ink as cut)'] = {
-        'face_y': [round(f0, 3), round(f1, 3)], 'face_centre_y': round((f0 + f1) / 2, 3), 'cfg_y': P.LOGO['y'],
-        'ink_x': [round(ink.xmin, 3), round(ink.xmax, 3)], 'ink_y': [round(ink.ymin, 3), round(ink.ymax, 3)],
-        'ink_centre_y': round((ink.ymin + ink.ymax) / 2, 3), 'margins_below_above': [round(m0, 3), round(m1, 3)]}
-    ok['wordmark centred on the face below the window (margins within 0.05)'] = abs(m0 - m1) <= 0.05 and min(m0, m1) > 1.0
+    # the chin face is plain since 2026-10-23: the old wordmark's place (its 0.4 deep ink, read 0.2 under the face) is solid
+    import logo
+    pv = logo.solid(P.Z_FRONT - 0.3, P.Z_FRONT - 0.1, P.LOGO_CHIN).val()
+    frac = T.intersect(pv).Volume() / pv.Volume()
+    rep['chin face plain (the old wordmark place; solid fraction)'] = round(frac, 5)
+    ok['chin face plain (no wordmark: the old ink place is solid)'] = frac >= 0.9999 and not P.LOGO
     # the back icon, as engraved in the lid, on the back's flat (from the back round's tangent at each end); read
     # between the grip grooves and the top screw's counterbore (y 110.7), which are the back's only other cuts
     b0, b1 = P.Y0 + P.BACK_EDGE_R, P.Y1 - P.BACK_EDGE_R
-    lb = box(8.0, 52.0, max(P.GRIP_GROOVES_Y) + 1.0, 105.0, P.Z_BACK + 0.1, P.Z_BACK + 0.3).val().cut(L).BoundingBox()
+    lb = box(8.0, 52.0, logo.placed(P.LOGO_BACK_WORDMARK).bounds[3] + 1.0, 105.0, P.Z_BACK + 0.1, P.Z_BACK + 0.3).val().cut(L).BoundingBox()
     rep['back icon (back flat; ink as cut)'] = {'flat_y': [round(b0, 3), round(b1, 3)], 'flat_centre_y': round((b0 + b1) / 2, 3),
                                                 'ink_x': [round(lb.xmin, 3), round(lb.xmax, 3)], 'ink_y': [round(lb.ymin, 3), round(lb.ymax, 3)],
                                                 'ink_centre': [round((lb.xmin + lb.xmax) / 2, 3), round((lb.ymin + lb.ymax) / 2, 3)]}

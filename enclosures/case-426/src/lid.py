@@ -3,7 +3,7 @@
   - two M2 screws pass through the lid, the PCB's H3/H4 holes and into the tub bosses,
     clamping the PCB; a third screw at the top centre closes the top edge
   - four posts support the PCB rear at H1/H2/H5/H6: H5's carries the locating pin, the other three
-    are bored for the midplate's snap barbs
+    are bored round the midplate's pins
   - battery bay: two bridge springs press the pack lightly forward into the midplate's slot; they
     stop short of the cell's right edge, where spare lead wound on the midplate's cleats runs
   - carries the lower part of the USB-C recess, the block that closes the port hole's lower edge,
@@ -12,7 +12,8 @@
     side keys' slots to hook pockets in the tub's wall (joint.py)
   - the five side keys (Rev J, sidekeys.py): each is the lid's side wall cut free on three sides and
     carried up past the parting line into its slot in the tub, so it prints standing on the back face
-  - the site's book icon engraved 0.4 mm into the centre of the back (params.LOGO_BACK)
+  - the site's book icon engraved 0.4 mm into the centre of the back (params.LOGO_BACK) and the wordmark above the grip
+    grooves (params.LOGO_BACK_WORDMARK; it was in the chin until 2026-10-23)
 Printed back face down.
 """
 import cadquery as cq
@@ -151,10 +152,15 @@ def build(keys=True):
         lid = lid.cut(rbox(g['x'][0], g['x'][1], gy - g['width'] / 2, gy + g['width'] / 2,
                            P.Z_BACK - 0.5, P.Z_BACK + g['depth'], g['width'] / 2 - 0.01))
     from body import seam_chamfer
-    lid = lid.cut(seam_chamfer(upper=False))
+    v = seam_chamfer(upper=False)
+    if v is not None:                                # square since 2026-10-23
+        lid = lid.cut(v)
     if P.LOGO_BACK:                                  # the site's book icon, centred on the back
         import logo
         lid = lid.cut(logo.solid(P.Z_BACK - 0.2, P.Z_BACK + P.LOGO_BACK['depth'], P.LOGO_BACK))
+    if P.LOGO_BACK_WORDMARK:                         # the wordmark above the grip grooves (2026-10-23: it was in the chin)
+        import logo
+        lid = lid.cut(logo.solid(P.Z_BACK - 0.2, P.Z_BACK + P.LOGO_BACK_WORDMARK['depth'], P.LOGO_BACK_WORDMARK))
     lid = lid.intersect(body)
     # the side keys: out comes each one's footprint, its void and its free-end slot; in goes the key,
     # which stands on the back face and is fused to the wall at its root

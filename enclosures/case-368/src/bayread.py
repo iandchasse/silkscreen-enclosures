@@ -336,6 +336,8 @@ def midplane_ties():
             rows.append((f'{nm}[{k}]', s.val().BoundingBox().zmax - P.Z_BACK))
     if P.LOGO_BACK:
         rows.append(('logo depth', P.LOGO_BACK['depth']))
+    if P.LOGO_BACK_WORDMARK:
+        rows.append(('back wordmark depth', P.LOGO_BACK_WORDMARK['depth']))
     rows.append(('grip groove depth', P.GRIP_GROOVE['depth']))
     near = []
     for nm, h in rows:

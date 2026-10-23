@@ -2,8 +2,8 @@
 same file is in both cases, case-426/src and case-368/src: keep the two byte-identical).
 
   seam square   no V at the parting line, in the tub (z SEAM + 0.1), the lid (SEAM - 0.1) and the side keys' bars
-                (TAB_BAR_TOP - 0.1): a point 0.05 inside the plan outline that is air while the point 0.6 further in is solid
-                is a V. Total length of V, mm: 0 when square.
+                (TAB_BAR_TOP - 0.1): a point 0.05 inside the plan outline that is air while the point 0.6 further in is solid,
+                and the wall is whole 0.5 further from the parting line, is a V. Total length of V, mm: 0 when square.
   pads          every kept side key's pad face stands DECIDED['pad_proud'] (1.2) past the case face
   pins          each midplate snap post is a plain pin: solid on its axis (no slot), nothing in the annulus where the barb
                 was, its tip at DECIDED['pin_tip'] (-1.00, whole layers from the bed)
@@ -83,13 +83,19 @@ def outline(step=STEP):
     return out
 
 
-def v_length(solid, z, pts):
-    """Length (mm) of the outline where the solid has a V at height z: air 0.05 inside the outline, solid 0.6 further in
-    (air at both is an opening: a slot, the port, the header)."""
+def v_length(solid, z, zref, pts, skip=None):
+    """Length (mm) of the outline where the solid has a V at height z: air 0.05 inside the outline, solid 0.6 further in,
+    and the outer wall there whole at zref (a height clear of any V). Air at both depths is an opening (a key slot, the
+    port, the header); air at z but whole at zref and 0.05 in is a V; a narrow vertical slot (a key's free-end gap, 0.3
+    wide) is air at zref too, so it does not count. skip(x, y): outline points that belong to a designed feature (the USB
+    port's recess and its lead-in, which cut the outer face across the parting line)."""
     inside = Inside(solid)
     n = 0
     for (x, y), (nx, ny) in pts:
-        if not inside(x + 0.05 * nx, y + 0.05 * ny, z) and inside(x + 0.65 * nx, y + 0.65 * ny, z):
+        if skip and skip(x, y):
+            continue
+        if (not inside(x + 0.05 * nx, y + 0.05 * ny, z) and inside(x + 0.65 * nx, y + 0.65 * ny, z)
+                and inside(x + 0.05 * nx, y + 0.05 * ny, zref)):
             n += 1
     return round(n * STEP, 2)
 
@@ -115,9 +121,11 @@ def run(folder):
 
     # ---- seam square ------------------------------------------------------------------------------------------------
     pts = outline()
-    rep['seam V (mm of outline)'] = r = {'tub z SEAM+0.1': v_length(T, P.SEAM + 0.1, pts),
-                                         'lid z SEAM-0.1': v_length(L, P.SEAM - 0.1, pts),
-                                         'key bars z TAB_BAR_TOP-0.1': v_length(L, P.TAB_BAR_TOP - 0.1, pts)}
+    yc, half = body.usb()['yc'], P.USB_RECESS[0] / 2 + P.USB_RECESS_LEAD + 0.5             # the port's recess and lead-in
+    skip = lambda x, y: x > P.X1 - 1.0 and abs(y - yc) < half
+    rep['seam V (mm of outline)'] = r = {'tub z SEAM+0.1': v_length(T, P.SEAM + 0.1, P.SEAM + 0.6, pts, skip),
+                                         'lid z SEAM-0.1': v_length(L, P.SEAM - 0.1, P.SEAM - 0.6, pts, skip),
+                                         'key bars z TAB_BAR_TOP-0.1': v_length(L, P.TAB_BAR_TOP - 0.1, P.TAB_BAR_TOP - 0.6, pts, skip)}
     ok['seam square: no V in the tub, the lid or the key bars'] = all(v <= D['seam_v'] for v in r.values())
 
     # ---- pads -------------------------------------------------------------------------------------------------------

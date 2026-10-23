@@ -100,10 +100,11 @@ def bar(t):
     s, a = t['side'], t['away']
     xo = P.X1 if s > 0 else P.X0
     b = _plan(t, t['y_root'], P.TAB_Z[0], P.TAB_BAR_TOP)
-    c = 0.25
-    v = xz_prism([(xo - s * c, P.TAB_BAR_TOP + 0.01), (xo + s * 0.5, P.TAB_BAR_TOP + 0.01), (xo + s * 0.5, P.TAB_BAR_TOP - c - 0.5),
-                  (xo, P.TAB_BAR_TOP - c)], *sorted((t['y_root'] - a * 1, t['y_block'])))
-    b = b.cut(v)
+    c = P.TAB_BAR_V                                  # the V on the bar's outer top edge: 0 since 2026-10-23 (params.SEAM_CHAMFER)
+    if c > 0:
+        v = xz_prism([(xo - s * c, P.TAB_BAR_TOP + 0.01), (xo + s * 0.5, P.TAB_BAR_TOP + 0.01), (xo + s * 0.5, P.TAB_BAR_TOP - c - 0.5),
+                      (xo, P.TAB_BAR_TOP - c)], *sorted((t['y_root'] - a * 1, t['y_block'])))
+        b = b.cut(v)
     xb, _ = foot_x(t)
     xi = xo - s * 0.35
     h = abs(xi - xb)

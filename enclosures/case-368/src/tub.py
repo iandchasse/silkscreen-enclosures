@@ -283,8 +283,11 @@ def rim_chamfer():
     2026-09-30): there the chamfer thinned the wall behind the hook slots below what Orca prints in the rim's last
     layers. Over the key row the tub's rim meets the lid's chamfer square; the step at each end is vertical."""
     from body import seam_chamfer
+    v = seam_chamfer(upper=True)
+    if v is None:                                            # no V at all since 2026-10-23
+        return None
     x0, x1 = rim_relief()
-    return seam_chamfer(upper=True).cut(box(x0, x1, P.Y0 - 3.0, P.Y0 + 1.0, P.SEAM - 1.0, P.SEAM + 1.0))
+    return v.cut(box(x0, x1, P.Y0 - 3.0, P.Y0 + 1.0, P.SEAM - 1.0, P.SEAM + 1.0))
 
 
 def coupon(tub_wp):
@@ -535,7 +538,9 @@ def build(ribs=True):
     for a in joint.tub_adds():                               # the tongues, below the parting plane
         tub = tub.union(a)
     cut += [window(), *key_openings(), *gate_slot(), *chin_lead_in(), *key_slots(), *u['tub_cuts'], reset_hole(), *joint.tub_cuts(), *detent_pockets()]
-    cut.append(rim_chamfer())
+    v = rim_chamfer()                                        # None: no V since 2026-10-23
+    if v is not None:
+        cut.append(v)
     for c in cut:
         tub = tub.cut(c)
     if P.LOGO:

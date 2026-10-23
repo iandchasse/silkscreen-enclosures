@@ -182,8 +182,8 @@ Y0 = BOT_IN - BOT_WALL                    # -9.40
 CORNER_R = 5.0                            # plan-view corner radius
 FRONT_EDGE_R = 1.8                        # front face to side: 9 layers at 0.2
 BACK_EDGE_R = 2.0                         # back face to side
-SEAM_CHAMFER = 0.4                        # small V at the parting line on both halves (the tub's half stops short of
-                                          # the key row on the chin: KEY_SLOT relief)
+SEAM_CHAMFER = 0.0                        # no V at the parting line (2026-10-23, Ian, after a community member's edit: both
+                                          # halves square; it was 0.4 x 45 degrees on each half)
 POCKET_STEP_Z = LIP + 1.0                 # no step: the thin panel's layers are inset only 0.65 (kept for callers)
 POCKET_STEP_CLR = 0.45
 # The frame round the panel pocket (between the pocket and the walls) must never touch the midplate,
@@ -233,7 +233,8 @@ KEY_EDGE_CHAMFER = 0.3                    # key openings' front edge (both build
                                           # tub's face, so the light strip's 45-degree wells are gone)
 GRIP_GROOVES_Y = (-5.6, -3.6, -1.6)       # shallow grooves across the back's lower edge
 GRIP_GROOVE = dict(x=(8.0, 52.0), width=0.8, depth=0.2)    # was 0.3, a mid-plane (as LOGO_BACK)
-LOGO = LOGO_CHIN
+LOGO = None                              # the chin is plain since 2026-10-23 (the wordmark is on the back: LOGO_BACK_WORDMARK;
+                                          # LOGO_CHIN keeps the old place for the checks that prove the chin plain)
 # The wordmark on the back above the grip grooves (2026-10-23, Ian, after a community member's edit), mirrored so it
 # reads right from behind. depth 0.4 set here (two whole layers on the back; the light-strip chin's 0.3 is a mid-plane):
 # the floor there is LID_T 1.0, so 0.6 is left. Ink 7.11 tall, 40.0 wide: y 4.95, ink 1.40..8.51, 2.6 above the top
@@ -479,13 +480,14 @@ TAB_GAP_SIDE = {+1: 0.15, -1: 0.25}   # nub to plunger at rest. The board's only
                                       # off 0.10 further than a -X key (test 1, 2026-09-29: +X keys did not click)
 TAB_Z = (Z_BACK, 0.6)
 TAB_BAR_TOP = SEAM - 0.15
+TAB_BAR_V = round(max(0.0, SEAM_CHAMFER - (SEAM - TAB_BAR_TOP)), 3)   # the key bar's share of the seam's V: 0.25 with the 0.4 V, 0 without
 TAB_BLOCK_MARGIN = 0.3
 TAB_SLOT_CLR = 0.2
 TAB_END_CLR = 0.3
 TAB_END_FOOT = 0.4
 TAB_ROOT_CLR = 0.2
 TAB_FOOT_GAP = (0.75, 1.20)
-TAB_PAD_PROUD = 1.5
+TAB_PAD_PROUD = 1.2                       # 1.5 until 2026-10-23 (a community member's edit: 1.2; our 45-degree faces kept); 0.80 / 0.70 at the click
 TAB_PAD_FACE = (-3.4, -1.0)
 TAB_PAD_LEN = 10.0
 TAB_PAD_LENS = {'SW7': 8.0}               # power: a slightly smaller pad is harder to hit by accident
@@ -629,7 +631,15 @@ CORNER_BLOCK_Y1 = round(ROD_AXIS[0] - ROD_HOLE_D / 2 - 0.2, 3)   # -3.75
 CORNER_POST_D = 6.0
 H34_PIN = dict(d=1.9, h=0.8, cone=(0.95, 0.6, 0.4))   # the board's X/Y stop on the H3/H4 posts: H5's pin (2.2 hole)
 SNAP_POSTS = ('H2', 'H6')                 # H1 went with the board's upper extension
-BOARD_SNAP = dict(d=1.90, crest=2.44, catch=-0.10, lead_deg=30.0, face_deg=45.0, slot=0.60, tip=-0.95)
+# 'pole' (2026-10-23, Ian, after a community member's edit): a plain d1.90 pin, its tip edge rounded tip_r, no slot, no barb.
+# As printed it locates the board +-0.155 both ways (the slotted post laid two fingers, 1.52 across X and 0.65 across Y each,
+# its barb caught 0.09 in Y only). tip -1.00, not -0.95: the midplate prints screen side down from DISP_REAR, so -1.00 is a
+# whole number of layers from the bed (a mid-plane at -0.90 / -0.95) and lays the pin's top where the barbs' tip laid, so
+# the lid's bore floor and every overlap read stay as they are. The PCBA no longer clicks onto the midplate before the lid goes
+# on; with the lid on nothing changes (the barbs were slack at home). 'barb': Rev G-K's two-finger snap (crest, catch, lead_deg,
+# face_deg, slot).
+BOARD_SNAP = dict(style='pole', d=1.90, tip=-1.00, tip_r=0.30,
+                  crest=2.44, catch=-0.10, lead_deg=30.0, face_deg=45.0, slot=0.60)   # the barb style's numbers (unused by 'pole')
                                           # x3: crest 2.44 (Rev K 2.50): the fingers are 3.55 long here (Rev K 3.95)
 BOARD_SNAP_BORE = (3.0, -1.40)
 BOARD_POST_D = {'H5': 4.3, 'H6': 5.0}   # H2: see SUPPORT_POSTS

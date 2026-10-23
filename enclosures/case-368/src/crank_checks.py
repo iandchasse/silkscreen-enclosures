@@ -25,8 +25,8 @@ slice_check.py reads the printed features back (check 8).
   free swing (2026-10-12) the board out, the tub face down: each crank turned by hand from its key to its first tub
              contact, its cheek zones against the tub's well as sliced (both parts on their layer grids), each face
              grown, the crank and rod sagged through their bores' play toward the face: >= 0.05 (FREE_SWING)
-  logo       the chin wordmark leaves >= 0.6 of plastic over the cheek slots' roofs; the back icon leaves >= 0.4 of the
-             lid's floor under its engraving (logo_back_floor)
+  logo       (no chin wordmark since 2026-10-23: nothing to leave over the cheek slots' roofs) the back icon and the wordmark
+             above the grip grooves each leave >= 0.4 of the lid's floor under their engraving (logo_back_floor)
 The key is the hook key (test 2, 2026-09-30): its stop above rest is KEY_W_OUT (its hooks flat under the slots' roof),
 where it hangs face down in the assembly pose; mechanics.key_hooks has the hooks' own checks (the stop, the walls behind
 the slots, tilt, pull-out, the hooks against the crank over -20..+60, gravity per pose).
@@ -587,8 +587,9 @@ def key_in(K):
 
 def logo_over_slots():
     """The chin wordmark's engraving against the cheek slots' roofs: plastic left over each roof."""
-    if not P.LOGO:
-        return {'overlaps': False, 'min_plastic_mm': round(P.Z_FRONT - P.SLOT_ROOF, 3)}
+    if not P.LOGO:                                   # no chin wordmark since 2026-10-23 (the wordmark is on the back)
+        return {'ok': True, 'none': 'no chin wordmark since 2026-10-23', 'overlaps': False,
+                'min_plastic_mm': round(P.Z_FRONT - P.SLOT_ROOF, 3)}
     import logo
     lb = logo.solid(P.Z_FRONT - P.LOGO['depth'], P.Z_FRONT + 0.2).val().BoundingBox()
     over = False
@@ -602,15 +603,19 @@ def logo_over_slots():
 
 
 def logo_back_floor(lid_s=None):
-    """The back icon's engraving (params LOGO_BACK, 0.3 deep) against the lid's floor: the plastic left under it, >= 0.4.
+    """The back's two engravings, the book icon (params.LOGO_BACK) and the wordmark above the grip grooves
+    (LOGO_BACK_WORDMARK, 2026-10-23), each against the lid's floor (_back_floor): -> {'icon': ..., 'wordmark': ..., 'ok'}."""
+    rows = {n: _back_floor(c, lid_s) for n, c in (('icon', P.LOGO_BACK), ('wordmark', P.LOGO_BACK_WORDMARK)) if c}
+    return {**rows, 'ok': all(r['ok'] for r in rows.values())}
+
+
+def _back_floor(cfg, lid_s=None):
+    """One engraving in the lid's back (cfg: params LOGO_BACK, 0.2 deep, or LOGO_BACK_WORDMARK, 0.4) against the lid's floor: the plastic left under it, >= 0.4.
     Over the battery pocket (with its BATT_POCKET_CLR) the floor is BATT_FLOOR_T (0.4), elsewhere LID_T (0.8); from
     params and the placed polygon. With the built lid (lid_s), also read off the solid: the icon's prism from the
     engraving's floor up is solid for 0.4 and for the plastic claimed (less 0.01), and not 0.05 past it; and the pocket's
     floor is a whole BATT_FLOOR_T under the cell."""
-    if not P.LOGO_BACK:
-        return {'ok': True}
     import logo
-    cfg = P.LOGO_BACK
     g = logo.placed(cfg)
     c = P.BATT_POCKET_CLR
     pk = (P.BATT['x'][0] - c, P.BATT['x'][1] + c, P.BATT['y'][0] - c, P.BATT['y'][1] + c)

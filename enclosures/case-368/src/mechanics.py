@@ -1464,10 +1464,16 @@ def latches():
 
 
 def board_snap():
-    """The midplate's snap posts through the board's H2/H6 holes: what the fingers have to do to
+    """The midplate's posts (plain pins since 2026-10-23; before, snap posts) through the board's H2/H6 holes: what the fingers have to do to
     get in, and what they hold afterwards."""
     B = P.BOARD_SNAP
     hole = 2.2                                              # board's drilled hole
+    if B.get('style', 'barb') == 'pole':                    # plain pins since 2026-10-23: they locate, nothing snaps
+        return {'style': 'pole', 'posts': list(P.SNAP_POSTS), 'post_d': B['d'], 'hole_d': hole,
+                'xy_clearance_mm': round((hole - B['d']) / 2, 3), 'tip_past_board_rear_mm': round(-B['tip'], 3), 'catch_mm': 0.0,
+                'board_z_play_mm': None,
+                'note': 'locates the board on the midplate in X and Y; nothing holds it in Z until the lid is on, and with the '
+                        'lid on its posts set Z (as before)'}
     delta = (B['crest'] - hole) / 2                          # radial squeeze to pass
     L = P.DISP_REAR - B['tip']                               # finger roots at the plate's front face
     t = B['d'] / 2                                           # half-round finger, bending radially

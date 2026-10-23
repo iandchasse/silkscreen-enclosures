@@ -19,7 +19,8 @@
   - its rim is the closed groove the tub's tongue runs in, and latch arms reach up past the side keys'
     slots to hook pockets in the tub's wall (joint.py); two more on the top wall (x3)
   - the three side keys (Rev J/K, sidekeys.py): each is the lid's side wall cut free on three sides
-  - the site's book icon engraved in the back (params.LOGO_BACK), and the grip grooves
+  - the site's book icon engraved in the back (params.LOGO_BACK), the wordmark above the grip grooves
+    (params.LOGO_BACK_WORDMARK; it was in the chin until 2026-10-23), and the grip grooves
 Printed back face down.
 """
 import math
@@ -252,10 +253,15 @@ def build(keys=True):
         lid = lid.cut(rbox(g['x'][0], g['x'][1], gy - g['width'] / 2, gy + g['width'] / 2,
                            P.Z_BACK - 0.5, P.Z_BACK + g['depth'], g['width'] / 2 - 0.01))
     from body import seam_chamfer
-    lid = lid.cut(seam_chamfer(upper=False))
+    v = seam_chamfer(upper=False)
+    if v is not None:                                # square since 2026-10-23
+        lid = lid.cut(v)
     if P.LOGO_BACK:
         import logo
         lid = lid.cut(logo.solid(P.Z_BACK - 0.2, P.Z_BACK + P.LOGO_BACK['depth'], P.LOGO_BACK))
+    if P.LOGO_BACK_WORDMARK:                         # the wordmark above the grip grooves (2026-10-23: it was in the chin)
+        import logo
+        lid = lid.cut(logo.solid(P.Z_BACK - 0.2, P.Z_BACK + P.LOGO_BACK_WORDMARK['depth'], P.LOGO_BACK_WORDMARK))
     lid = lid.intersect(body)
     # the side keys: out comes each one's footprint, its void and its free-end slot; in goes the key, which
     # stands on the back face and is fused to the wall at its root

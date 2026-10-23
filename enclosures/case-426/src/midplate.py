@@ -188,35 +188,40 @@ def fence_posts():
 
 
 def snap_posts():
-    """A post through each of the board's H1/H2 holes with a two-finger barb that catches the
-    rear face, so the PCBA clips onto the midplate before the lid goes on.
+    """The midplate's posts through the board's holes (params.SNAP_POSTS, style params.BOARD_SNAP['style']).
 
-    It captures rather than clamps: the barb's retaining face sits BOARD_SNAP['catch'] just under
-    the board's rear face, so with the lid on the board still rests on the lid's posts and the
-    barbs go slack. Nothing here fights the panel's thickness tolerance.
+    'pole' (since 2026-10-23): a plain pin, d BOARD_SNAP['d'], from the tip (BOARD_SNAP['tip'], under the board's rear
+    face) up through the plate, its tip edge rounded. It locates the board in X and Y; nothing holds it in Z until the
+    lid is on, and with the lid on the lid's posts set Z as before.
 
-    The midplate prints screen side down, so these posts stand up off the bed and the barb's
-    retaining face is the overhang: it is 45 degrees, which is why the board comes off again with
-    a firm pull instead of never.
+    'barb' (Rev G-K): a two-finger snap with a barb that catches the rear face, so the PCBA clips onto the midplate
+    before the lid goes on. It captures rather than clamps: the retaining face sits BOARD_SNAP['catch'] just under the
+    board's rear face, so with the lid on the board still rests on the lid's posts and the barbs go slack. The midplate
+    prints screen side down, so the retaining face is the overhang: 45 degrees, which is why the board comes off again
+    with a firm pull.
     """
     B = P.BOARD_SNAP
-    rise = (B['crest'] - B['d']) / 2
-    z_crest = B['catch'] - rise / math.tan(math.radians(B['face_deg']))       # widest point of the barb
-    z_lead = z_crest - rise / math.tan(math.radians(B['lead_deg']))           # bottom of the lead-in cone
-    assert z_lead > B['tip'] + 0.02, (z_lead, B['tip'])
+    pole = B.get('style', 'barb') == 'pole'
+    if not pole:
+        rise = (B['crest'] - B['d']) / 2
+        z_crest = B['catch'] - rise / math.tan(math.radians(B['face_deg']))       # widest point of the barb
+        z_lead = z_crest - rise / math.tan(math.radians(B['lead_deg']))           # bottom of the lead-in cone
+        assert z_lead > B['tip'] + 0.02, (z_lead, B['tip'])
     fps = hw.footprints()
     out = []
     for ref in P.SNAP_POSTS:
         cx, cy = fps[ref]['cad']
-        p = zcyl(cx, cy, B['tip'], P.DISP_REAR, B['d'])      # through the plate: the finger roots at
-                                                             # its front face, so it is 3.95 mm long
-        p = p.union(cq.Workplane('XY', origin=(cx, cy, z_lead))               # lead-in cone
-                    .circle(B['d'] / 2).workplane(offset=z_crest - z_lead).circle(B['crest'] / 2).loft())
-        p = p.union(cq.Workplane('XY', origin=(cx, cy, z_crest))              # 45-degree retaining face
-                    .circle(B['crest'] / 2).workplane(offset=B['catch'] - z_crest).circle(B['d'] / 2).loft())
-        # one slot through post and plate, so the two halves can squeeze together on the way in
-        r = B['crest'] / 2 + 0.1
-        p = p.cut(box(cx - r, cx + r, cy - B['slot'] / 2, cy + B['slot'] / 2, B['tip'] - 0.1, P.DISP_REAR + 0.01))
+        p = zcyl(cx, cy, B['tip'], P.DISP_REAR, B['d'])      # through the plate (a barb finger roots at its front face)
+        if pole:                                             # fillet the tip's edge (-Z end)
+            p = p.faces('<Z').edges().fillet(B['tip_r'])
+        else:
+            p = p.union(cq.Workplane('XY', origin=(cx, cy, z_lead))               # lead-in cone
+                        .circle(B['d'] / 2).workplane(offset=z_crest - z_lead).circle(B['crest'] / 2).loft())
+            p = p.union(cq.Workplane('XY', origin=(cx, cy, z_crest))              # 45-degree retaining face
+                        .circle(B['crest'] / 2).workplane(offset=B['catch'] - z_crest).circle(B['d'] / 2).loft())
+            # one slot through post and plate, so the two halves can squeeze together on the way in
+            r = B['crest'] / 2 + 0.1
+            p = p.cut(box(cx - r, cx + r, cy - B['slot'] / 2, cy + B['slot'] / 2, B['tip'] - 0.1, P.DISP_REAR + 0.01))
         out.append(p)
     return out
 
