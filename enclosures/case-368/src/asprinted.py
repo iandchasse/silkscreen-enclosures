@@ -31,6 +31,14 @@ any makes slice_check exit 1.
             as printed: the lift from home before a barb step meets a pocket step, its dead band; FAIL above
             LATCH_PLAY_MAX, or if a barb overlaps its pocket's wall at home (it could not drop in).
 
+  usb       (2026-10-22) the USB-C port as printed against a plug in each board's socket: Rev 1.0's through-hole USB4085
+            and Rev 1.02's SMD USB4105 (0.14 nearer the board), both 0.085 nearer the board than KiCad seats them, on the
+            board's posts. The section is every layer's material from J1's mouth to the floor's face, the lid's at home,
+            projected on the Y-Z plane: the hole as laid. A nominal plug shell (8.25 x 2.40, r 1.0) centred in the socket
+            must clear the hole's four flats (board side, far side, each side) by USB_FIT_MIN (0.10) for both boards:
+            FAIL otherwise. The corners (r 1.0 and a full stadium) are printed, not graded: a real plug's corner lies
+            between. (main 7e4544c: the Rev 1.02 plug is 0.07 into the board-side edge in both cases, FAIL.)
+
 The checks take each part as a list of layers [(zc, polygon)] in the CAD frame (slice_check.device_layers), so they
 can be fed any slice (the 4.26's too: the screws and the latches need only its frames and its params' numbers). The
 4.26 has the same module (case-426/src/asprinted.py, kept identical to this one): its slice_check reads the home and
@@ -289,6 +297,101 @@ def latch(lid, tub, dz, wall, c, face, out_sign, axis, barb_z, pocket_z):
             'sections': res}
 
 
+USB_FIT_MIN = 0.10         # the plug's least clearance to each of the hole's flats, for both boards
+USB_PLUG_DEFAULT = (8.25, 2.40, 1.0)
+
+
+def post_top(lid, posts, dz):
+    """Where the board's rear face rests at home: the lid's board posts' tops (the median over posts, each the highest
+    layer's top below z 0.5, shifted forward by dz). None if no post is found."""
+    tops = []
+    for x, y in posts:
+        lz = [z for z, _ in _covering(lid, x, y) if z < 0.5]
+        if lz:
+            tops.append(round(max(lz) + LAYER / 2 + dz, 3))
+    return float(np.median(tops)) if tops and dz is not None else None
+
+
+def _material_yz(lid, tub, dz, x0, x1, yc, zc, span=(7.0, 4.0)):
+    """The USB floor's section: every layer's material between x0 and x1 (J1's mouth to the floor's face) projected on
+    Y-Z, as one shape. Each layer is a slab of its thickness (the lid's shifted by dz); a connected piece of the
+    layer's cut projects to the interval of its Y bounds."""
+    from shapely.geometry import box as sbox
+    from shapely.ops import unary_union
+    win = sbox(x0, yc - span[0], x1, yc + span[0])
+    slabs = []
+    for layers, shift in ((tub, 0.0), (lid, dz)):
+        for z, g in layers:
+            zz = z + shift
+            if abs(zz - zc) > span[1] or g.is_empty:
+                continue
+            cut = g.intersection(win)
+            if cut.is_empty:
+                continue
+            for q in getattr(cut, 'geoms', [cut]):
+                if q.is_empty or q.area < 1e-9:
+                    continue
+                b = q.bounds
+                slabs.append(sbox(b[1], zz - LAYER / 2, b[3], zz + LAYER / 2))
+    return unary_union(slabs)
+
+
+def _rrect(yc, zc, w, h, r):
+    from shapely.geometry import box as sbox
+    return sbox(yc - w / 2 + r, zc - h / 2 + r, yc + w / 2 - r, zc + h / 2 - r).buffer(r, resolution=32)
+
+
+def _gap(M, P):
+    """Least distance from the shape P to M; negative by the depth P reaches into M if they overlap."""
+    if M.is_empty:
+        return math.inf
+    if not M.intersects(P):
+        return M.distance(P)
+    lo, hi = 0.0, 3.0
+    for _ in range(30):
+        mid = (lo + hi) / 2
+        if P.buffer(-mid).is_empty or not P.buffer(-mid).intersects(M):
+            hi = mid
+        else:
+            lo = mid
+    return -round((lo + hi) / 2, 4)
+
+
+def usb_fit(lid, tub, dz, board_dz, yc, mouth_x, x_face, sockets, plug=USB_PLUG_DEFAULT, fit_min=USB_FIT_MIN):
+    """The USB-C port as printed against a plug in each socket (module docstring, `usb`). lid / tub: device_layers
+    (CAD frame, ends 'round'); dz: the lid's home; board_dz: the board's rear face above its CAD place (post_top);
+    yc, mouth_x: J1's centre line and mouth; x_face: the floor's outer face; sockets: {name: the socket opening's
+    centre z in the CAD frame, with the seat offset already in}. plug: (w, h, r) of the shell, centred in the
+    socket (board_dz added). Returns {'rows': [...], 'ok'} with, per socket: the four flats' clearances
+    (board side = +Z, far side = -Z, -Y, +Y; negative: the plug is in the material), the least clearance with the
+    corners for the plug's r and for a full stadium, and the hole's printed edges."""
+    from shapely.geometry import box as sbox
+    w, h, r = plug
+    rows, fails = [], []
+    for name, zs in sockets.items():
+        zp = zs + board_dz
+        M = _material_yz(lid, tub, dz, mouth_x, x_face, yc, zp)
+        fy0, fy1 = yc - (w / 2 - r), yc + (w / 2 - r)              # the flats' spans
+        fz0, fz1 = zp - (h / 2 - r), zp + (h / 2 - r)
+        up = M.intersection(sbox(fy0, zp, fy1, zp + 6.0))
+        dn = M.intersection(sbox(fy0, zp - 6.0, fy1, zp))
+        lf = M.intersection(sbox(yc - 6.0, fz0, yc, fz1))
+        rt = M.intersection(sbox(yc, fz0, yc + 6.0, fz1))
+        flats = {'board side': round(up.bounds[1] - (zp + h / 2), 3) if not up.is_empty else None,
+                 'far side': round((zp - h / 2) - dn.bounds[3], 3) if not dn.is_empty else None,
+                 '-Y': round((yc - w / 2) - lf.bounds[2], 3) if not lf.is_empty else None,
+                 '+Y': round(rt.bounds[0] - (yc + w / 2), 3) if not rt.is_empty else None}
+        corners = {'r %g' % r: round(_gap(M, _rrect(yc, zp, w, h, r)), 3),
+                   'stadium': round(_gap(M, _rrect(yc, zp, w, h, h / 2)), 3)}
+        row = {'socket': name, 'plug_zc': round(zp, 3), 'flats': flats, 'corners': corners}
+        bad = [f'{k} {v}' for k, v in flats.items() if v is None or v < fit_min - 1e-9]
+        row.update(ok=not bad, fails=bad)
+        rows.append(row)
+        fails += [f'{name}: {b}' for b in bad]
+    return {'rows': rows, 'ok': bool(rows) and not fails, 'min': fit_min, 'fails': fails,
+            'plug': list(plug), 'board_dz': board_dz, 'lid_dz': dz}
+
+
 def show(r):
     """Print the read-backs (slice_check's report style); r may hold only some of them (the 4.26 reads the home and
     the screws)."""
@@ -331,3 +434,19 @@ def show(r):
               + ('' if not bad else '  ' + '; '.join(f"{l['latch']}: {', '.join(l['fails'])}" for l in bad)))
     print(f"  as printed, screws (an M2x{r['screws'][0]['L']:g} socket head cap or pan head): "
           f"{'PASS' if all(s['ok'] for s in r['screws']) else 'FAIL'}")
+    if 'usb' in r:
+        show_usb(r['usb'])
+
+
+def show_usb(u):
+    """The USB port read-back (usb_fit) in slice_check's style."""
+    w, h, rr = u['plug']
+    print(f"  USB port as printed: a {w:g} x {h:g} plug (r {rr:g}) centred in J1's socket, lid at home {u['lid_dz']:+.3f}, "
+          f"board on its posts {u['board_dz']:+.3f}")
+    for row in u['rows']:
+        fl = row['flats']
+        print(f"    {row['socket']:36s} plug z {row['plug_zc']:+.3f}: board side {fl['board side']:+.3f}, far side {fl['far side']:+.3f}, "
+              f"-Y {fl['-Y']:+.3f}, +Y {fl['+Y']:+.3f} | corners " + ', '.join(f'{k} {v:+.3f}' for k, v in row['corners'].items())
+              + f"  {'PASS' if row['ok'] else 'FAIL ' + '; '.join(row['fails'])}")
+    print(f"  as printed, the plug clears the port hole's four flats by >= {u['min']} for both boards: "
+          f"{'PASS' if u['ok'] else 'FAIL'}")

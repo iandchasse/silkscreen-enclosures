@@ -258,6 +258,22 @@ the two gate coupons changed (the coupons carry a 0.02 mm3 sliver of a boss; no 
 that this is what bows the sides (`../enclosures/case-368/README.md`, "The long sides"). Sliced in the OrcaSlicer CLI with the CC2 and generic presets
 (nothing new over air, the tub 0.02 g lighter); not printed.
 
+**USB-C port, 2026-10-22 (the port fits board Rev 1.0 and Rev 1.02): reprint the tub of either size, and for the 3.68 the
+lid too.** Board Rev 1.02 puts a surface-mount USB-C socket where Rev 1.0 has a through-hole one, and its opening sits
+0.14 mm nearer the board. As printed, a plug in it touched the port hole's board-side edge in both sizes (in the 3.68 a
+Rev 1.0 plug was also close to the lid's port block on the other side). The hole now reaches one layer further toward the board
+(the edge moves one layer, 0.2 mm as printed, onto a layer line in both tubs), the divot moves with it (it is 0.16 mm taller in
+the 4.26, 0.23 mm in the 3.68, on the board side only), and in the 3.68 the lid's port block is one layer (0.1 mm) lower.
+**Reprint the tub you use (4.26: `4.26/tub-*` for your configuration, every configuration's tub changes the same way; 3.68:
+`3.68/tub-standard` or `3.68/tub-light-strip`), and for the 3.68 also `3.68/lid`.** The 4.26 lid, the midplates, keys, cranks,
+gate and rod are unchanged, and in the plate files only those objects changed. The new tub fits a Rev 1.0 board too: a
+plug in either board's socket clears the hole by at least 0.13 mm on every flat as printed (the old tub: 0.07 on Rev 1.0
+and −0.07, touching, on Rev 1.02, once the socket's real seat height is counted). `slice_check` now reads this back and
+fails under 0.10 (`../enclosures/case-368/README.md`, "The USB port fits board Rev 1.0 and Rev 1.02", and the 4.26's section
+5.9). Sliced in the OrcaSlicer CLI with the CC2 and generic presets; not printed. The case does not back the
+1.2 mm of J1 that overhangs the board's edge (on either board); a tab on the board under J1 would be the clean fix if a
+sample needs it.
+
 ## Start here: the plate file
 
 Open the plate file for your reader in OrcaSlicer:

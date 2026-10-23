@@ -69,6 +69,10 @@ backstops 0.065 mm too tall. The method that caught each one:
      - a socket head flush or below the back.
      It also reads (3.68 only) the board's room at the tub's bosses under its bottom mounting holes (H3/H4) (`board_room`: FAIL under 0.20 with a
      +0.16 board; bosses only, the midplate's 0.13 / 0.03 is not read).
+   - `asprinted.usb_fit` (both cases, `slice_check`): the USB port as laid, against an 8.25 x 2.40 plug centred in the
+     board Rev 1.0 socket and in Rev 1.02's (0.14 nearer the board), each seated 0.085 nearer the board than KiCad draws it,
+     with the lid at home and the board on its posts. FAIL under 0.10 on any of the hole's four flats (the corners are
+     printed, not graded). It failed on main (Rev 1.02 -0.07 on the board side) and passes in all 32 + 2 builds.
    - `lid_close.py` (latch arms bent on the way in).
    - `slice_check.detent_join` and the crank free-swing check.
    - `case-426/src/configs_slice.py` (key layers, side-key zones, what each key stands on at the bed

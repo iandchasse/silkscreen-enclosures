@@ -563,6 +563,52 @@ through the midplate: with only 0.13 (0.03 with a thick panel) before the board 
 props the lid, and then the +0.4 spring room is the next step. That the board, held by the
 springs and the pins alone at its bottom edge, does not rock: the bottom keys press mostly in Y, so it should not.
 
+## The USB port fits board Rev 1.0 and Rev 1.02 (2026-10-22)
+
+**Reprint the tub (`3.68/tub-standard` or `3.68/tub-light-strip`) and the lid (`3.68/lid`)**; the midplate, keys, cranks,
+gate and rod are unchanged. The USB recess is 0.2 mm taller on the board side; nothing else shows from outside.
+
+**Why.** Board Rev 1.02 swaps the through-hole USB4085 for the surface-mount USB4105, whose opening sits 0.14 mm nearer the
+board (centre z −1.815, was −1.955), and KiCad seats both about 0.085 mm deeper than a real board rests. As printed, the
+hole's board-side edge (drawn at z −0.575) lay on a layer's mid-plane and printed at −0.53, so a Rev 1.02 plug's
+board-side face sat 0.015 mm from it (as KiCad draws the seat), and about 0.07 mm into it once the seat is counted. The
+other side of the plug was tight for Rev 1.0 too: the lid's port block (the hole's far edge, drawn at −3.335) is 5.100 mm
+over the lid's back, exactly on a mid-plane, and printed one layer high.
+
+**The change** (`params.USB_HOLE_TOP`, `USB_RECESS_TOP`, `USB_BLOCK_DROP`; `tub.usb_features`):
+
+| | was | now | whole layers from |
+|---|---|---|---|
+| the hole's board-side edge (z) | −0.575, printed −0.53 | **−0.33** | the tub's face (standard 4.47, light strip 5.27): 24 / 28 |
+| the divot's board-side edge (z) | 1.045, printed 1.00 | **1.27** | the tub's face: 16 / 20 |
+| the lid's port block top (z) | −3.335, printed −3.235 | **−3.435** | the lid's back (−8.435): 25 |
+
+The hole keeps its width (8.54) and corner radius (1.1): now 8.54 × 3.105 mm, z −3.435 to −0.33. The divot is 11.5 × 6.225
+mm (z −4.955 to 1.27), its 45° lead-in moved with it. They are drawn for the frozen Rev 1.0 board copy
+(`tub.usb_features` asserts that J1 is where it was); a case regenerated from the Rev 1.02 board needs `body.usb()` fixed
+first (it raises on the USB4105 model) and these layer lines redone.
+
+**As printed, read back** (`asprinted.usb_fit`, in `slice_check` for both builds; the lid at its home +0.105, the board
+on the lid's posts +0.070, a 8.25 × 2.40 plug centred in each board's socket, 0.085 mm nearer the board than KiCad draws
+it): board side / far side / each side, in mm.
+
+| board | before (main) | now |
+|---|---|---|
+| Rev 1.0 | 0.07 / 0.13 / 0.14 | **0.27 / 0.33 / 0.145** |
+| Rev 1.02 | **−0.07** / 0.27 / 0.12 | **0.13 / 0.47 / 0.145** |
+
+`slice_check` fails under 0.10 on any of those four flats, for either board, and failed on the old tub and lid (both builds).
+A real plug's corners are not graded (their radius lies between 1.0 and a full stadium): Rev 1.02 has 0.06 mm at them for an r 1.0 plug and 0.13 for a full stadium.
+The far side is a soft stop (the board can lift off the lid's posts there); the board side is the hard one.
+
+**Unproven.** The real seat height of the USB4105: if it sits a further 0.1 mm nearer the board than KiCad's model, the
+board side is 0.03 mm clear (the next step: a second layer there, edge at −0.13).
+
+**The overhang.** Both boards' J1 overhang the board's edge by 1.2 mm (edge at x 59.9975, mouth at 61.195): the through-hole
+USB4085 is held there by its legs, the SMD USB4105 by its pads and shield stakes. Nothing in the tub or lid carries that
+front part (nothing beside or under it in the tub; the lid's block stops 0.3 to 0.4 mm below the shell, and one more layer
+there would leave Rev 1.0's shell 0.07 from it). A tab on the board under J1 is the clean fix if a sample needs it.
+
 ## Screen bevel (the standard build, 2026-10-10)
 
 Ian asked for a "longer and more exaggerated chamfer, rounded at the corners too"; the 4.26 took a 35° bevel, and for
@@ -1321,7 +1367,7 @@ The side keys are x3's.
 
 **Checked, unchanged by the front's 1.2 mm raise:**
 
-- The USB-C divot and its floor are on the side wall at Z −4.96 to 1.04, below the front edge's round, which now
+- The USB-C divot and its floor are on the side wall at Z −4.96 to 1.27 (1.04 until 2026-10-22), below the front edge's round, which now
   starts at 3.47.
 - The reset hole, the screw heads (in the lid) and the side-key slots (below Z 0.8) are unchanged.
 - The wordmark is still engraved 0.3 into the face. It has 1.1 of skin under it over the foot pocket (x3 had 0.3
@@ -1814,7 +1860,7 @@ Everything that sets a fit is in `src/params.py`, with its reason. Kept from Rev
   each, seven springs. The board clips onto the midplate at H2 and H6 (H1 went with the trim): 1.36 % strain,
   8.2 N to push on, 14 N to pull off.
 - **Stack detents** (Rev K): four strips click the midplate into the tub, 0.72 N each, 1.0 % strain.
-- **USB-C divot**, its floor, the lid's block under the port, and the reset hole and trough: unchanged (J1 and
+- **USB-C divot**, its floor, the lid's block under the port, and the reset hole and trough: unchanged since Rev K, but for the port hole's board-side edge, the divot's and the block's top (2026-10-22, *The USB port fits board Rev 1.0 and Rev 1.02*) (J1 and
   SW11 have not moved).
 
 New in x3:

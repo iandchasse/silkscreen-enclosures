@@ -1071,7 +1071,7 @@ def measure_list(b, P, hw, panel, usb, K):
          f'<b>The three ribbons</b> fold on an assumed R{f2(panel.BEND_R)}') +
         ': the drawing gives none, so check the real ' + ('FPC folds' if LS else 'ribbons fold') +
         ' that tightly without creasing.',
-        f'<b>USB-C cables.</b> The recess takes overmolds up to {f2(P.USB_RECESS[0])} &times; {f2(P.USB_RECESS[1])}&nbsp;mm, '
+        f'<b>USB-C cables.</b> The recess takes overmolds up to {f2(usb["recess"][0])} &times; {f2(usb["recess"][1])}&nbsp;mm, '
         f'and a typical plug seats about {f2(usb["plug_short_mm"])}&nbsp;mm short of full depth: try your cables on the '
         'PCBA dummy.',
         f'<b>Tape on the plungers</b> must be thinner than the side keys&rsquo; gap: {f2(P.TAB_GAP_SIDE[-1])}&nbsp;mm on the '

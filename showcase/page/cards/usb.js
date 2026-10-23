@@ -83,7 +83,7 @@ SC.card({
       row('Floor face to ' + SC.part(ref), r2(U.face_to_mouth) + ' mm', 'its inside on the panel\u2019s corridor, ' + f(U.insert_x - U.mouth_x, 3) + ' in front of the mouth'),
       row('Typical plug', r2(U.plug_short_mm) + ' mm short', 'of full depth; the overmold stops on the floor'),
       row('Recess', f(U.recess[0], 2) + ' &times; ' + f(U.recess[1], 2) + ' mm', 'typical cables; ' + f(U.x1 - U.face_x, 2) + ' deep, R' + f(U.r, 1) + ', 45\u00b0 lead-in'),
-      row('Port hole', f(U.hole[0], 2) + ' &times; ' + f(U.hole[1], 2) + ' mm', SC.partPos(ref) + ' opening plus 0.1 a side; open below, closed by the lid'),
+      row('Port hole', f(U.hole[0], 2) + ' &times; ' + f(U.hole[1], 2) + ' mm', SC.partPos(ref) + ' opening plus 0.1 a side, taller toward the board; open below, closed by the lid'),
     ].join('');
 
     var input = ctx.q('#usb-plug'), outEl = ctx.q('#usb-out');

@@ -2131,19 +2131,45 @@ every lead. It backs the whole glass, so neither touches nor the battery load it
 ### 5.9 USB-C
 
 `tub.usb_features`.
-- **The divot:** the port is a recess for the plug's overmold, 11.5 × 6.0 mm R1.5, sized for typical
-  cables, with a 45° lead-in that opens it to 13.1 × 7.6 at the case face.
+- **The divot:** the port is a recess for the plug's overmold, 11.5 × 6.16 mm R1.5 (z −4.955 to 1.20), sized
+  for typical cables, with a 45° lead-in that opens it to 13.1 × 7.76 at the case face.
 - **Its floor is the tub itself:**
   - a 0.5 mm wall whose inside is the insertion corridor (x 61.31) and whose face is 0.615 mm in
     front of J1's mouth
   - so a typical plug seats to within about 0.17 mm of full depth
   - 0.5 mm is about the thinnest wall a 0.4 mm nozzle lays as one line
 - **The hole** is J1's opening (8.34 × 2.56) plus 0.1 mm a side, so the plug passes and nothing of
-  the board shows.
+  the board shows, but its edge toward the board is one layer further out (see *Both boards* below):
+  8.54 × 2.94 mm, z −3.335 to −0.40, R1.1.
 - **Under the hole:** the floor is open to the parting line, so the face-down tub doesn't have to
   bridge the hole's lower edge. A block on the lid rises into that notch and closes it, 0.055 mm in
   front of the mouth.
 - **Larger overmolds** stop at the case face.
+- **Both boards (2026-10-22).** The port fits board Rev 1.0 (through-hole USB4085) and Rev 1.02 (surface-mount
+  USB4105, whose opening sits 0.14 mm nearer the board: z −1.815, was −1.955).
+  - **Why it moved.** As drawn, a Rev 1.02 plug's board-side face was 0.04 mm from the hole's edge; as printed 0.015
+    (the edge, drawn at −0.575, printed at −0.60 on a layer's mid-plane), and KiCad seats both J1s about 0.085 mm deeper
+    than a real board rests, so a real plug hit that edge by about 0.07.
+  - **The change.** The hole's board-side edge is one layer further out, at z −0.40 (6.0 − 0.40 = 5.6 mm from the
+    face, 28 whole layers), and the recess's at 1.20 (was 1.045, which printed at 1.00; 4.8 mm, 24 layers). Width
+    (8.54), corner radius (1.1) and the hole's far edge, the lid block's top (drawn −3.335, printed −3.30), are unchanged.
+    The parts that change are the tub and nothing else: the lid, midplate, keys, cranks and gate are the same.
+  - **As printed, read back** (`asprinted.usb_fit`, every build's `slice_check`; the lid at its home −0.100, the board on
+    the lid's posts, a 8.25 × 2.40 plug centred in each board's socket, seated 0.085 nearer the board than KiCad draws it):
+    Rev 1.0 0.27 / 0.33 / 0.145; Rev 1.02 0.13 / 0.47 / 0.145 (board side / far side / each side, mm; all 32 configurations alike). `slice_check` fails under 0.10 on any of
+    those four flats, for either board, and failed on the old tub (Rev 1.0 0.07 / 0.33 / 0.145, Rev 1.02 −0.07 / 0.47 / 0.13).
+    A real plug's corners are not graded (their radius is between 1.0 and a full stadium): at the hole's corners
+    Rev 1.02 has 0.06 mm for an r 1.0 plug and 0.13 for a full stadium.
+  - **Open until a sample is measured:** the real seat height of the USB4105 (the clearance is 0.03 at the board side
+    if it sits a further 0.1 mm nearer the board than KiCad's model; the next step would be a second layer there, edge at
+    −0.20). The case is drawn for the frozen Rev 1.0 board copy, so the numbers above are for it
+    (`tub.usb_features` asserts it); regenerating the case from the Rev 1.02 board needs `body.usb()` fixed first (it
+    raises on the USB4105 model, whose shell is drawn in two mirrored halves) and the layer lines redone.
+  - **The overhang is not backed by the case.** Both boards' J1 overhang the board's edge by 1.2 mm (board edge at x
+    59.9975, mouth at 61.195): the through-hole USB4085 is held there by its legs, the SMD USB4105 by its pads and
+    shield stakes. Nothing in the tub or lid carries that front part: the tub has no material beside or under it, and the
+    lid's port block stops 0.3 to 0.4 mm below the shell (one more layer there would leave Rev 1.0's shell 0.07 from it).
+    A tab on the board under J1 is the clean fix if a sample needs it.
 
 ### 5.10 Reset, ribbons and J6
 
@@ -2543,7 +2569,7 @@ open to a taller button face or supports. "A functional button is better than a 
   thicker than 5.2 mm won't go under them.
 - **The panel's thickness,** and the switches' travel.
 - **The ribbons:** the folds assume R0.65; the drawing gives none.
-- **USB cables:** overmolds up to 11.5 × 6.0 mm fit, and a plug seats about 0.17 mm short. Try them
+- **USB cables:** overmolds up to 11.5 × 6.16 mm fit, and a plug seats about 0.17 mm short. Try them
   on the dummy.
 - **Tape:** it must be thinner than the side keys' rest gap (on the keys your layout has): 0.15 mm on the
   right-hand keys (0.095 at the least), 0.25 on the left.

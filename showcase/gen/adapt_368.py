@@ -1268,7 +1268,7 @@ def measure_block(B, cards, K):
         f'&nbsp;mm to the click, {f2(T["travel"]["bottom"])} to the bottom in the model).',
         f'<b>The FPC.</b> Its folds over the glass edge assume R{f2(panel.BEND_R)}; the drawing gives none, so check it '
         'folds that tightly without creasing. Check its contact side against the display connector (J2), too: the drawing does not say.',
-        f'<b>USB-C cables.</b> The recess takes overmolds up to {f2(P.USB_RECESS[0])} &times; {f2(P.USB_RECESS[1])}&nbsp;mm, '
+        f'<b>USB-C cables.</b> The recess takes overmolds up to {f2(us["recess"][0])} &times; {f2(us["recess"][1])}&nbsp;mm, '
         f'and a typical plug seats about {f2(us["plug_short_mm"])}&nbsp;mm short of full depth: try your cables on the '
         'PCBA dummy.',
         f'<b>Tape on the plungers</b> must be thinner than the side keys&rsquo; gap: {f2(P.TAB_GAP_SIDE[+1])}&nbsp;mm on the '

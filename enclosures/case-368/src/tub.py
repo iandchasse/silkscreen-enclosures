@@ -372,34 +372,50 @@ def usb_features():
     tub_cuts  the recess, from the floor's face outward, and the hole with its notch
     tub_adds  the floor's inner 0.1 mm, where it stands proud of the wall's inside (LOW_X1 -> INSERT_X1)
     lid_cuts  the recess
-    lid_adds  the block that closes the hole's lower edge"""
+    lid_adds  the block that closes the hole's lower edge
+
+    2026-10-22: the hole's and the recess's board-side edges stand P.USB_HOLE_TOP / USB_RECESS_TOP, a layer or so
+    further out than J1's opening plus 0.1, and the lid's block is P.USB_BLOCK_DROP lower (board Rev 1.02's J1 sits 0.14
+    nearer the board; asprinted.usb_fit reads the printed edges against both boards' sockets)."""
     u = usb()
     F = P.USB_FLOOR
     w, h = P.USB_RECESS
     x_in = P.INSERT_X1
     x_face = x_in + F['t']                                   # the floor's outer face
-    recess = rrect_x(x_face, P.X1 + 1, u['yc'], u['zc'], w, h, P.USB_RECESS_R)
+    # Rev 1.0 / Rev 1.02 (params.USB_HOLE_TOP): the recess and the hole keep their far edges and their widths; their
+    # board-side edges (the larger z) stand on layer lines, drawn for the frozen Rev 1.0 board copy
+    assert all(abs(u[k] - v) < 0.005 for k, v in P.J1_REV10.items()), \
+        f"J1 moved (zc {u['zc']:.3f}): redo P.J1_REV10, USB_HOLE_TOP, USB_RECESS_TOP, USB_BLOCK_DROP"
+    zr0 = u['zc'] - h / 2                                    # the recess's far edge (-4.955)
+    hr = P.USB_RECESS_TOP - zr0                              # its height now (the board-side edge moved out a layer)
+    zr = zr0 + hr / 2                                        # its centre
+    recess = rrect_x(x_face, P.X1 + 1, u['yc'], zr, w, hr, P.USB_RECESS_R)
     ld, over = P.USB_RECESS_LEAD, 0.5                        # 45-degree lead-in at the case face
-    s0 = cq.Sketch().rect(w, h).vertices().fillet(P.USB_RECESS_R)
-    s1 = cq.Sketch().rect(w + 2 * (ld + over), h + 2 * (ld + over)).vertices().fillet(P.USB_RECESS_R + ld + over)
-    recess = recess.union(cq.Workplane('YZ', origin=(P.X1 - ld, u['yc'], u['zc']))
+    s0 = cq.Sketch().rect(w, hr).vertices().fillet(P.USB_RECESS_R)
+    s1 = cq.Sketch().rect(w + 2 * (ld + over), hr + 2 * (ld + over)).vertices().fillet(P.USB_RECESS_R + ld + over)
+    recess = recess.union(cq.Workplane('YZ', origin=(P.X1 - ld, u['yc'], zr))
                           .placeSketch(s0, s1.moved(cq.Location(cq.Vector(0, 0, ld + over)))).loft())
     iw = (u['inner_y'][1] - u['inner_y'][0]) + 2 * F['hole']
-    ih = (u['inner_z'][1] - u['inner_z'][0]) + 2 * F['hole']
+    ih0 = (u['inner_z'][1] - u['inner_z'][0]) + 2 * F['hole']      # J1's opening plus the clearance: 2.76
     ir = u['inner_r'] + F['hole']
-    hole = rrect_x(x_in - 0.3, x_face + 0.02, u['yc'], u['zc'], iw, ih, ir)
+    z_far = u['zc'] - ih0 / 2                                # the hole's far edge, the lid block's top (-3.335) ...
+    z_blk = z_far - P.USB_BLOCK_DROP                         # ... less the 3.68's layer
+    ih = P.USB_HOLE_TOP - z_blk                              # the hole's height now: board-side edge to the block's top
+    zh = z_blk + ih / 2
+    hole = rrect_x(x_in - 0.3, x_face + 0.02, u['yc'], zh, iw, ih, ir)
     notch = box(x_in - 0.3, x_face + 0.02, u['yc'] - iw / 2, u['yc'] + iw / 2, P.SEAM - 0.1, u['zc'])
     m = 0.6
     floor_add = box(x_in, LOW_X1 + 0.01, u['yc'] - w / 2 - m, u['yc'] + w / 2 + m, P.SEAM, u['zc'] + h / 2 + m)
     floor_add = floor_add.cut(hole).cut(notch)
     nc = F['notch_clr']
     block = box(u['mouth_x'] + F['lid_gap'], x_face, u['yc'] - iw / 2 + nc, u['yc'] + iw / 2 - nc,
-                P.SEAM - 0.3, u['zc'] - ih / 2)
+                P.SEAM - 0.3, z_blk)
     return {'tub_cuts': [recess, hole, notch], 'tub_adds': [floor_add], 'lid_cuts': [recess], 'lid_adds': [block],
-            'size': (w, h), 'r': P.USB_RECESS_R,
-            'port_y': (u['yc'] - w / 2, u['yc'] + w / 2), 'port_z': (u['zc'] - h / 2, u['zc'] + h / 2),
+            'size': (w, round(hr, 3)), 'r': P.USB_RECESS_R,
+            'port_y': (u['yc'] - w / 2, u['yc'] + w / 2), 'port_z': (zr0, P.USB_RECESS_TOP),
             'wall_x': (LOW_X1, P.X1), 'floor_x': (x_in, x_face), 'face_x': x_face,
             'seat_x': u['mouth_x'] + P.USB_PLUG_SPARE, 'hole': (round(iw, 3), round(ih, 3)), 'hole_r': round(ir, 3),
+            'hole_z': (round(z_blk, 3), P.USB_HOLE_TOP),
             'block_y': (u['yc'] - w / 2 - 1.0, u['yc'] + w / 2 + 1.0),
             'face_to_mouth': round(x_face - u['mouth_x'], 3),
             'plug_short_mm': round(max(0.0, (x_face - u['mouth_x']) - P.USB_PLUG_SPARE), 3)}

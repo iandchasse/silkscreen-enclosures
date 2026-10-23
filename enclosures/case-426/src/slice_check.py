@@ -1434,7 +1434,25 @@ def as_printed(report):
     h = A.home(L['lid'], L['tub'], rims, posts, hw.PCB_T)
     screws = {'H3': tuple(fps['H3']['cad'][:2]), 'H4': tuple(fps['H4']['cad'][:2]), 'top': P.TOP_SCREW}
     sc = [A.screw(n, x, y, L['lid'], L['tub'], h['dz'], P.SCREW_L, P.Z_BACK) for n, (x, y) in screws.items()]
-    return {'ok': bool(h['dz'] is not None and all(s['ok'] for s in sc)), 'home': h, 'screws': sc}
+    usb = usb_fit(report, h['dz'], posts)
+    return {'ok': bool(h['dz'] is not None and all(s['ok'] for s in sc) and usb['ok']), 'home': h, 'screws': sc, 'usb': usb}
+
+
+def usb_fit(report, dz, posts):
+    """The USB port as printed (asprinted.usb_fit, 2026-10-22): a nominal plug centred in the Rev 1.0 socket and in the
+    Rev 1.02 socket (0.14 nearer the board), each seated J1_SEAT_DZ nearer the board than KiCad draws it, on the board's
+    posts, against the lid (at home) and the tub as laid. FAIL under USB_FIT_MIN on any flat. The hole
+    is read from the lid's and the tub's layers with round line ends, as deposited."""
+    import asprinted as A
+    u = P.J1_REV10
+    R = {k: device_layers(k, hw.ROOT / report[k]['gcode'], ends='round') for k in ('lid', 'tub')}
+    bz = A.post_top(R['lid'], posts, dz)
+    if dz is None or bz is None:
+        return {'ok': False, 'rows': [], 'fails': ['no lid home or no board post'], 'min': P.USB_FIT_MIN}
+    s = P.J1_SEAT_DZ
+    sockets = {'Rev 1.0 (USB4085)': u['zc'] + s, 'Rev 1.02 (USB4105, 0.14 nearer)': u['zc'] + P.J1_REV102_DZ + s}
+    return A.usb_fit(R['lid'], R['tub'], dz, bz, u['yc'], u['mouth_x'], P.INSERT_X1 + P.USB_FLOOR['t'], sockets,
+                     plug=P.USB_PLUG, fit_min=P.USB_FIT_MIN)
 
 
 if __name__ == '__main__':

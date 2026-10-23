@@ -530,6 +530,23 @@ USB_RECESS_LEAD = 0.8                     # 45-degree lead-in at the case face
 #            closes the hole's lower edge
 # lid_gap    that block's inside face in front of J1's mouth
 USB_FLOOR = dict(t=0.5, hole=0.10, notch_clr=0.1, lid_gap=0.055)
+# 2026-10-22, the port fits board Rev 1.0 and Rev 1.02. Rev 1.02's J1 (the SMD USB4105) sits 0.14 mm nearer the board
+# than Rev 1.0's through-hole USB4085 (the opening's centre z -1.815, was -1.955), and KiCad seats both about 0.085
+# deeper than a real board rests, so a plug in a Rev 1.02 socket sat 0.015 from the hole's board-side edge as printed
+# (line to line at the corners; interference once the seat is counted). The tub prints face down, so a plane
+# counts in whole layers from the face (Z_FRONT): the hole's board-side edge and the recess's both move one layer
+# (the edge at z -0.575 printed at -0.60; the recess's 1.045 at 1.00) onto layer lines. Both are drawn for the frozen
+# Rev 1.0 board copy (assert in tub.usb_features); a regenerated case redoes them. The hole keeps its width (8.54), its
+# corner radius (1.1) and its far edge (the lid's block, the 4.26's -3.335, which prints -3.30 and sits -3.40 at home).
+# slice_check reads the printed edges back against both sockets (asprinted.usb_fit; FAIL under 0.1 on any side).
+USB_HOLE_TOP = -0.40                      # the hole's board-side edge (z), a whole layer line from the face: 6.0 + 0.4
+USB_RECESS_TOP = 1.20                     # the recess's board-side edge (z): 6.0 - 1.2 = 4.8
+J1_REV10 = dict(yc=41.30, zc=-1.955, mouth_x=61.195)   # the frozen Rev 1.0 board copy's J1 (tub.usb_features asserts it)
+J1_REV102_DZ = 0.14                       # Rev 1.02's USB4105 opening sits this much nearer the board (z up): -1.815
+J1_SEAT_DZ = 0.085                        # KiCad seats parts this far behind where a real board's rear face rests (both J1s)
+USB_PLUG = (8.25, 2.40, 1.0)              # the nominal USB-C plug shell: width, height and its least corner radius
+USB_FIT_MIN = 0.10                        # the plug's least clearance to the hole's printed edges, each flat, both boards
+USB_BLOCK_DROP = 0.0                      # the lid's port block top, below the hole's far edge (the 3.68 lowers it a layer)
 
 # ---- fasteners ---------------------------------------------------------------------------
 M2_PILOT = 1.7                            # thread-forming into the printed PLA

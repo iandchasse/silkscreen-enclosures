@@ -536,7 +536,7 @@ NUB_BOND = ('SW7',)
 NUB_WINDOW = dict(clr=0.5, top_clr=0.25)
 TAB_RELIEF_MAX = 0.40
 
-# ---- USB-C (Rev I-K, unchanged: J1 has not moved) ----------------------------------------
+# ---- USB-C (Rev I-K; the port opened a layer toward the board 2026-10-22, below) --------
 USB_PLUG_SPARE = 0.45
 OVERMOLD = (12.35, 6.5)
 OVERMOLD_CLR = 0.25
@@ -544,6 +544,24 @@ USB_RECESS = (11.5, 6.0)
 USB_RECESS_R = 1.5
 USB_RECESS_LEAD = 0.8
 USB_FLOOR = dict(t=0.5, hole=0.10, notch_clr=0.1, lid_gap=0.055)
+# 2026-10-22, the port fits board Rev 1.0 and Rev 1.02. Rev 1.02's J1 (the SMD USB4105) sits 0.14 mm nearer the board
+# than Rev 1.0's through-hole USB4085 (the opening's centre z -1.815, was -1.955), and KiCad seats both about 0.085
+# deeper than a real board rests, so a plug in a Rev 1.02 socket sat 0.015 from the hole's board-side edge as printed
+# (-0.063 at the corners; interference once the seat is counted). The tub prints face down and the lid back down, so a
+# plane counts in whole layers from the bed: the hole's board-side edge and the recess's move onto layer lines from the
+# tub's face (the edge at z -0.575 printed at -0.53; the recess's 1.045 at 1.00), and the lid's port block, the hole's
+# far edge, which stood at -3.335 on a layer's mid-plane (5.100 over the lid's back; it printed one layer high, 0.2),
+# drops one layer onto a line from the lid's back. The hole keeps its width (8.54) and its corner radius (1.1). Both
+# are drawn for the frozen Rev 1.0 board copy (assert in tub.usb_features); a regenerated case redoes them.
+# slice_check reads the printed edges back against both sockets (asprinted.usb_fit; FAIL under 0.1 on any side).
+USB_HOLE_TOP = -0.33                      # the hole's board-side edge (z): 4.47 + 0.33 = 4.80 (standard), 5.27 + 0.33 = 5.60
+USB_RECESS_TOP = 1.27                     # the recess's board-side edge (z): 4.47 - 1.27 = 3.2 (standard), 5.27 - 1.27 = 4.0
+J1_REV10 = dict(yc=41.30, zc=-1.955, mouth_x=61.195)   # the frozen Rev 1.0 board copy's J1 (tub.usb_features asserts it)
+J1_REV102_DZ = 0.14                       # Rev 1.02's USB4105 opening sits this much nearer the board (z up): -1.815
+J1_SEAT_DZ = 0.085                        # KiCad seats parts this far behind where a real board's rear face rests (both J1s)
+USB_PLUG = (8.25, 2.40, 1.0)              # the nominal USB-C plug shell: width, height and its least corner radius
+USB_FIT_MIN = 0.10                        # the plug's least clearance to the hole's printed edges, each flat, both boards
+USB_BLOCK_DROP = 0.10                     # the lid's port block top: -3.335 -> -3.435, 5.0 over the lid's back (Z_BACK -8.435)
 
 # ---- fasteners ---------------------------------------------------------------------------
 # Four M2 x 8 socket head caps (ISO 4762, Ian's; a pan head, ISO 7045, also fits; three until 2026-10-13), thread-forming
