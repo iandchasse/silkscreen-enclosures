@@ -296,10 +296,11 @@ def worker_drawings(B, M):
         notes={'ref': 'bottom-left', 'u': r3(cy), 'mirror': 'bottom-right', 'rod_axis': [r3(v) for v in P.ROD_AXIS],
                'what': "the bottom-left corner screw, through a lid post into the tub's corner block, below the rod"})
     h6 = fps['H6']['cad']
-    py = h6[1] + P.BOARD_SNAP['slot'] / 2 + 0.25       # beside the snap post's slot, so its fingers are cut
+    # a barb post's section is taken beside its slot so the fingers are cut; a pin (style 'pole', 2026-10-23) is cut through its axis
+    py = h6[1] + (P.BOARD_SNAP['slot'] / 2 + 0.25 if P.BOARD_SNAP.get('style', 'barb') == 'barb' else 0.0)
     add('pin', 'y', py, [h6[0] - 6.5, h6[0] + 6.5, ZW[0], ZW[1]], [
         ('tub', 'case', tub), ('lid', 'case2', lid), ('pcb', 'pcb', pcb), ('midplate', 'plate', mid), *disp],
-        notes={'ref': 'H6', 'hole_y': h6[1], 'what': 'the board snapped onto a midplate post, the lid post behind it'})
+        notes={'ref': 'H6', 'hole_y': h6[1], 'what': 'the board on a midplate pin, the lid post behind it'})
     add('top', 'x', P.TOP_SCREW[0], [84.0, 99.4, zb, ZW[1]], [
         ('tub', 'case', tub), ('lid', 'case2', lid), ('pcb', 'pcb', pcb), ('screw', 'metal', M['screw_top']),
         *disp, ('midplate', 'plate', mid)], notes={'ref': 'top screw'})
@@ -480,8 +481,9 @@ def keys_checks(B):
     out.append({'id': 'x_gaps', 'label': 'Side gaps: cheeks to their slots and webs, caps to their openings',
                 'ok': min(xg.values()) > 0, 'value': min(xg.values()), 'detail': ', '.join(f'{k} {v}' for k, v in xg.items()),
                 'source': 'crank.json x_gaps'})
-    out.append({'id': 'logo', 'label': 'The chin wordmark stays clear of the cranks&rsquo; slots',
-                'ok': bool(cj['logo'].get('ok')), 'value': cj['logo'].get('min_plastic_mm'), 'source': 'crank.json logo'})
+    out.append({'id': 'logo', 'label': 'The back wordmark and icon each leave at least 0.4 mm of the lid&rsquo;s floor (the chin is plain)',
+                'ok': bool(cj['logo'].get('ok')) and bool(cj['logo_back'].get('ok')),
+                'value': cj['logo_back']['wordmark']['plastic_left_mm'], 'source': 'crank.json logo_back'})
     for blk, name in (('key_forces', 'forces'), ('key_preload', 'rest load'), ('key_hooks', 'hooks'), ('key_fit', 'key fit'),
                       ('crank_stress', 'stress'), ('key_sweep', 'key sweep')):
         ch = mech[blk].get('checks', {})
@@ -605,9 +607,8 @@ def presets_block(B):
                       'cap': f'<b>Board prep.</b> The board is cut above the battery connector (J5) (y {hw.PCB_CUT_Y:g} here, KiCad y 62.00), power '
                              'moves to the left upper page key (SW7), and the left lower page key (SW5) is left off.'},
         'edges': {'cam': v(96, -52, 44), 'tgt': v(52, 2, 1), 'tag': 'Edges',
-                  'cap': f'<b>Edges and logo.</b> {P.FRONT_EDGE_R:g} mm front and {P.BACK_EDGE_R:g} mm back rounds, a '
-                         f'{P.SEAM_CHAMFER:g} mm V at the parting line (the lid&rsquo;s half only, on the chin under the '
-                         'keys), and the wordmark in the chin.'},
+                  'cap': f'<b>Edges and logo.</b> {P.FRONT_EDGE_R:g} mm front and {P.BACK_EDGE_R:g} mm back rounds, '
+                         'a square parting line (no V), and the wordmark on the back above the grip grooves, the book icon in the centre.'},
         'close': {'cam': v(36, -110, -58), 'tgt': v(30, 20, -4), 'sec': ['y', r3(P.SCREWS['bottom-left'][1]), True],
                   'focus': ['screws', 'lid', 'tub', 'pcba', 'rod'], 'highlight': ['screw_*', 'gate'], 'tag': 'Fasteners',
                   'cap': '<b>Fasteners.</b> Cut through the bottom pair of screws: each M2 runs through a post in the lid '
@@ -660,7 +661,7 @@ def explode_block(B):
                'along the channel in the gate&rsquo;s slot, through the rail and every crank; the printed gate drops '
                'into the slot and closes it.',
         'midplate': 'Midplate onto the back of the panel; it clicks in at its four detents.',
-        'pcba': 'The trimmed board: FPC through the slot into the display connector (J2), then press it onto the snap posts at the upper-left and centre mounting holes (H2, H6). Each '
+        'pcba': 'The trimmed board: FPC through the slot into the display connector (J2), then set it onto the pins at the upper-left and centre mounting holes (H2, H6). Each '
                 'bottom switch&rsquo;s plunger slides past its crank&rsquo;s nose.',
         'battery': 'The cell rides in the lid: bottom edge under the lip, pushed right (and down only until it stops under the lip) and taped. Stand '
                    'the lid up by the top edge and plug the lead into the battery connector (J5).',
@@ -727,8 +728,8 @@ def assembly_block(B):
         {'id': 'midplate', 'title': 'Midplate', 'groups': ['midplate'], 'preset': 'detent',
          'text': 'Onto the back of the panel; it clicks in at its four detents.'},
         {'id': 'pcba', 'title': 'Board', 'groups': ['pcba'], 'preset': 'ribbons',
-         'text': 'Feed the FPC through the board&rsquo;s slot and plug it into the display connector (J2). Press the board onto the snap posts at the upper-left and centre mounting holes (H2, H6) '
-                 'until it clicks; the plungers slide past the cranks&rsquo; noses.'},
+         'text': 'Feed the FPC through the board&rsquo;s slot and plug it into the display connector (J2). Set the board onto the pins at the upper-left and centre mounting holes (H2, H6) '
+                 'and keep the stack face down until the lid is on; the plungers slide past the cranks&rsquo; noses.'},
         {'id': 'battery', 'title': 'Battery, in the lid', 'groups': ['battery', 'lid'], 'preset': 'battery',
          'text': 'Tuck the cell&rsquo;s bottom edge under the lid&rsquo;s lip, push it right, and down only until it stops under the lip, and tape it down. '
                  'Stand the lid up beside the case&rsquo;s top edge and plug the lead into the battery connector (J5).'},
@@ -1122,7 +1123,7 @@ def cards_block(B, M, K):
                     'screw_len': P.SCREW_L, 'pilot': P.M2_PILOT,
                     'support_post': list(P.SUPPORT_POSTS[0])}
     # ---- edges and logo
-    lg = logo.placed()
+    lg = logo.placed(dict(P.LOGO_BACK_WORDMARK, mirror=False))      # the wordmark on the back, drawn as read from behind
     lb = logo.placed(P.LOGO_BACK)
     G['edges'] = {'edges': {'front_r': P.FRONT_EDGE_R, 'back_r': P.BACK_EDGE_R, 'seam_chamfer': P.SEAM_CHAMFER,
                             # the window's bevel as seen: its width on the face (the 4.26 adapter's too), its angle
@@ -1131,7 +1132,8 @@ def cards_block(B, M, K):
                             'window_bevel_deg': P.WINDOW_BEVEL_ANGLE,
                             'window_corner_r': [P.WINDOW_CORNER_R, r3(P.WINDOW_CORNER_R + P.WINDOW_BEVEL_W)]},
                   'logo': {'polys': B.L.rings(lg, 2), 'bounds': [round(v, 2) for v in lg.bounds],
-                           'width': P.LOGO['width'], 'depth': P.LOGO['depth']},
+                           'width': P.LOGO_BACK_WORDMARK['width'], 'depth': P.LOGO_BACK_WORDMARK['depth'], 'on': 'back',
+                           'at': [r3(P.LOGO_BACK_WORDMARK['x']), r3(P.LOGO_BACK_WORDMARK['y'])]},
                   'logo_back': {'polys': B.L.rings(lb, 2), 'bounds': [round(v, 2) for v in lb.bounds],
                                 'width': P.LOGO_BACK['width'], 'depth': P.LOGO_BACK['depth'],
                                 'at': [r3(P.LOGO_BACK['x']), P.LOGO_BACK['y']]},
@@ -1214,6 +1216,10 @@ def checks_block(B, K):
     for blk, lab in (('latches', 'Latches'), ('board_snap', 'Board snaps'), ('mid_detents', 'Midplate detents')):
         v = mech.get(blk, {})
         st = v.get('root_strain_pct', v.get('strain_pct'))
+        if blk == 'board_snap' and v.get('style') == 'pole':            # plain pins since 2026-10-23: they locate, nothing flexes
+            C_.append({'id': blk, 'label': 'Board pins: locate only (no snap, nothing flexes)', 'ok': True,
+                       'value': v.get('xy_clearance_mm'), 'source': f'mechanics.json {blk}'})
+            continue
         C_.append({'id': blk, 'label': f'{lab}: strain at the root under 1.5 %', 'ok': None if st is None else st < 1.5,
                    'value': st, 'source': f'mechanics.json {blk}'})
     pr = json.loads((out / 'print' / 'print-report.json').read_text())

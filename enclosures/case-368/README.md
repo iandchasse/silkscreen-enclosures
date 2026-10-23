@@ -609,6 +609,35 @@ USB4085 is held there by its legs, the SMD USB4105 by its pads and shield stakes
 front part (nothing beside or under it in the tub; the lid's block stops 0.3 to 0.4 mm below the shell, and one more layer
 there would leave Rev 1.0's shell 0.07 from it). A tab on the board under J1 is the clean fix if a sample needs it.
 
+## A community member's edit (2026-10-23)
+
+A community member edited the 4.26 standard case in Onshape; Ian took six of the changes and made them in both cases where
+they apply (`../case-426/README.md`, "A community member's edit", has the full account; none of the member's files is in
+the repo). What reaches the 3.68, all read back by `community.py` (build time, `out/<variant>/community.json`) and by
+`slice_check.py` (as laid), each check failing on main's built parts first:
+
+- **Screws: `PILOT_R` only.** `asprinted.PILOT_R` is (0.5, 1.0) now in both cases (was 1.2), so a 2.4 clearance bore is not
+  read as pilot. The 3.68's reads do not move: 7.2 / 6.9 mm of thread at the bottom corners, 6.2 / 5.9 at the tops, the
+  pilots laid 1.69. The top-screw relief is the 4.26's (its pilot ran 9.0 mm; these never stripped).
+- **Plain pins on H2 and H6 instead of the snap posts** (`BOARD_SNAP['style'] = 'pole'`: Ø1.90, tip -1.00 and rounded, no
+  slot, no barb). Sliced first, as the plan asked: the 3.68's slotted posts laid two fingers 1.52-1.53 wide in X and 0.65
+  in Y each (±0.36 of play in the 2.2 hole), the same as the 4.26's; the pins lay 1.89 round and locate the board to
+  ±0.155. **The PCBA no longer clicks onto the midplate before the lid goes on**: keep the stack face down until the lid is
+  on. The lid's Ø3.0 bore (floor -1.40) is unchanged under the tip at -1.00.
+- **Side pads 1.2 proud** (`TAB_PAD_PROUD`, was 1.5): 0.80 (+X, SW1) / 0.70 (-X, SW5 and SW7) proud at the click.
+- **The wordmark on the back, above the grip grooves, and a plain chin.** `LOGO_BACK_WORDMARK`: 40.0 wide, 7.11 tall, **0.4
+  deep** (set here: the light strip's chin wordmark was 0.3, a layer's mid-plane), mirrored, centred on x 30 at y 4.95 (ink
+  y 1.40-8.51, 2.6 above the top groove's edge). The back is solid under it (0.6 of floor left: `crank_checks.logo_back_floor`),
+  clear of the corner counterbores (x at most 4.1 / at least 55.9, y at most -3.15) and 27 mm below the book icon. `LOGO` is None:
+  the chin is plain (the chin web stays, it also carries the keys' rail).
+- **The parting line is square** (`SEAM_CHAMFER` = 0; it was a 0.4 V, left off the tub's half over the key row). The
+  key bars lost their V with it (`TAB_BAR_V`).
+- **Two-colour logo, opt-in:** `logo.inlay` bodies for the icon (0.2, one layer) and the wordmark (0.4), exported as
+  `inlay_icon` and `inlay_wordmark` and into `print/3.68/` as `lid-inlay-icon` and `lid-inlay-wordmark`; with both builds
+  at whole-layer depths both can have them. `print/silkscreen-368-plates-2colour.3mf` and
+  `out/configs/standard-2colour.3mf` print the lid alone with the inlays on filament 2 (multi-material printers only; the
+  normal files print the engraving).
+
 ## Screen bevel (the standard build, 2026-10-10)
 
 Ian asked for a "longer and more exaggerated chamfer, rounded at the corners too"; the 4.26 took a 35° bevel, and for
@@ -1000,7 +1029,7 @@ both builds and in the 4.26 case: it depends only on the case side (X −4.09 in
    after the same short press with no free play first. Face down (reading lying on your back), the keys drop 1.0 onto
    their hooks, all four level, and the first press travels 0.5–1.5 (0.3–1.6 at the extremes) before the switch.
 
-**Taking it apart:** lid off (its four screws), lift the board off the midplate's snap posts (the plungers slide off
+**Taking it apart:** lid off (its four screws), lift the board off the midplate's pins (the plungers slide off
 the noses). Hook a straightened paperclip into the small hole in the gate's outside face and lift the gate out toward
 the back. Push the rod's right end (bare at X 56.3–61.4) toward −X with a small screwdriver until it stops at the last
 ring; since 2026-10-13 the right corner block (a screw's boss) stands 0.375 under the rod there, so keep a 2 mm blade
@@ -1151,7 +1180,7 @@ the centre and 1.42 / 2.08 / 2.20 / 3.30 at the top edge.)
     0.30–1.65 before the switch.
   - **The walls,** read off the built tub every 0.1 over each slot: at least 0.449 (standard) / 0.549 (light
     strip) behind every slot (≥ 0.45) in every layer from the rim up, and 1.20 / 1.30 over the roof at the slot's
-    back (≥ 0.5). The tub has no seam chamfer on the chin over the key row (x 5.6–54.4): with it, the wall behind
+    back (≥ 0.5). The tub had no seam chamfer on the chin over the key row (x 5.6–54.4; none anywhere since 2026-10-23): with it, the wall behind
     each slot thinned to 0.17–0.37 in the rim's last one or two layers, which Orca does not print (eight slits into
     the slots, above the lid's rim; found by slicing, 2026-09-30).
   - **Tilt:** on its hooks a key is level within 0.64° (0.1 between the two, 8.95 apart: 0.11 end to end at the cap).
@@ -1212,7 +1241,7 @@ the centre and 1.42 / 2.08 / 2.20 / 3.30 at the top edge.)
   (≥ 1.90) and no line in the slot is a bridge. **The gate:** its first layer is the flange (4.05 × 2.30 as
   sliced), nothing overhangs past 45° (the bevel is the 45), the pull hole reads back 1.28 free (≥ 1.15), and
   its walls (0.60 at the thinnest) and flange wings print in every layer.
-- **Other:** the wordmark (Y 2.05–9.16) does not reach over the cheek slots (1.00 / 1.80 of plastic over their
+- **Other:** (until 2026-10-23, when the wordmark left the chin) the wordmark (Y 2.05–9.16) did not reach over the cheek slots (1.00 / 1.80 of plastic over their
   roofs, the skin since 2026-10-12; 1.32 / 2.12 over the old 3.15 roofs); the X gaps are set by the parameters: cheek to slot side and to web 0.15, cap to opening 0.30, cap to web
   0.40, a hook to its slot's outer side 0.40 (0.35 / 0.45 / 0.45 to 2026-10-03), the key's body to the crank's cheeks 0.45 (it must stay 0.05 or more over the cap-to-opening gap). The back
   icon leaves 0.5 of the lid's floor under its engraving (≥ 0.4), 1.83 clear of the battery pocket.
@@ -1240,9 +1269,9 @@ the centre and 1.42 / 2.08 / 2.20 / 3.30 at the top edge.)
   to 2.1 below the face; the assembly keeps the tub face down until the board is in.
 - **x3std's hooks bear on a roof inside the chin wall** (0.35 wide, 0.04 of it flat once the print rounds the hook's
   tip and the roof's edge; the pull stays along Z, and the rail keeps the hook from moving off it).
-- **The seam's V is half as deep on the chin under the keys** (x 5.6–54.4, both builds): the tub's half of it is left
-  off there, so the 0.45 / 0.55 of chin wall behind the hook slots prints right up to the rim. The lid's half is
-  unchanged, and the step at each end of the span is vertical, 0.4 × 0.4.
+- **The seam's V was half as deep on the chin under the keys** (x 5.6–54.4, both builds): the tub's half of it was left
+  off there, so the 0.45 / 0.55 of chin wall behind the hook slots printed right up to the rim. (The V went on 2026-10-23: the
+  parting line is square, so the wall prints to the rim everywhere.)
 - **The gate's flush 2.5 × 6.2 web and its 1.3 mm pull hole** show on the left side face at y −2.5. On the standard
   build the mouth's floor meets the front edge's round in its last 0.04 mm, a 0.25-tall notch that the gate's tip
   fills, and the gate's outer bottom corner stands about 0.09 past the round (cosmetic; the tip is left sharp, since a
@@ -1857,8 +1886,8 @@ Everything that sets a fit is in `src/params.py`, with its reason. Kept from Rev
 - **Bottom keys** (2026-09-26, replacing Rev D–K's rockers): straight keys over bell cranks on a filament rod,
   1.14 N at the cap's centre for a 1.27 N switch, no preload. See *Bottom keys*.
 - **Midplate springs** press the panel to the lip: 0.1–0.3 mm deflection over the panel's ±0.1 mm, 0.5–1.6 N
-  each, seven springs. The board clips onto the midplate at H2 and H6 (H1 went with the trim): 1.36 % strain,
-  8.2 N to push on, 14 N to pull off.
+  each, seven springs. The board sits on the midplate's pins at H2 and H6 (H1 went with the trim); plain pins since 2026-10-23, before that snap
+  posts (1.36 % strain, 8.2 N to push on, 14 N to pull off).
 - **Stack detents** (Rev K): four strips click the midplate into the tub, 0.72 N each, 1.0 % strain.
 - **USB-C divot**, its floor, the lid's block under the port, and the reset hole and trough: unchanged since Rev K, but for the port hole's board-side edge, the divot's and the block's top (2026-10-22, *The USB port fits board Rev 1.0 and Rev 1.02*) (J1 and
   SW11 have not moved).
@@ -1876,7 +1905,7 @@ New in x3:
   `hardware/reference/board-trim.md` for the copper audit.
 - **Battery bay** in the lid, behind the board (above), its pocket sunk 0.4 mm into the floor. H2's lid post would
   stand in it, so a post in SW5's empty site (SW5 is left off) carries the board's top-left corner instead; H2's
-  snap post on the midplate still clips the board.
+  pin on the midplate still locates the board.
 - **Top screw** in the top-right corner, its boss merged into the right wall beside the panel.
 - **Screws:** four M2 × 8 socket head caps (ISO 4762; pan heads also fit) since 2026-10-13 (*Four screws, and the lid
   where it really sits*): the bottom pair in the chin's two bottom corners, below the rod, with 7.2 mm of thread in
@@ -1893,8 +1922,8 @@ New in x3:
   through the two step layers. Nothing else on the lid changed; the head sits where it did. On its +X side the boss
   ends at the case wall, so the square layer's wall there spans about 1.7 mm over the slot's end, anchored at both
   ends (a short bridge).
-- **Chin web:** the chin's skin is solid down to well over the switch pins, so the 0.3 mm wordmark leaves over
-  1 mm of plastic. Below it (y < 0) are the bottom keys' rail and webs; the wordmark does not reach over the cheek
+- **Chin web:** the chin's skin is solid down to well over the switch pins (it carried the 0.3 mm wordmark, 1 mm of
+  plastic under it, until 2026-10-23, when the wordmark moved to the back). Below it (y < 0) are the bottom keys' rail and webs; the wordmark does not reach over the cheek
   slots' roofs.
 - **Back icon:** the site's book icon, 26 mm wide, engraved 0.3 into the back, centred on it (30.0, 44.6; until
   2026-09-29 it sat low, at y 24.0). The case is 68.18 × 108.0, Y −9.40 to 98.60. The icon (y 35.33–53.87) stays
@@ -1929,7 +1958,7 @@ New in x3:
    comes before the first full print, the chin fit check is optional; keep the tub face down until the board is in).
 4. **Midplate.** Onto the back of the panel; it clicks in at its four detents.
 5. **Board.** FPC through the board's slot into the display connector (J2; check the FPC's contact side against it
-   first). Press the board onto the snap posts at mounting holes H2 and H6 until it clicks.
+   first). Set the board onto the pins at mounting holes H2 and H6; they locate it, nothing clicks, so keep the stack face down until the lid is on.
 6. **Battery.** Check the pack: at most 5.3 mm thick with up to two layers of tape on each face, 30.5 wide and 37.0
    long with its protection board (and one layer of tape over each end), lead end up. Tuck its bottom edge under the
    lid's lip, push it to the right (and down only until it stops under the lip) and tape it down. Stand the lid up beside the case's top edge and

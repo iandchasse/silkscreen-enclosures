@@ -73,6 +73,11 @@ backstops 0.065 mm too tall. The method that caught each one:
      board Rev 1.0 socket and in Rev 1.02's (0.14 nearer the board), each seated 0.085 nearer the board than KiCad draws it,
      with the lid at home and the board on its posts. FAIL under 0.10 on any of the hole's four flats (the corners are
      printed, not graded). It failed on main (Rev 1.02 -0.07 on the board side) and passes in all 32 + 2 builds.
+   - `community.py` (both cases, identical; `build.py` runs it on every build -> `community.json`) and `slice_check`'s rows for the
+     2026-10-23 changes: no seam V, pads 1.2 proud, the midplate's pins (as laid: one piece, 1.80 or more across), the back
+     wordmark open and the chin plain as laid, the two-colour inlays filling their recesses, and the 4.26 top screw's relief
+     (its pilot starts at 1.6, 3.6 mm of thread). Their limits are Ian's literal numbers, so they failed on main and pass now.
+     `configs_slice.two_colour()` reads the two-colour lid plate by tool.
    - `lid_close.py` (latch arms bent on the way in).
    - `slice_check.detent_join` and the crank free-swing check.
    - `case-426/src/configs_slice.py` (key layers, side-key zones, what each key stands on at the bed

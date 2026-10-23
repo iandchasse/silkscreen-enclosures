@@ -31,7 +31,7 @@ with the board 0.2 mm off), and the 4.26 build now checks it. The 3.68 keys keep
 its own.
 
 **4.26 chinless case, 2026-10-04 (touch-centric, new, not printed yet):** a 4.26 case with **no bottom keys** and
-the shortest chin: 117.4 mm tall instead of 125.0, the wordmark centred in what is left below the screen. It is for
+the shortest chin: 117.4 mm tall instead of 125.0 (the wordmark was centred in what is left below the screen; since 2026-10-23 it is on the back). It is for
 the stock touch panel (GDEQ0426T82-FT01C): touch does OK/Back, and the five side keys are as on the standard case.
 **Its board must NOT have the four bottom switches (SW9, SW8, SW3, SW2) fitted:** they stick out 1.9 mm past the
 board's bottom edge, into the chin wall, and the case will not close over them. Order the board without the bottom
@@ -274,6 +274,35 @@ fails under 0.10 (`../enclosures/case-368/README.md`, "The USB port fits board R
 1.2 mm of J1 that overhangs the board's edge (on either board); a tab on the board under J1 would be the clean fix if a
 sample needs it.
 
+**Both cases, 2026-10-23 (a community member's edit; reprint the tub, the lid and the midplate):** a community member edited
+the 4.26 standard case in Onshape and Ian took six of the changes, made here in both cases where they apply.
+- **Top screw (4.26, every configuration; the tub):** a 2.4 clearance bore from the rim to the board's front face, so the screw
+  bites the last 3.8 mm of its pilot, 3.6 mm as printed (3.3 with the lid 0.3 open) like the two bottom screws, instead of 9.0
+  (it stripped heads). The 3.68's screws are unchanged.
+- **The wordmark is on the lid's back, above the grip grooves** (the lid), and the chin is plain (the tub). On the 4.26 it
+  sits 2.6 mm above the top groove (the chinless case: above its grooves at 2 / 4 / 6); on the 3.68 the same distance. The
+  book icon stays in the centre.
+- **No V at the parting line** (tub and lid): both halves are square.
+- **Side pads 1.2 mm proud** (the lid, which carries the side keys; was 1.5): 0.80 / 0.70 at the click.
+- **Plain pins on the midplate** (was snap posts): the PCBA sits on three pins (4.26: H1, H2, H6; 3.68: H2, H6) that locate it
+  to ±0.155 mm; **it no longer clicks onto the midplate before the lid goes on, so keep the stack face down until the lid is
+  on.** With the lid on nothing else changes.
+Reprint `tub-*`, `lid` (`lid-chinless`) and `midplate` for your size and configuration; the keys, cranks, gate and rod are
+unchanged. Both plate files and every configuration's project carry the new parts, and nothing else in them moved. Sliced in
+the OrcaSlicer CLI with the CC2 and generic presets and read back from the G-code; not printed. (`../enclosures/case-426/README.md`,
+"A community member's edit"; the 3.68's section of the same name.)
+
+**Two-colour logo (optional, 2026-10-23):** the lid's two back engravings (the wordmark and the book icon) can be filled
+with a second colour. It needs a printer that changes filament (a multi-material system or a tool changer): the logo is the
+lid's first two layers, so a manual swap cannot make it. The normal files print the same logo as an engraving in one colour
+and are what to use otherwise. The inlays are `4.26/lid-inlay-wordmark`, `lid-inlay-icon` (and `lid-chinless-inlay-*`) and
+`3.68/lid-inlay-*`, in the lid's own print frame: load them as parts of the lid on filament 2, or open
+[`silkscreen-426-plates-2colour.3mf`](silkscreen-426-plates-2colour.3mf) / [`silkscreen-368-plates-2colour.3mf`](silkscreen-368-plates-2colour.3mf),
+the plate files with the lid taken off its case plate and put on a plate of its own with the inlays on filament 2 (its
+filaments default to a light case colour and black; they are only preview colours, load what you have; OrcaSlicer adds a small
+prime tower on that plate and changes filament only for its first two layers). The per-configuration projects of the case
+project have `-2colour` versions too (`make_plates.py configs`, `index-2colour.json`).
+
 ## Start here: the plate file
 
 Open the plate file for your reader in OrcaSlicer:
@@ -467,6 +496,7 @@ under every key and crank, supports only in the lid's 3 enforcers, each key 50 l
 | Path | What |
 |---|---|
 | `silkscreen-426-plates.3mf`, `silkscreen-368-plates.3mf` | the plate files above |
+| `silkscreen-426-plates-2colour.3mf`, `silkscreen-368-plates-2colour.3mf` | the optional two-colour logo versions of the plate files (below) |
 | `rod-jig.stl`, `rod-jig.step` | the rod jig, the same for both sizes (also on plate 1 of the plate files) |
 | [`4.26/`](4.26/) | every 4.26 part on its own, and `ROD.txt` |
 | [`3.68/`](3.68/) | every 3.68 part on its own, and `ROD.txt` |
@@ -474,6 +504,8 @@ under every key and crank, supports only in the lid's 3 enforcers, each key 50 l
 In the size folders each part comes twice: `<part>.stl`, oriented and placed as it prints, and `<part>.step`, in the
 case's CAD frame (the board's coordinates) for editing. The gate's STEP is in its print pose, like its STL.
 
+- **Two-colour logo (optional):** `lid-inlay-wordmark`, `lid-inlay-icon` on both sizes, and `lid-chinless-inlay-wordmark`, `lid-chinless-inlay-icon` on the 4.26: the
+  bodies that fill the lid's back engravings, in the lid's print frame (filament 2; not needed for the normal files).
 - **Tubs:** `tub-standard`. `tub-light-strip` is for the light-strip case, which is in development and not released.
 - **4.26 chinless:** `tub-chinless` and `lid-chinless`, its own tub and lid, with the shared `midplate`. The board
   must not have the bottom-row buttons (SW9/SW8/SW3/SW2) fitted.
@@ -493,6 +525,7 @@ case's CAD frame (the board's coordinates) for editing. The gate's STEP is in it
 | Files | Written by |
 |---|---|
 | `4.26/`, `3.68/` | `enclosures/case-426/src/build.py` and `enclosures/case-368/src/build.py`, at the end of a full build (every print build: on the 4.26 standard, light-strip, chinless and light-strip chinless) |
+| the two-colour plate files | `enclosures/make_plates.py` (with the plate files): the same projects with the lid on a plate of its own, the inlays on filament 2 |
 | the two plate files | `enclosures/make_plates.py`, from each build's print-oriented STLs (`src/plates.py`, in `out/<build>/print/`): generic projects, the released builds only. `make_plates.py --printer cc2` writes the author's CC2 versions with every build to `cc2-local/` (git-ignored) |
 | one OrcaSlicer project per 4.26 configuration (not in this folder) | `enclosures/make_plates.py configs`, into `enclosures/case-426/out/configs/` (OrcaSlicer's generic presets, what the website serves; `--printer cc2`: `out/configs-cc2/`; build output, not in git; above) |
 | the 3.68 standard build's OrcaSlicer project (not in this folder) | `enclosures/make_plates.py configs --size 368`, into `enclosures/case-368/out/configs/standard.3mf` (the same generic presets, what the website serves; `--printer cc2`: `out/configs-cc2/`; build output, not in git; above) |

@@ -67,12 +67,12 @@ sides := leftkeys | rightkeys | upperkeys          (none: all four side keys)
 
 The four bases:
 
-| Base | Panel | Board | Outside (x × y × z) | Front wordmark | In `print/` (plate of `print/silkscreen-426-plates.3mf`; the CC2 file `print/cc2-local/` has all four builds) |
+| Base | Panel | Board | Outside (x × y × z) | Wordmark (on the back since 2026-10-23) | In `print/` (plate of `print/silkscreen-426-plates.3mf`; the CC2 file `print/cc2-local/` has all four builds) |
 |---|---|---|---|---|---|
-| `standard` | GDEQ0426T82-FT01C, touch and frontlight | as assembled | 68.2 × 125.0 × 12.7 | `LOGO` y 6.29, above the keys | plate 1 (CC2 file: 1): `tub-standard` and the shared parts |
-| `light-strip` | plain GDEY0426T82 with the Silkscreen light strip | as assembled | 68.2 × 125.0 × 12.7 | y 6.29 | CC2 file only, plate 2: `tub-light-strip` and the shared parts |
-| `chinless` (touch-centric) | GDEQ0426T82-FT01C; touch does OK/Back | **without the bottom-row buttons (SW9, SW8, SW3, SW2)** | **68.2 × 117.4 × 12.7** | **y 6.605, centred** on the face below the window (y 0.0-13.215) | plate 3 (CC2 file: 4): `tub-chinless`, `lid-chinless`, the shared `midplate` |
-| `light-strip-chinless` (2026-10-07) | plain GDEY0426T82 with the Silkscreen light strip; no touch | **without the bottom-row buttons (SW9, SW8, SW3, SW2)** | 68.2 × 117.4 × 12.7 | y 6.95, centred | CC2 file only, plate 5: `tub-light-strip-chinless`, the chinless lid (`lid-chinless`), the shared `midplate` |
+| `standard` | GDEQ0426T82-FT01C, touch and frontlight | as assembled | 68.2 × 125.0 × 12.7 | `LOGO_BACK_WORDMARK` y 4.95, above the grip grooves; the chin is plain | plate 1 (CC2 file: 1): `tub-standard` and the shared parts |
+| `light-strip` | plain GDEY0426T82 with the Silkscreen light strip | as assembled | 68.2 × 125.0 × 12.7 | y 4.95 | CC2 file only, plate 2: `tub-light-strip` and the shared parts |
+| `chinless` (touch-centric) | GDEQ0426T82-FT01C; touch does OK/Back | **without the bottom-row buttons (SW9, SW8, SW3, SW2)** | **68.2 × 117.4 × 12.7** | **y 12.55**, above the grooves (at y 2 / 4 / 6) | plate 3 (CC2 file: 4): `tub-chinless`, `lid-chinless`, the shared `midplate` |
+| `light-strip-chinless` (2026-10-07) | plain GDEY0426T82 with the Silkscreen light strip; no touch | **without the bottom-row buttons (SW9, SW8, SW3, SW2)** | 68.2 × 117.4 × 12.7 | y 12.55 | CC2 file only, plate 5: `tub-light-strip-chinless`, the chinless lid (`lid-chinless`), the shared `midplate` |
 
 These four, with all four side keys and the dev header, are the *print builds*: their files are in the repo's `print/4.26/` and
 the plate file. Every configuration, the print builds included, also gets its own OrcaSlicer project,
@@ -420,12 +420,11 @@ The standard build's FT01C touch panel with **no bottom keys**, and the shortest
   outline's ±0.2 on top (the same with the board ±0.2 in X). That is 0.15 more than the keyed tub's rail face, which
   stands 0.45 off the board's edge and has been printed and assembled. -0.4 would leave 0.0 at the worst stack, so
   -0.6 is as short as it safely goes.
-- **The wordmark** is centred on the face that remains below the window, from the front round's tangent (y 0.0) to
-  the window's bevel on the face (13.215 since the 35-degree bevel, 2026-10-10; 13.9 before): `LOGO` y 6.605
-  (computed in `params.py` from the bevel, so it follows the angle), its ink y 3.05-10.16 as cut, 3.05 below and 3.05
-  above (`chin.json` checks it within 0.05). The light-strip chinless builds keep Rev K's window, the face to 13.9 and
-  `LOGO` y 6.95 (ink y 3.40-10.51). The back icon follows the case's centre (y 56.9, was 53.1).
-- No keys, cranks, rod, gate, rail, key openings, hook slots or rim relief: the seam's V runs all along the chin. It
+- **The wordmark** is on the back since 2026-10-23, like every build's: `LOGO_BACK_WORDMARK` y 12.55 (ink y 9.00-16.11), above
+  its grip grooves (at y 2 / 4 / 6, a groove's top edge at 6.4), and the chin face is plain. The back icon follows the
+  case's centre (y 56.9, was 53.1), 46 mm above the wordmark. (Until then the wordmark was engraved on the face below the
+  window, centred: `LOGO` y 6.605, computed from the 35-degree bevel; the light-strip chinless builds' y 6.95.)
+- No keys, cranks, rod, gate, rail, key openings, hook slots or rim relief: the rim is square along the chin (there is no seam V since 2026-10-23). It
   needs no rod, no gate, no coupons and no `ROD.txt` steps. The five side keys are part of the lid, as in every build.
 - **Prints:** plate 3 "Chinless case" of `print/silkscreen-426-plates.3mf` (plate 4 of the CC2 file): `print/4.26/tub-chinless`,
   `lid-chinless` (its side keys get the same supports as on the standard case) and the shared `midplate`. The
@@ -718,7 +717,7 @@ Ian's screws are socket head caps (ISO 4762 / DIN 912, M2: head 3.8 across, 2.0 
 - **Lid: the counterbores are 2.0 deep** (`params.M2_HEAD_CB_DEPTH`, 10 layers; was 1.8, 9). A socket head's top is
   flush with the back, a pan head's 0.4 below it. Their diameter (4.2) is unchanged, so the back's first layer is too.
 - **The same M2 x 10** (`params.SCREW_L`), one layer further in: H3 / H4 3.6 mm in the pilot (3.3 with the lid 0.3
-  open; was 3.4 / 3.1), the top screw 9.0 (8.7), each tip 0.2 short of its pilot's end and 0.8 from the front face (was
+  open; was 3.4 / 3.1), the top screw 9.0 (8.7; 3.6 (3.3) since 2026-10-23, see A community member's edit), each tip 0.2 short of its pilot's end and 0.8 from the front face (was
   0.4 and 1.0). Every configuration has the same three screws and the same numbers, the light-strip ones included.
 - **The stepped bridge** over each counterbore is one layer higher and prints as before: the same Bridge and
   Overhang-wall lines, nothing floating. The H3 / H4 Ø6.0 bosses (and on a chinless lid their blocks) now run up to
@@ -733,6 +732,65 @@ Ian's screws are socket head caps (ISO 4762 / DIN 912, M2: head 3.8 across, 2.0 
   configurations (each screw's socket head 0.2 proud); on these it passes all 32.
 - **Reprint the lid** (`lid` or `lid-chinless`) for flush heads; with pan heads it is optional. The lid prints as
   before (the standard lid 31 min 57 s, 15.10 g; was 31 min 55 s); nothing else changes.
+
+## A community member's edit (2026-10-23)
+
+A community member edited the 4.26 standard case in Onshape and sent the result. Ian took six of the changes, and
+they are re-made here in this project's CadQuery from measurements: none of the member's files is in the repo, and the
+lid, tub and midplate they sent are not used (their tub was an older one, from before the USB fix). The member is
+credited as "a community member" until Ian gives a name and permission. Every row below is read back by
+`community.py` (build time, `out/<build>/community.json`) and by `slice_check.py` (as laid), and each check was run on
+main's built parts first and failed there (§8).
+
+- **Top screw relief, all 32 configurations.** The top screw thread-formed through a Ø1.70 pilot from the rim to
+  the front, 9.0 mm as printed (8.7 with the lid 0.3 open), which stripped heads. It now has an M2_CLEAR (Ø2.4)
+  clearance bore from the rim to z 1.6 (`params.TOP_SCREW_CLEAR_TO` = `PCB_FRONT`, a layer line of the face-down tub:
+  the 1.4-1.6 layer is clearance and the 1.6-1.8 layer is pilot), so the screw bites the last 3.8 mm of the pilot:
+  **3.6 mm in the pilot as printed, 3.3 with the lid 0.3 open**, the same as H3 / H4, which bite on Ian's prints. The
+  tip is still 0.2 short of the pilot's end and 0.8 from the front face, and the head seat is unchanged. No taper (each
+  0.2 of taper would cost 0.2 of a 3.6 that is already close to the 3.0 floor). `asprinted.PILOT_R` is (0.5, 1.0)
+  now, in both cases (was 1.2): the pilot lays at r 0.85 and the clearance bore at r 1.19, and at 1.2 the relief read
+  as pilot and failed on its laid Ø2.388. The tub changes; the lid and the midplate do not. The 3.68 takes the
+  `PILOT_R` change only (its screws read as before: 7.2 / 6.9 at the corners, 6.2 / 5.9 at the tops).
+- **Two-colour logo, opt-in.** `logo.inlay` builds the body that exactly fills each back engraving (the wordmark and
+  the book icon: 0.4 deep, two whole layers), exported as `inlay_wordmark` and `inlay_icon` and into `print/4.26/` as
+  `lid-inlay-*` and `lid-chinless-inlay-*`. The normal lid and every normal project are unchanged. The optional
+  two-colour OrcaSlicer projects (`print/silkscreen-426-plates-2colour.3mf`; per configuration
+  `out/configs/<slug>-2colour.3mf`, listed in `index-2colour.json`) print the lid alone on a plate of its own, with the
+  inlays as parts on filament 2 (default colours: filament 1 `#E8E1D0`, a light case; filament 2 black, `#000000`; only
+  the slicer's preview colours, the user loads any light filament as 1 and a dark one as 2). They need a printer that
+  changes filament: the logo is the lid's first two layers, so a manual swap cannot make it. The prime tower is set
+  small (width 30) in a free corner of the plate, and `configs_slice.py` reads it back (§7). The CC2 files do not get
+  two-colour versions, and the site does not list them: Ian's later call.
+- **Plain pins instead of the snap posts.** The midplate's posts through H1, H2 and H6 are plain Ø1.90 pins, their
+  tip edge rounded (`BOARD_SNAP['style'] = 'pole'`; the barb style stays as an option). As printed the slotted post
+  laid two fingers 1.42-1.52 wide in X (±0.36 of play in the 2.2 hole) and its barb caught only in Y, 0.09 a side; the
+  pin lays 1.89 round and locates the board to ±0.155 both ways. **The PCBA no longer clicks onto the midplate before
+  the lid goes on**: keep the stack face down until the lid is on. With the lid on nothing changes (the barbs were
+  slack at home). The pin's tip is at -1.00, not -0.95: the midplate prints screen side down, so -1.00 is a whole
+  number of layers from the bed and lays the pin's top where the barbs' tip laid, so the lid's bore floor (-1.40) and
+  every overlap read stay as they are.
+- **Side pads 1.2 proud** (`TAB_PAD_PROUD`, was 1.5), our 45-degree faces and plan fillet kept; the nubs and the rest
+  gaps are unchanged. At the click the pad stands 0.80 (+X) / 0.70 (-X) proud (was 1.10 / 1.00); Rev E's 0.5 was the
+  one that needed the thumb to sink in.
+- **The wordmark on the back, above the grip grooves.** `LOGO_BACK_WORDMARK`: 40.0 mm wide, 7.11 tall, 0.4 deep,
+  mirrored so it reads from behind, centred on x 30, `y = max(GRIP_GROOVES_Y) + 6.55`: **y 4.95 on the keyed
+  builds (ink y 1.40-8.51, 2.6 above the top groove's edge), y 12.55 on the chinless builds (ink 9.00-16.11)**. It is
+  4.15 clear of the H3 / H4 counterbores and 34 / 30 mm below the book icon (keyed / chinless). The back is solid to
+  +1.2 under it (0.8 of floor left). The chin is plain (`LOGO = None`, the old place kept as `LOGO_CHIN` for the
+  checks); the grip grooves stay.
+- **The parting line is square** on both halves (`SEAM_CHAMFER` = 0; it was a 0.4 x 45 degree V on each half, left
+  off the tub over the key row). The side keys' bars lost their own V with it (`TAB_BAR_V` is derived from
+  `SEAM_CHAMFER`: 0.25 with the 0.4 V, 0 without). The side gate's 0.2 mm top chamfer, drawn to end level with the
+  old V, is a separate part and stays (`GATE['top_chamfer']`; `OPEN-WORK.md` asks whether to square it).
+
+**Not taken** (each is in the plan Ian approved): the nub cut-back (the member's rest gap of 0.65-0.75: by the reach
+model four of the five keys could not click, and test 1 already failed at a 0.39 gap); their reshaped pads (a 1.15 mm
+shelf over air, and the plate build would stop on it); the lid posts 1.0 shorter, the flat H5 pin and the removed
+battery springs (the pin would no longer enter the board, and the screen's hold at the top end falls about 5x on a
+thin panel; a bulge study needs the member's photo first); filling the grip grooves; any taper on the top screw; and
+their tub. Questions for the member (which keys click, a photo of the bulge, their screws, the old USB edge in their
+tub, credit) are in `../OPEN-WORK.md`.
 
 ## Bottom keys (Rev L): bell crank and sliding key
 
@@ -1120,9 +1178,9 @@ Both builds give the same numbers:
   tub, the hooks included, at any lift (the centred sweep is 2-D at the key's middle; an as-sliced 3-D sweep of both
   tubs, by hand on 2026-10-03, found the skin the key's side stop down to about −1.9, ±0.30, and the webs below, ±0.40).
 - **Hooks and slots** (`mechanics.key_hooks`, test 2; the design study's missing checks): the chin wall behind each
-  slot is 0.457 or more at every layer the tub prints, the rim's included (≥ 0.45: over the key row the tub has no
-  seam chamfer, `KEY_SLOT` relief; with it the rim layer printed nothing behind the slots, a one-layer slit into
-  them in the seam's V; the CAD's own least, 0.43, is in its top 0.08 under the roof, which no layer prints), 0.569 over the roof at
+  slot is 0.457 or more at every layer the tub prints, the rim's included (≥ 0.45: over the key row the tub had no
+  seam chamfer (`KEY_SLOT` relief; with it the rim layer printed nothing behind the slots, a one-layer slit into
+  them in the seam's V), and since 2026-10-23 there is no V anywhere; the CAD's own least, 0.43, is in its top 0.08 under the roof, which no layer prints), 0.569 over the roof at
   the slot's back (≥ 0.50), and nothing is left in a slot. X-tilt (about Y): free, the guides alone allow
   7.5° (1.31 end to end; 8.6° and 1.48 on the 9.9 key, as before test 2); face down on both hooks it is
   0.0°, 0.64° if one hook prints 0.1 off (1.28° both ways), and a pull at the cap's end stays
@@ -1899,7 +1957,7 @@ prints face down without supports.
 The lid (`src/lid.py`) is a shallow tray: the outer body below the parting line, hollowed to 1.2 mm
 walls and floor. It carries:
 - **Posts under the board:** H1 Ø4.4, H2 Ø4.4, H5 Ø4.3 with a Ø1.9 locating pin, and H6 Ø5.0.
-  H1, H2 and H6 have Ø3.0 bores that the midplate's snap barbs drop into.
+  H1, H2 and H6 have Ø3.0 bores that the midplate's pins (snap barbs until 2026-10-23) go into.
 - **Screws:** the H3/H4 screws pass through it, the board and into the tub bosses. The top screw at
   (40.2, 112.8) goes lid to tub, between the battery's corner and J6. The heads' counterbores print
   with no supports (§5.8 Screws).
@@ -1969,7 +2027,7 @@ with its top edge as the last layer. No layer of it is ever laid over air.
 - **Block:** from 0.3 mm before the pad to the free end, the key rises to z 0.6 into the tub's slot:
   7.3 mm tall, so it barely bends. The slot clears it by 0.2 mm above and 0.3 mm at the free end.
 - **Pad:**
-  - 10 mm long (SW10, power: 7 mm), 1.5 mm proud, with a 7.1 × 2.4 mm flat face (z −3.4…−1.0)
+  - 10 mm long (SW10, power: 7 mm), 1.2 mm proud (1.5 until 2026-10-23), with a 7.1 × 2.4 mm flat face (z −3.4…−1.0)
     and rounded ends.
   - Its lower face is 45°, because in the lid's print it is an overhang.
 - **Nub:**
@@ -2072,14 +2130,14 @@ every lead. It backs the whole glass, so neither touches nor the battery load it
   - They take up the panel's ±0.2 mm: 0.15 mm of deflection with a thin panel, 0.55 with a thick
     one, out of 0.6 available. That gives 0.5 N to 1.85 N per spring, and no gap in front of the glass.
   - The two beside SW5 and SW10 also press the board down where the side buttons need it.
-- **Board capture:**
-  - The midplate carries snap posts through H1, H2 and H6, a triangle that spans the board. Each is
-    a Ø1.90 post in the 2.2 mm hole, split into two fingers 3.95 mm long.
-  - Each barb squeezes 0.15 mm to pass, with a 30° lead and a 45° retaining face. It catches the
-    rear face 0.10 mm below it.
-  - About 7.4 N each to press the board on and 13 N to take it off, at 1.37 % strain.
-  - **It captures, it does not clamp.** With the lid on, the board sits on the lid's posts and the
-    barbs go slack, so nothing fights the panel's thickness tolerance. H5's pin sets X and Y.
+- **Board location:**
+  - The midplate carries plain pins through H1, H2 and H6, a triangle that spans the board (since 2026-10-23; before,
+    two-finger snap posts with a barb that clipped the board on). Each is a Ø1.90 pin in the 2.2 mm hole, its tip
+    rounded R0.3 and 1.0 mm past the board's rear face, into a Ø3.0 bore in the lid's post.
+  - As printed it lays 1.89 round: the board is located to ±0.155 in X and Y. Nothing clicks, and nothing holds the
+    board in Z until the lid is on: keep the stack face down.
+  - **It locates, it does not clamp.** With the lid on, the board sits on the lid's posts, as before. H5's pin sets
+    X and Y at the top end.
 - **Battery slot:**
   - The slot is on the plate's back and stands up through the board's notch. A continuous left rail
     has a lip 0.9 mm over the cell's edge, 0.2 mm off its back.
@@ -2190,10 +2248,12 @@ every lead. It backs the whole glass, so neither touches nor the battery load it
   - Front edge R1.8, which is nine 0.2 mm layers and so prints as a smooth curve; the first layer
     starts about 1 mm in, which hides elephant's foot.
   - Back edge R2.0.
-  - A 0.4 mm V at the parting line, from a chamfer on each half: it reads as deliberate and hides a
-    tenth of misalignment.
+  - A square parting line since 2026-10-23 (it was a 0.4 mm V from a chamfer on each half, which read as deliberate and
+    hid a tenth of misalignment).
 - **Wordmark:** the site's logo SVG (`hardware/logo/silkscreen-logo.svg`), lettering only, 40 mm wide
-  and engraved 0.4 mm deep in the chin.
+  and engraved 0.4 mm deep in the lid's back, above the grip grooves (since 2026-10-23; before, in the tub's chin). It is
+  mirrored so it reads from behind; `LOGO_BACK_WORDMARK` y 4.95 (ink y 1.40-8.51), y 12.55 on the chinless builds. The
+  chin face is plain. In the two-colour projects its recess is filled by a part in filament 2 (below).
   - A 0.055 mm bold keeps the e's crossbar at about 0.38 mm.
   - Features under 0.24 mm are filtered out, because a face-down first layer can't make them.
   - At this size the s and the c just touch.
@@ -2242,7 +2302,8 @@ board is at risk.
 5. Midplate onto the back of the display; it clicks in at its four detents.
 6. PCBA in:
    - Feed the tails through the board slot into the display, frontlight and touch connectors (J2, J3, J4).
-   - Press the board onto the three snap posts (through mounting holes H1, H2, H6) until it clicks. The plungers pass the
+   - Set the board onto the three pins (through mounting holes H1, H2, H6); they locate it, nothing clicks, so keep the
+     stack face down until the lid is on. The plungers pass the
      cranks' noses (the cranks hang clear in the face-down tub).
    - Plug the battery into the battery connector (J5) and wind any spare lead round the two cleats.
 
@@ -2258,8 +2319,8 @@ board is at risk.
 **MicroSD card:** screws out and lid off. Unwind the lead, lift the cell's right side past its snaps
 and swing it out from under the lip; it stays on its lead. Push the card, and it ejects and pulls free.
 
-**Taking it apart:** as above, then lift the board off the snap posts (about 13 N each) while holding
-the midplate down through the battery notch.
+**Taking it apart:** as above, then lift the board off the pins while holding
+the midplate down through the battery notch (it was 13 N a snap post until 2026-10-23).
 
 **Noise:** most of the click is the switch's own dome. Tape on the plungers softens the rest. The side
 keys' gap is 0.25 mm on the two-button side (SW5, SW7), more than a layer of electrical tape (0.13–0.18),
@@ -2273,8 +2334,8 @@ switch pressed. The bottom keys have no gap face up (each rests on its crank, an
 | Part | Orientation | Notes |
 |---|---|---|
 | tub | face down | every inward surface facing the screen is on the bed or ≤ 45° |
-| lid | back face down | the side keys stand on the bed; the book icon prints as 0.4 mm gaps in the first layers; the floor under it stays 0.8 thick; supports under the side keys' hinge notches only (below) |
-| midplate | screen side down | springs are short bridges; lips and barbs have 45° undersides; every slot is 0.5 mm so first-layer squash can't close it |
+| lid | back face down | the side keys stand on the bed; the book icon and the wordmark print as 0.4 mm gaps in the first layers; the floor under them stays 0.8 thick (two-colour: the gaps are filled by filament 2); supports under the side keys' hinge notches only (below) |
+| midplate | screen side down | springs are short bridges; lips and the battery slot's barbs have 45° undersides; the board pins stand up from the plate (rounded tip); every slot is 0.5 mm so first-layer squash can't close it |
 | bottom keys (`key-426`) | on its -X end (+X up) | the -X hook on the 2-layer raft (since 2026-10-06), the +X hook's -X face a 45° lead; no supports; elephant-foot compensation 0 (per object) |
 | cranks | on the pad end, +Y up | every −Y face ≥ 45°; on a 2-layer raft (since 2026-10-06) |
 | pcba-dummy | board face down | the dev header's (J6's) 1.9 mm overhang prints unsupported |
@@ -2323,7 +2384,7 @@ print failed without it.
 | Later moves | `build.later_moves` | the PCBA stepped in 0.25 mm at a time (J1, SW11 and the side switches against the tub, keys and midplate), the whole board past the battery slot, then the lid with its keys, and each key up its slot (each sweep against the fixed part cut down to the space the mover passes through, since 2026-10-08: the same report, about 3 times faster) | clean |
 | Lid closing | `lid_close.latch_arms` → `out/<build>/lid-close.json` | 2026-10-12: each latch arm bent by the tub's tongue on the way in (the rigid sweep above moves it unbent), against the midplate (nominal, pushed 0.2 toward the arm, and that shifted 0.2 along the wall) and the board (centred; pushed 0.15 or 0.35 toward the wall: the chamfer only) ([The lid closing](#the-lid-closing-2026-10-12)) | all 13 clear on all 32 |
 | Bottom keys | `build.bottom_keys_check`, `mechanics.key_sweep`, `mechanics.key_fit`, `mechanics.key_proud`, `slice_check.key_fit` | Rev L: rest for the board ±0.2 with each switch (the key 1.0–2.0 proud there, since 2026-10-03), the crank swept −13…+16°, the key from its stop to over-travel, the assembly paths (rod, cranks, board, keys), and the key's fit in its opening as printed (a tolerance stack, and read back from the G-code): see [Bottom keys](#checks-buildbottom_keys_check--outvariantbottom-keysjson-slice_checkpy) | only the designed contacts |
-| Chin | `build.chin_check` → `out/<build>/chin.json` | chinless configurations: every bottom-key feature absent, the lid's blocks and grooves present, the wordmark centred, the board's clearance to the chin wall; the tub above y 11 and the lid away from the chin equal to the keyed twin's | 25 of 25 on all 16 (2026-10-07) |
+| Chin | `build.chin_check` → `out/<build>/chin.json` | chinless configurations: every bottom-key feature absent, the lid's blocks and grooves present, the chin face plain, the board's clearance to the chin wall; the tub above y 11 and the lid away from the chin equal to the keyed twin's | 25 of 25 on all 16 (2026-10-07) |
 | Dev header | `build.header_closed_check` → `out/<build>/header.json` | `-nodev`: the top wall closed, the second top tongue run, and a fitted J6 against the lid's lip | 10 of 10 on all 16 |
 | Side-key layouts | `build.sides_check` → `out/<build>/sides.json`; `slice_check.side_wall_no_support` | a layout's left-out keys: the plain wall in tub and lid, nothing else changed against the all-four twin, a fitted switch never pressed; read back from the G-code | 30 of 30 on all 24 |
 | Twins | `build.share_check`, `build.twin_shares` → `out/<build>/shared.json`, `out/shares-all.json` | each configuration's parts against its twins' ("What the builds share") | every claim equal |
@@ -2358,6 +2419,7 @@ print failed without it.
 | I | 2026-09-21 | print 5 | print 4 |
 | J | 2026-09-22 | no | print 5 |
 | K | 2026-09-22 | no | Ian's questions on Rev J |
+| community | 2026-10-23 | no | a community member's edit of the 4.26 standard case (see A community member's edit) |
 
 **Rev D**
 - **Screen:** panel and ribbons rebuilt 1:1 from the drawing's vectors, and the site's battery model
@@ -2365,6 +2427,7 @@ print failed without it.
 - **Side pads:** 10 mm, 7 for power.
 - **Edges and logo:** rounded front and back, the seam V (over the key row only the lid's half: the tub's rim is
   square there so the wall behind the hook slots prints to the rim, `KEY_SLOT` relief), and the wordmark from the SVG.
+  (The V went on 2026-10-23, and the wordmark moved to the back.)
 - **Bottom keys:** the pivot was redesigned after a free-body check. The first design hung the ridge
   in a bar under the skin that touched it only from above and behind, so a press pulled the ridge out
   of its seat. It now sits in the V-seat described in §5.7.
@@ -2410,7 +2473,7 @@ Everything left was on the long sides:
 - **Nubs:** now 6.0 × 2.75 mm. This was unlocked by measuring the plunger standing 1.24 mm proud of
   its collar.
 - **Board capture:** snap posts through H1 and H2, so the board clips onto the midplate. It captures
-  rather than clamps, so the panel's tolerance is still free.
+  rather than clamps, so the panel's tolerance is still free. (Plain locating pins since 2026-10-23.)
 - **Wordmark:** the cause of "silkscrccn" was the model's own thin-feature filter, which deleted the
   e's 0.273 mm crossbar before the STL was written. The mark went to 50 mm wide.
 - **Dummy:** a J1 socket a plug can enter.
@@ -2659,8 +2722,9 @@ python -B src/compare.py            # X4 and retro case comparison -> out/<slug>
 | `sidekeys.py` | the side keys and the lid cuts around them |
 | `joint.py` | tongue, groove, latches, the midplate's latch notches |
 | `keys.py` | the bottom keys and cranks (Rev L), the rail's profiles, the rod and its side gate, and the YZ band geometry their checks use |
-| `midplate.py` | the midplate: springs, snap posts, battery slot, detents |
-| `logo.py` | the wordmark and icon from SVG |
+| `midplate.py` | the midplate: springs, board pins (snap posts until 2026-10-23), battery slot, detents |
+| `logo.py` | the wordmark and icon from SVG; `inlay()`: the bodies that fill their recesses (two-colour) |
+| `community.py` | the 2026-10-23 changes' checks (`community.json`) and their slice read-backs |
 | `build.py` | builds and exports every part; the interference and assembly-path checks |
 | `lid_close.py` | the lid closing: the latch arms bent on the way in, against the midplate and the board (a build check, 2026-10-12) |
 | `mechanics.py` | sweeps and force models |
@@ -2676,7 +2740,7 @@ python -B src/compare.py            # X4 and retro case comparison -> out/<slug>
 
 - **Where to start:** most changes are a number in `params.py`, which works like a CAD tool's
   parameter table. For example, `TAB_GAP_SIDE` sets the side keys' rest gap, `MID_DETENT['bump']` how
-  hard the stack clicks, and `LOGO['width']` the wordmark.
+  hard the stack clicks, and `LOGO_BACK_WORDMARK['width']` the wordmark.
 - **After a change:** rerun `build.py` and `mechanics.py`, and read the three JSON files.
   - A new overlap or a non-empty `hits` means the change broke a fit or a path.
   - A strain over about 1.5 % means a flexure is too stiff for PLA.

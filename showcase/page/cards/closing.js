@@ -1,4 +1,4 @@
-// Closing up: drawings clamp, pin and top (cards.closing), the board snap posts, and the rod's printed side gate
+// Closing up: drawings clamp, pin and top (cards.closing), the board pins (snap posts until 2026-10-23), and the rod's printed side gate
 // (keys.rod, cards.closing.gate; its 3D view frames the gate part on the stage). The screws come from
 // cards.closing.screw_list: three on the 4.26 (H3, H4, top), four on the 3.68 (its bottom pair in the chin's corners,
 // whose 'clamp' drawing cuts the bottom-left one along x; notes.u is the screw's place across the cut).
@@ -106,11 +106,12 @@ SC.card({
       },
     });
     ctx.Drawing(dP, 'dw-closing-pin', {
-      label: 'Section through the ' + pref + ' snap post',
+      label: 'Section through the ' + pref + (BS.style === 'pole' ? ' pin' : ' snap post'),
       annotate: function (a0, d) {
         var a = fitA(a0, d);
-        lab(a, dP, 'midplate', px_ + 0.95 * (dP.axis === 'y' ? 1 : 1), 0.8, '\u00d8' + f(BS.post_d, 1) + ' post in\n\u00d8' + f(BS.hole_d, 1) + ' hole', 30, 30, { hot: true });
-        lab(a, dP, 'midplate', px_ + 1.25, -0.35, 'barb catches\nthe board', 34, -30, { hot: true });
+        lab(a, dP, 'midplate', px_ + 0.95 * (dP.axis === 'y' ? 1 : 1), 0.8, '\u00d8' + f(BS.post_d, 1) + (BS.style === 'pole' ? ' pin in\n\u00d8' : ' post in\n\u00d8') + f(BS.hole_d, 1) + ' hole', 30, 30, { hot: true });
+        if (BS.style === 'pole') lab(a, dP, 'midplate', px_ + 0.5, BS.geom.tip + 0.15, 'rounded tip', 34, -30, { hot: true });
+        else lab(a, dP, 'midplate', px_ + 1.25, -0.35, 'barb catches\nthe board', 34, -30, { hot: true });
         lab(a, dP, 'lid', px_ + 2.4, -3.2, 'lid post,\nbored', 26, -12);
         lab(a, dP, 'midplate', px_ - 2.0, (z.mid_rear + z.pcb_front) / 2 + 0.4, 'midplate', -34, 22);
       },
@@ -129,9 +130,9 @@ SC.card({
     var nums = [
       row('Screws', nS + ' &times; ' + SC.esc(sname), iso + ' ' + kinds + (also ? ' (or ' + also[2] + 's)' : '')
         + (CB ? ' &middot; counterbores ' + (Math.abs(CB.bottom - CB.top) < 1e-6 ? f(CB.bottom, 1) : f(CB.bottom, 1) + ' / ' + f(CB.top, 1)) + ' mm deep' : '')),
-      row('Snap posts', list(posts), f(BS.push_on_N_each, 1) + ' N on, ' + f(BS.pull_off_N_each, 1) + ' N off, each'),
-      row('Finger strain', f(BS.root_strain_pct, 2) + ' %', 'in PLA &middot; catch ' + f(BS.catch_mm, 2) + ' mm'),
-      row('Board play', f(BS.board_z_play_mm, 2) + ' mm', 'captured, not clamped, until the lid is on'),
+      BS.style === 'pole' ? row('Board pins', list(posts), '\u00d8' + f(BS.post_d, 2) + ' in \u00d8' + f(BS.hole_d, 1) + ' holes &middot; locate only, no snap') : row('Snap posts', list(posts), f(BS.push_on_N_each, 1) + ' N on, ' + f(BS.pull_off_N_each, 1) + ' N off, each'),
+      BS.style === 'pole' ? row('Board clearance', f(BS.xy_clearance_mm, 3) + ' mm', 'a side, in X and Y &middot; nothing holds it in Z until the lid is on') : row('Finger strain', f(BS.root_strain_pct, 2) + ' %', 'in PLA &middot; catch ' + f(BS.catch_mm, 2) + ' mm'),
+      BS.style === 'pole' ? null : row('Board play', f(BS.board_z_play_mm, 2) + ' mm', 'captured, not clamped, until the lid is on'),
       G && row('Rod gate', 'printed', 'web ' + f(G.web, 2) + ' + flange ' + f(G.flange, 2) + ' mm &middot; stops the rod at x ' + f(G.stop_x, 2) + ' &middot; &Oslash;' + f(G.pull_d, 1) + ' mm pull hole'),
       R && row('Rod', f(R.cut, 2) + ' mm', 'of ' + f(R.d, 2) + ' mm filament &middot; ' + (D.cards.keys.end_play ? f(D.cards.keys.end_play[0], 1) + '&ndash;' + f(D.cards.keys.end_play[1], 1) + ' mm end play' : '')),
     ];

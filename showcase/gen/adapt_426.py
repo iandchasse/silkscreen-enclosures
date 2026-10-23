@@ -283,7 +283,8 @@ def child(b, out):
     dw('clamp', 'y', h3[1], [-4.2, 11.1, -7.4, 7.4], [
         ('tub', 'case', M['tub']), ('lid', 'case2', M['lid']), ('pcb', 'pcb', pcb), ('screw', 'metal', M['screw_H3'])],
         notes={'hole': 'H3'})
-    py = h2[1] + P.BOARD_SNAP['slot'] / 2 + 0.25       # beside the snap post's slot (as 3.68), so its fingers are cut
+    # a barb post's section is taken beside its slot so the fingers are cut; a pin (style 'pole', 2026-10-23) is cut through its axis
+    py = h2[1] + (P.BOARD_SNAP['slot'] / 2 + 0.25 if P.BOARD_SNAP.get('style', 'barb') == 'barb' else 0.0)
     dw('pin', 'y', py, [4.0, 17.0, -7.4, 7.4], [
         ('tub', 'case', M['tub']), ('lid', 'case2', M['lid']), ('pcb', 'pcb', pcb),
         ('midplate', 'plate', M['midplate']), *disp], notes={'hole': 'H2', 'hole_y': h2[1]})
@@ -487,8 +488,8 @@ def child(b, out):
                               'lip along its left edge and two snaps on its right; its lead runs past the cleats to the battery connector (J5), and '
                               'the microSD socket\u2019s (J7) card comes out under its bottom edge once the cell is swung out.')),
         'edges': dict(cam=[96, -52, 44], tgt=[52, 2, 1], tag='Edges',
-                      cap='<b>Edges and logo.</b> 1.8 mm front and 2.0 mm back rounds, a 0.4 mm V at the parting line, and '
-                          'the wordmark in the chin.'),
+                      cap='<b>Edges and logo.</b> 1.8 mm front and 2.0 mm back rounds, a square parting line (no V), and '
+                          'the wordmark on the back above the grip grooves, the book icon in the centre.'),
         'close': dict(cam=[36, -110, -58], tgt=[30, 20, -4], sec=['y', 3.0, True], focus=['screws', 'lid', 'tub', 'pcba', 'rod'],
                       highlight=['screw_*', 'gate'], tag='Fasteners',
                       cap='<b>Fasteners.</b> Cut through the two bottom mounting holes (H3/H4): each screw clamps the board between a lid boss and a tub '
@@ -534,8 +535,8 @@ def child(b, out):
                            highlight=['screw_*'], tag='Fasteners',
                            cap='<b>Fasteners.</b> Cut through the two bottom mounting holes (H3/H4): each screw clamps the board between a lid boss and a '
                                'tub boss; on the chinless case both lid bosses run into the chin wall.')
-        PR['edges']['cap'] = ('<b>Edges and logo.</b> 1.8 mm front and 2.0 mm back rounds, a 0.4 mm V at the parting '
-                              'line, and the wordmark centred on the face below the window.')
+        PR['edges']['cap'] = ('<b>Edges and logo.</b> 1.8 mm front and 2.0 mm back rounds, a square parting line '
+                              '(no V), and the wordmark on the back above the grip grooves (the chin is plain).')
     if LC:
         PR['home']['cap'] = ('<b>Assembled.</b> Screen side up. The light-strip chinless build: the plain panel with the '
                              'light strip and no bottom keys, so the case ends just below the board, 117.4 mm tall '
@@ -561,8 +562,8 @@ def child(b, out):
         'keys': 'The four keys from inside, cap first, hooks in their slots, until both hooks stop under the skin.',
         'rod': 'The cranks drop into their slots; the 1.75 mm filament rod slides through the rail and the cranks from '
                'the -X wall, and the printed gate drops into its slot and cams it home.',
-        'pcba': H('PCBA in: the plungers pass the cranks\u2019 noses (the cranks hang clear), and it clicks onto the '
-                  'midplate\u2019s three snap posts.'),
+        'pcba': H('PCBA in: the plungers pass the cranks\u2019 noses (the cranks hang clear), and it sits on the '
+                  'midplate\u2019s three pins.'),
         'lid': f'Lid on, with the five side keys that are part of it: they slide up into their slots in the tub; the '
                f'tongue drops into the groove, {J["latch_count"]} latches click, posts take the board.',
         'screws': H('Three M2\u00d710 socket head caps from the back.'),
@@ -570,7 +571,7 @@ def child(b, out):
     if CL:
         stext['tub'] = ('Tub face down: the bezel lip, the slots the side keys rise into and the USB-C divot are all part '
                         'of it; the chin is a plain wall just below the board.')
-        stext['pcba'] = 'PCBA in (the four bottom-row buttons, SW9, SW8, SW3 and SW2, not fitted): it clicks onto the midplate\'s three snap posts.'
+        stext['pcba'] = 'PCBA in (the four bottom-row buttons, SW9, SW8, SW3 and SW2, not fitted): it sits on the midplate\'s three pins.'
     explode = {'order': order, 'offsets': {g: offs[g] for g in order}, 'steps': [asciify(stext[g]) for g in order],
                'done': '<b>Assembled.</b> Twelve printed parts, a filament rod, three screws.' if KEYS else
                '<b>Assembled.</b> Three printed parts and three screws.'}
@@ -610,7 +611,7 @@ def child(b, out):
            'with the small hole showing. From here the rod and cranks stay put however the tub is tilted, as long as its '
            'back never faces down.', ['rod'], 'close'),
           ('pcba', 'PCBA', 'Tails through the board slot into the display connector (J2)' + ('' if LS else ' and the frontlight and touch connectors (J3, J4)') + (', the strip&rsquo;s tail into the frontlight connector (J3)'
-           if LS else '') + '; press the board onto the three snap posts until it clicks. Let the cranks hang: the plungers '
+           if LS else '') + '; set the board onto the three pins; keep the stack face down until the lid is on. Let the cranks hang: the plungers '
            'pass their noses. Plug the battery into the battery connector (J5) and wind the spare lead round the cleats.', ['pcba'], 'battery'),
           ('lid', 'Lid', f'Each side key slides up its slot, the tongue drops into the groove, four posts take the board, '
            f'{J["latch_count"]} latches click. The lid&rsquo;s rim closes over the gate: if the case side shows an open '
@@ -622,7 +623,7 @@ def child(b, out):
         A = [a for a in A if a[0] not in ('coupon', 'prep', 'keys', 'cranks', 'rod', 'gate', 'set')]
         fix = {'pcba': ('Tails through the board slot into the display connector (J2), the strip&rsquo;s tail into the frontlight connector (J3)' if LS else
                         'Tails through the board slot into the display, frontlight and touch connectors (J2, J3, J4)') + '; press the board (the four bottom-row buttons, SW9, SW8, SW3 and SW2, not '
-                       'fitted) onto the three snap posts until it clicks. Plug the battery into the battery connector (J5) and wind the spare lead '
+                       'fitted) onto the three pins; keep the stack face down until the lid is on. Plug the battery into the battery connector (J5) and wind the spare lead '
                        'round the cleats.',
                'lid': f'The chinless lid: each side key slides up its slot, the tongue drops into the groove, the posts take '
                       f'the board, {J["latch_count"]} latches click.'}
@@ -644,7 +645,7 @@ def child(b, out):
                      'cell model; not on build.py\'s EXPECTED list')
         elif (r['part'], r['with']) == ('midplate', 'PCB') and all(w[0] - 2 <= x <= w[1] + 2 and w[2] - 2 <= y <= w[3] + 2
                                                                     for x, y in (p[:2] for p in snap_at.values())):
-            c.update(ok=True, status='designed', detail=det + ': the midplate\'s snap posts through the board at its mounting holes H1, H2, H6; '
+            c.update(ok=True, status='designed', detail=det + ': the midplate\'s pins through the board at its mounting holes H1, H2, H6; '
                      'not on build.py\'s EXPECTED list')
         else:
             c.update(ok=False, detail=det)
@@ -724,7 +725,7 @@ def child(b, out):
     assert len(ids) == len(set(ids)), 'duplicate check ids'
 
     # ---- the case's numbers (Rev K's meta blocks, now per card) -----------------------------------------
-    lg = logo.placed()
+    lg = logo.placed(dict(P.LOGO_BACK_WORDMARK, mirror=False))      # the wordmark on the back, drawn as read from behind
     lgb = logo.placed(P.LOGO_BACK)
     usb = {'mouth_x': u['mouth_x'], 'x1': P.X1, 'wall_x': list(uf['wall_x']), 'yc': u['yc'], 'zc': u['zc'],
            'shell_y': list(u['y']), 'shell_z': list(u['z']), 'recess': list(uf['size']), 'r': uf['r'],
@@ -892,7 +893,7 @@ def child(b, out):
             'the chin wall. Touch and the five side keys are the controls.',
             'Three printed parts: <code>tub-chinless</code>, <code>lid-chinless</code> (the side keys are part of it) and '
             'the shared midplate. No keys, cranks, rod or gate; plate 3 of the plate file has all three.',
-            'The wordmark is centred on the face below the window, the back icon on the shorter back, and the lid&rsquo;s '
+            'The chin is plain, the wordmark and the back icon are on the back (above the grip grooves, and in the centre), and the lid&rsquo;s '
             'bosses at the two bottom mounting holes (H3 / H4) run into the chin wall.',
             f'The five side keys, the tongue and its {J["latch_count"]} latches, the USB-C divot, the reset hole and the '
             'battery are the standard build&rsquo;s. <a href="#m=joint" data-goto="joint">Joint</a>',
@@ -910,7 +911,7 @@ def child(b, out):
             'gate; all three are in print/4.26/ (the plate file holds the released builds only).',
             'The light strip goes in as on the light-strip build, with no Back-button (SW9) lead to trim. <a href="#m=strip" '
             'data-goto="strip">Light strip</a>',
-            f'The wordmark, the back, the lid&rsquo;s bosses at the two bottom mounting holes (H3 / H4), the five side keys and the tongue with its '
+            f'The back with its wordmark, the lid&rsquo;s bosses at the two bottom mounting holes (H3 / H4), the five side keys and the tongue with its '
             f'{J["latch_count"]} latches are the chinless build&rsquo;s. <a href="#m=joint" data-goto="joint">Joint</a>',
         ]
     strip_block = {
@@ -1008,7 +1009,8 @@ def child(b, out):
                     'board_snap': mech.get('board_snap')},
         'edges': {'edges': {'front_r': P.FRONT_EDGE_R, 'back_r': P.BACK_EDGE_R, 'seam_chamfer': P.SEAM_CHAMFER,
                             'key_chamfer': P.KEY_EDGE_CHAMFER, 'window_bevel': P.WINDOW_FACE_W},
-                  'logo': {'polys': L.rings(lg, 2), 'bounds': [round(v, 2) for v in lg.bounds]},
+                  'logo': {'polys': L.rings(lg, 2), 'bounds': [round(v, 2) for v in lg.bounds], 'on': 'back', 'depth': P.LOGO_BACK_WORDMARK['depth'],
+                           'width': P.LOGO_BACK_WORDMARK['width'], 'at': [P.LOGO_BACK_WORDMARK['x'], P.LOGO_BACK_WORDMARK['y']]},
                   'logo_back': {'polys': L.rings(lgb, 2), 'bounds': [round(v, 2) for v in lgb.bounds],
                                 'width': P.LOGO_BACK['width'], 'depth': P.LOGO_BACK['depth'], 'at': [P.LOGO_BACK['x'], P.LOGO_BACK['y']]}},
         'compare': cmpd,

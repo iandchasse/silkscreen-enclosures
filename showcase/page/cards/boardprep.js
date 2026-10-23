@@ -1,5 +1,5 @@
 // Board prep (3.68 only): the trim line, the power rework and SW5 left off. The plan is drawn from the trimmed board's
-// outline (cards.battery.depth_map.outline), with the snap posts, the post in SW5's site, J5 and the side switches.
+// outline (cards.battery.depth_map.outline), with the midplate pins, the post in SW5's site, J5 and the side switches.
 SC.card({
   id: 'boardprep', title: 'Board prep', order: 85, preset: 'boardprep', sizes: ['368'],
   needs: ['cards.boardprep.trim_y', 'cards.boardprep.fit', 'cards.boardprep.remove', 'cards.boardprep.leave_off', 'cards.battery.depth_map.outline', 'cards.closing.holes'],
@@ -45,7 +45,7 @@ SC.card({
       SC.svg('circle', { cx: xy[0], cy: -xy[1], r: d / 2, class: 'post' }, svg);
       tx(xy[0] + (dx || 2.2), xy[1] + (dy || 0), s, anchor || 'start', null, 2.4);
     };
-    (BP.snap_posts || []).forEach(function (h) { if (H[h]) post(H[h], 2.2, 'snap post ' + h); });
+    (BP.snap_posts || []).forEach(function (h) { if (H[h]) post(H[h], 2.2, 'midplate pin ' + h); });
     if (H.H5) post(H.H5, 1.9, 'locating pin H5', 'end', -2.2, -3.4);
     if (BP.support_post) {
       var sp = BP.support_post;
@@ -76,7 +76,7 @@ SC.card({
         (gone.length ? 'Everything above goes with it: ' + goneRest.map(SC.part).join(', ') + (prot.length ? (goneRest.length ? ' and' : '') + ' the parts that protect the header and the frontlight lines (' + prot.map(SC.tag).join(', ') + ').' : '.') : ''),
       '<b>Power rework.</b> Remove ' + list(BP.remove) + ', then fit ' + list(BP.fit.map(function (r) { return r + (fv[r] ? ' (' + fv[r] + ')' : ''); })) +
         '. The power key moves to <b>' + SC.part(BP.power_key || '') + '</b>' + (roles[BP.power_key] ? ', ' + SC.esc(roles[BP.power_key]) : '') + '.',
-      '<b>Leave ' + BP.leave_off.map(SC.part).join(', ') + ' off.</b> The lid post at mounting hole H2 would stand in the battery bay, so a post in the empty site carries the board&rsquo;s top-left corner instead; the midplate&rsquo;s snap posts in mounting holes ' + (BP.snap_posts || []).join(' and ') + ' still clip the board.',
+      '<b>Leave ' + BP.leave_off.map(SC.part).join(', ') + ' off.</b> The lid post at mounting hole H2 would stand in the battery bay, so a post in the empty site carries the board&rsquo;s top-left corner instead; the midplate&rsquo;s pins in mounting holes ' + (BP.snap_posts || []).join(' and ') + ' still locate the board.',
       '<b>Trim</b> the battery connector&rsquo;s (J5&rsquo;s) through-hole leads and the switches&rsquo; pins to ' + f(BP.lead_trim_mm, 2) + ' mm proud of the front, so the midplate&rsquo;s springs keep their room.',
     ];
     ctx.q('#boardprep-steps').innerHTML = steps.map(function (s) { return '<li>' + s + '</li>'; }).join('');

@@ -3,6 +3,20 @@
 What is built but not printed, what is unproven, and the options that are studied but parked. The case READMEs have
 the full records; the study notes named here are local (not in git).
 
+## The community member's edit (2026-10-23): what Ian still decides
+
+The six changes Ian took are in both cases (`case-426/README.md`, "A community member's edit"). Left for Ian:
+- **The side gate's 0.2 mm top chamfer.** It was drawn to end level with the old seam V (`GATE['top_chamfer']`, both cases) and
+  was kept: it is a separate part and squaring it reprints the gate and touches the gate checks. Set it to 0 if he wants it square.
+- **The two-colour files** (`print/*-2colour.3mf`, `out/configs/<slug>-2colour.3mf`, `index-2colour.json`): on the website or not; and
+  whether his CC2 gets two-colour files (`print/cc2-local/` has none).
+- **The pin tip at -1.00** (the plan said -0.90, a layer's mid-plane on the midplate's print; -1.00 is whole layers and lays where the
+  barbs' tip laid).
+- **The member's questions and credit:** which of the five side keys click on their lid (their nub cut-back, not taken); a photo of
+  their bulge (their shorter lid posts, flat H5 pin and removed battery springs, not taken: a bulge study needs it first); their
+  screws; that their tub has the old USB edge; and their name and permission for the credit (the READMEs say "a community
+  member" until then).
+
 ## The 3.68 lid: rebuilt, not printed
 
 Ian printed 5ef49dc (in the pre-split history; four screws): all four screws bite, but the lid bulged at the top middle (CAD +X, upper

@@ -28,6 +28,14 @@ plate (--slice 0; memoised by the file's bytes, cache.orca_run), and for each co
 Writes slice-report.json in that folder (an entry for a configuration not sliced in this run stays while its 3MF is the
 one it was made from) and exits 1 when any configuration fails.
 
+Two-colour projects (2026-10-23; generic only, make_plates.py configs also writes <slug>-2colour.3mf, listed in
+index-2colour.json): two_colour() slices the lid plate (the last) of the keyed and the chinless 4.26 (and the 3.68's standard)
+with the CLI and reads it back by tool: both filaments are used; filament 2 extrudes only in the lid's first two layers and
+only inside the two inlays' polygons (grown 0.1); each glyph and the icon is covered by filament-2 lines for at least
+TWO_COVER of its area (layer 1, layer 2); no filament-1 line inside a glyph shrunk 0.15; the prime tower is clear of the
+lid; the job starts on the skirt and the side keys read as on the single-colour plate. Every one of the projects carries
+the same inlays at the same place in the lid's CAD frame (the other 30 are proved by that, not sliced).
+
     python -B src/configs_slice.py [--builds a,b,...] [--printer generic|cc2] [--size 426|368]
                                      (default: every configuration in out/configs/index.json, the generic projects)
 """
@@ -40,8 +48,8 @@ DIRS = {'generic': 'configs', 'cc2': 'configs-cc2'}    # make_plates.PRINTERS' f
 CONFIGS = cache.ROOT / 'out' / DIRS['generic']         # main() points these at --printer's (and --size's) folder
 SLICE = CONFIGS / 'slice'
 SUPPORT = ('Support', 'Support interface', 'Support transition')   # Orca's roles in rafts and supports
-NOT_PART = ('Custom', 'Skirt')      # the start G-code's purge line and the skirt (make_plates.SKIRT): on no object
-                                    # (no brim in these projects)
+NOT_PART = ('Custom', 'Skirt', 'Prime tower', 'Wipe tower')   # the start G-code's purge line, the skirt (make_plates.SKIRT)
+                                    # and the two-colour lid plate's prime tower: on no object (no brim in these projects)
 REACH = 3.0                         # mm: an object's extrusion past its box (a raft's first layer: 2.5)
 ENFORCER_REACH = 2.0                # mm: the lid's support past its enforcer's box: Orca draws its grid up to 0.7
                                     # (x) and 1.35 (y) past it (line centres, 2026-10-07); the next key is 18 away
@@ -489,6 +497,194 @@ def lid_alone(slug, entry):
     return rows, info
 
 
+# ---- the two-colour projects (make_plates.py configs, generic): the lid plate read back by tool
+TWO_REPS = {'426': ('standard', 'chinless'), '368': ('standard',)}   # sliced: the keyed and the chinless lid; the rest by position
+TWO_COVER = (0.75, 0.85)            # share of each glyph's area the filament-2 lines cover, layer 1 and layer 2 (as a separate
+                                    # object, check.md: 0.83-0.88 and 0.89-0.97)
+TWO_ZMAX = 0.45                     # filament 2 prints in the lid's first two layers only (z 0.2, 0.4)
+TWO_GROW = 0.1                      # filament 2's line centres inside the inlays' polygons grown by this
+TWO_OUTSIDE_MM = 0.2                # ... and at most this much line length outside
+TWO_SHRINK = 0.15                   # no filament-1 line inside a glyph shrunk by this: at most TWO_T0_MAX of its area
+TWO_T0_MAX = 0.02
+TWO_TOWER_CLEAR = 2.0               # the prime tower this far from the lid's box
+TWO_AT_TOL = 0.01                   # the inlays' place in the lid's CAD frame, project to project (mm)
+
+
+def tool_lines(path, zmax=TWO_ZMAX):
+    """The G-code by tool (2026-10-23): -> (lines, layers, changes). lines: [(z, tool, role, (x, y), (x2, y2), width)] for every
+    extruding move up to zmax (bed coordinates: the extruder offset added back); layers: {tool: sorted z of every layer it
+    extrudes in, the prime tower and the skirt left out}; changes: the number of tool-change lines (T0, T1) after the start."""
+    t = path.read_text(errors='ignore')
+    m = re.search(r'^; extruder_offset = (-?[\d.]+)x(-?[\d.]+)', t, re.M)
+    ox, oy = (float(m.group(1)), float(m.group(2))) if m else (0.0, 0.0)
+    lines, layers, changes = [], {}, 0
+    tool, role, z, w, x, y = 0, None, 0.0, 0.42, 0.0, 0.0
+    for line in t.splitlines():
+        if line.startswith(';TYPE:'):
+            role = line[6:].strip()
+        elif line.startswith(';Z:'):
+            z = float(line[3:])
+        elif line.startswith(';WIDTH:'):
+            w = float(line[7:])
+        elif re.match(r'T\d+\s*$', line):
+            tool = int(line[1:])
+            changes += 1
+        elif line.startswith(('G1 ', 'G0 ')):
+            v = {q[0]: float(q[1:]) for q in line.split(';')[0].split()[1:] if q[0] in 'XYE' and len(q) > 1}
+            nx, ny = v.get('X', x), v.get('Y', y)
+            if line[:2] == 'G1' and v.get('E', 0.0) > 0 and (nx, ny) != (x, y) and role not in (None, 'Custom'):
+                if role not in NOT_PART:
+                    layers.setdefault(tool, set()).add(round(z, 3))
+                if z <= zmax:
+                    lines.append((round(z, 3), tool, role, (x + ox, y + oy), (nx + ox, ny + oy), w))
+            x, y = nx, ny
+    return lines, {k: sorted(v) for k, v in layers.items()}, changes
+
+
+def glyph_polygons(stl, z=0.1):
+    """The polygons of an inlay's print STL at height z (its bottom layer): the logo's glyphs and the icon's pieces, in the lid's
+    print frame."""
+    import numpy as np
+    import trimesh
+    sec = trimesh.load(stl, force='mesh').section(plane_origin=[0, 0, z], plane_normal=[0, 0, 1])
+    if sec is None:
+        return []
+    flat, _ = sec.to_planar(to_2D=np.eye(4), check=False)
+    return [p for p in flat.polygons_full if p.area > 0.02]
+
+
+def lid_object(entry):
+    """(plate number, the lid object's info) of a two-colour entry: the plate with inlays."""
+    for n, pl in enumerate(entry['plates'], start=1):
+        for o in pl['objects']:
+            if o.get('inlays'):
+                return n, o
+    raise SystemExit('two-colour entry without a lid plate')
+
+
+def two_colour_at(slug, entry):
+    """Where the lid's inlays sit in the CAD frame, {name: [x0, y0, x1, y1]}: their boxes on the bed less the lid object's
+    corner (the lid's print frame) plus the lid's own CAD corner (out/<slug>/lid.stl). The same for every project of one
+    chin kind: the inlays are part of the lid, wherever its side keys make its box start."""
+    import trimesh
+    _, lid = lid_object(entry)
+    lo = trimesh.load(CONFIGS.parent / slug / 'lid.stl', force='mesh').bounds[0]
+    return {q['name']: [round(q['box'][0] - lid['box'][0] + lo[0], 3), round(q['box'][1] - lid['box'][1] + lo[1], 3),
+                        round(q['box'][3] - lid['box'][0] + lo[0], 3), round(q['box'][4] - lid['box'][1] + lo[1], 3)]
+            for q in lid['inlays']}
+
+
+def two_colour(size):
+    """The two-colour read-back (module docstring). -> (rows, info): rows [{check, ok, value}]."""
+    import shapely
+    from shapely.geometry import box, LineString
+    from shapely.ops import unary_union
+    f_idx = CONFIGS / 'index-2colour.json'
+    if not f_idx.exists():
+        return [], None
+    listing = json.loads(f_idx.read_text())
+    rows, info = [], {}
+
+    def verdict(what, ok, value=None):
+        rows.append({'check': f'two-colour: {what}', 'ok': bool(ok), **({'value': value} if value is not None else {})})
+    # 1. every project carries the inlays at one place in the lid's CAD frame (per chin kind: the keyed and the chinless lid)
+    at = {s: two_colour_at(s, e) for s, e in listing.items()}
+    kinds = {}
+    for s in at:
+        kinds.setdefault('chinless' if 'chinless' in s else 'keyed', []).append(s)
+    for kind, ss in kinds.items():
+        ref = at[ss[0]]
+        bad = {s: at[s] for s in ss if any(abs(a - b) > TWO_AT_TOL for k in ref for a, b in zip(at[s].get(k, [99] * 4), ref[k]))}
+        verdict(f'the {len(ss)} {kind} projects carry the same two inlays at the same place in the lid\'s CAD frame (+-{TWO_AT_TOL})',
+                not bad and len(ref) == 2, {'at': ref, 'differ': list(bad)[:3]})
+    info['inlays_at'] = {s: at[s] for s in (kinds.get('keyed', [])[:1] + kinds.get('chinless', [])[:1])}
+    # 2. the representatives, sliced (the lid plate only)
+    for slug in TWO_REPS[size]:
+        if slug not in listing:
+            verdict(f'{slug} is in index-2colour.json', False)
+            continue
+        entry = listing[slug]
+        f = CONFIGS / entry['file']
+        if hashlib.sha256(f.read_bytes()).hexdigest() != entry['sha256']:
+            raise SystemExit(f'{f}: not the file index-2colour.json lists (rerun make_plates.py configs)')
+        n, lid = lid_object(entry)
+        dest = SLICE / f'{slug}-2colour'
+        dest.mkdir(parents=True, exist_ok=True)
+        for g in dest.glob('*'):
+            if g.is_file():
+                g.unlink()
+        while cache.free_commit() < MIN_FREE:
+            time.sleep(5)
+        t0 = time.time()
+        r = cache.orca_run([str(ORCA), '--slice', str(n), '--outputdir', str(dest), str(f)], dest, [f], ORCA, timeout=1800)
+        g = dest / f'plate_{n}.gcode'
+        what = f'{slug} (plate {n}, the lid with its inlays)'
+        verdict(f'{what}: OrcaSlicer exits 0 and slices it', r.returncode == 0 and g.exists(), r.returncode)
+        if r.returncode or not g.exists():
+            continue
+        lines, layers, changes = tool_lines(g)
+        _, layers_all, _ = tool_lines(g, zmax=1e9)
+        info[slug] = {'gcode': g.relative_to(CONFIGS).as_posix(), 'seconds': round(time.time() - t0, 1), 'tool_changes': changes,
+                      'layers_by_tool': {k: [v[0], v[-1], len(v)] for k, v in layers_all.items()}}
+        verdict(f'{what}: both filaments print (T0 and T1)', set(layers_all) == {0, 1} and changes >= 2,
+                {'tools': sorted(layers_all), 'tool_changes': changes})
+        t1z = layers_all.get(1, [])
+        verdict(f'{what}: filament 2 prints in the first two layers only', bool(t1z) and max(t1z) <= TWO_ZMAX, t1z)
+        # the glyphs in the bed frame
+        polys, per = [], {}
+        for q in lid['inlays']:
+            stem = 'inlay_wordmark' if 'wordmark' in q['name'] else 'inlay_icon'
+            dx, dy = lid['box'][0], lid['box'][1]
+            gl = [shapely.affinity.translate(p, dx, dy) for p in glyph_polygons(CONFIGS.parent / slug / 'print' / f'{stem}.stl')]
+            per[q['name']] = gl
+            polys += gl
+        allg = unary_union(polys)
+        seg1 = [(a, b, w) for z, t, ro, a, b, w in lines if t == 1 and ro not in NOT_PART]
+        cl = unary_union([LineString([a, b]) for a, b, _ in seg1]) if seg1 else shapely.Polygon()
+        outside = cl.difference(allg.buffer(TWO_GROW)).length if seg1 else 0.0
+        verdict(f'{what}: filament 2 lays only inside the inlays (line centres within {TWO_GROW} of them; <= {TWO_OUTSIDE_MM} mm outside)',
+                bool(seg1) and outside <= TWO_OUTSIDE_MM, round(outside, 3))
+        cover = {}
+        for name, gl in per.items():
+            for i, p in enumerate(sorted(gl, key=lambda q: (round(q.centroid.x, 1), round(q.centroid.y, 1)))):
+                row = []
+                for z in (0.2, 0.4):
+                    ss = [(a, b, w) for zz, t, ro, a, b, w in lines if t == 1 and zz == z and ro not in NOT_PART]
+                    cov = unary_union([LineString([a, b]).buffer(w / 2, cap_style=2, join_style=2) for a, b, w in ss]) if ss else shapely.Polygon()
+                    row.append(round(cov.intersection(p).area / p.area, 3))
+                cover[f'{name} #{i + 1}'] = {'mm2': round(p.area, 2), 'layer1': row[0], 'layer2': row[1]}
+        info[slug]['coverage'] = cover
+        weak = {k: v for k, v in cover.items() if v['layer1'] < TWO_COVER[0] or v['layer2'] < TWO_COVER[1]}
+        verdict(f'{what}: every glyph and the icon covered by filament-2 lines (>= {TWO_COVER[0]:.0%} layer 1, >= {TWO_COVER[1]:.0%} '
+                f'layer 2): {len(cover)} pieces', bool(cover) and not weak,
+                {'least_layer1': min(v['layer1'] for v in cover.values()), 'least_layer2': min(v['layer2'] for v in cover.values()),
+                 'weak': weak})
+        shr = unary_union([p.buffer(-TWO_SHRINK) for p in polys])
+        t0lines = [(a, b, w) for z, t, ro, a, b, w in lines if t == 0 and ro not in NOT_PART and z in (0.2, 0.4)]
+        t0cov = unary_union([LineString([a, b]).buffer(w / 2, cap_style=2, join_style=2) for a, b, w in t0lines])
+        share = t0cov.intersection(shr).area / shr.area if shr.area else 0.0
+        verdict(f'{what}: no filament-1 line inside a glyph shrunk {TWO_SHRINK} (<= {TWO_T0_MAX:.0%} of its area)',
+                share <= TWO_T0_MAX, round(share, 4))
+        lb = lid['box']
+        clear = box(lb[0] - TWO_TOWER_CLEAR, lb[1] - TWO_TOWER_CLEAR, lb[2] + TWO_TOWER_CLEAR, lb[3] + TWO_TOWER_CLEAR)
+        tw = [LineString([a, b]) for z, t, ro, a, b, w in lines if ro in ('Prime tower', 'Wipe tower')]
+        tower = unary_union(tw) if tw else None
+        verdict(f'{what}: the prime tower is {TWO_TOWER_CLEAR} mm clear of the lid\'s box',
+                tower is not None and not tower.intersects(clear),
+                None if tower is None else [round(v, 1) for v in tower.bounds])
+        # the job and the side keys, as on the single-colour plate
+        zones = lid['key_zones']
+        js = job_start(g, zones)
+        verdict(f'{what}: the job starts on the skirt, not in a side key\'s zone', js['ok'], js)
+        reads = side_key_reads(g, zones)
+        verdict(f'{what}: its side keys ({len(reads)}) print on what is under them', len(reads) == len(zones) and all(v['ok'] for v in reads.values()),
+                {k: {'over_air_mm2_max': v['over_air_mm2_max'], 'reach_max': v['reach_max']} for k, v in reads.items()})
+        bases = side_key_bases(g, zones)
+        verdict(f'{what}: ' + side_key_base_row(bases)[0], len(bases) == len(zones) and all(v['ok'] for v in bases.values()),
+                side_key_base_row(bases)[1])
+    return rows, info
+
+
 def main(argv):
     global CONFIGS, SLICE
     import argparse
@@ -531,6 +727,11 @@ def main(argv):
     d['ok'] = all(x['ok'] for x in d['checks'])
     rep = {s: done.get(s, old.get(s)) for s in listing
            if s in done or (s in old and old[s].get('sha256') == listing[s]['sha256'])}
+    tc_rows, tc_info = two_colour(o.size) if o.printer == 'generic' else ([], None)
+    if tc_info is not None:
+        rep['_two_colour'] = {'ok': all(x['ok'] for x in tc_rows), 'checks': tc_rows, **tc_info}
+    elif '_two_colour' in old and o.printer == 'generic':
+        rep['_two_colour'] = old['_two_colour']
     cache.atomic_write(rf, json.dumps(rep, indent=1).encode())
     bad = [s for s in slugs if not done[s]['ok']]
     for s in slugs:
@@ -554,8 +755,15 @@ def main(argv):
                   + (f", first side-key line ({js['first_in_key_zone']['key']}, {js['first_in_key_zone']['role']}) "
                      f"after {js['laid_before_mm']} mm" if js['first_in_key_zone'] else ''))
     print(f'{len(slugs)} configurations sliced in {time.time() - t0:.0f} s -> {rf.relative_to(cache.REPO)}')
-    if bad:
-        raise SystemExit(f'configs_slice: {len(bad)} failed: {", ".join(bad)}')
+    for x in tc_rows:
+        print(f"{'ok  ' if x['ok'] else 'FAIL'} {x['check']}" + ('' if x['ok'] else f": {x.get('value')}"))
+    if tc_info is not None:
+        for slug, v in tc_info.items():
+            if isinstance(v, dict) and 'coverage' in v:
+                print(f'    {slug} two-colour coverage (layer 1 / layer 2): ' + '; '.join(
+                    f"{k} {c['layer1']:.2f}/{c['layer2']:.2f}" for k, c in v['coverage'].items()))
+    if bad or any(not x['ok'] for x in tc_rows):
+        raise SystemExit(f'configs_slice: {len(bad)} failed: {", ".join(bad)}' + (' and the two-colour read-back' if any(not x['ok'] for x in tc_rows) else ''))
 
 
 if __name__ == '__main__':
