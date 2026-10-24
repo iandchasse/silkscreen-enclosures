@@ -78,6 +78,8 @@ backstops 0.065 mm too tall. The method that caught each one:
      wordmark open and the chin plain as laid, the two-colour inlays filling their recesses, and the 4.26 top screw's relief
      (its pilot starts at 1.6, 3.6 mm of thread). Their limits are Ian's literal numbers, so they failed on main and pass now.
      `configs_slice.two_colour()` reads the two-colour lid plate by tool.
+   - `slice_check.board_posts` (4.26, a row of `as_printed`): the lid's board posts as laid, H1 +0.10 and H2 / H5 / H6 -0.10 from the
+     board, and H5's pin at least 0.79 of full section into the board at home (2026-10-24, the bulge fix). It FAILs on cfce1c4's lid slice.
    - `lid_close.py` (latch arms bent on the way in).
    - `slice_check.detent_join` and the crank free-swing check.
    - `case-426/src/configs_slice.py` (key layers, side-key zones, what each key stands on at the bed
