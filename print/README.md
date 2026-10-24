@@ -290,7 +290,7 @@ the 4.26 standard case in Onshape and Ian took six of the changes, made here in 
 Reprint `tub-*`, `lid` (`lid-chinless`) and `midplate` for your size and configuration; the keys, cranks, gate and rod are
 unchanged. Both plate files and every configuration's project carry the new parts, and nothing else in them moved. Sliced in
 the OrcaSlicer CLI with the CC2 and generic presets and read back from the G-code; not printed. (`../enclosures/case-426/README.md`,
-"A community member's edit"; the 3.68's section of the same name.)
+"Emily B's edit"; the 3.68's section of the same name.)
 
 **4.26 lid and midplate, 2026-10-24 (the same reprint: the bulge fix):** the 4.26 lid (`lid`, `lid-chinless`) and midplate that you
 reprint for the 2026-10-23 changes also carry this, so there is nothing more to print. The lid's board posts H2, H5 and H6 stand one

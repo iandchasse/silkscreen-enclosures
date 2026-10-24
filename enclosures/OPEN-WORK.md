@@ -3,9 +3,9 @@
 What is built but not printed, what is unproven, and the options that are studied but parked. The case READMEs have
 the full records; the study notes named here are local (not in git).
 
-## The community member's edit (2026-10-23): what Ian still decides
+## Emily B's edit (2026-10-23): what Ian still decides
 
-The six changes Ian took are in both cases (`case-426/README.md`, "A community member's edit"). Left for Ian:
+The six changes Ian took are in both cases (`case-426/README.md`, "Emily B's edit"). Left for Ian:
 - **The side gate's 0.2 mm top chamfer.** It was drawn to end level with the old seam V (`GATE['top_chamfer']`, both cases) and
   was kept: it is a separate part and squaring it reprints the gate and touches the gate checks. Set it to 0 if he wants it square.
 - **The two-colour files** (`print/*-2colour.3mf`, `out/configs/<slug>-2colour.3mf`, `index-2colour.json`): on the website or not; and

@@ -609,10 +609,10 @@ USB4085 is held there by its legs, the SMD USB4105 by its pads and shield stakes
 front part (nothing beside or under it in the tub; the lid's block stops 0.3 to 0.4 mm below the shell, and one more layer
 there would leave Rev 1.0's shell 0.07 from it). A tab on the board under J1 is the clean fix if a sample needs it.
 
-## A community member's edit (2026-10-23)
+## Emily B's edit (2026-10-23)
 
 Emily B (mixmastermouse), from the Silkscreen community, edited the 4.26 standard case in Onshape; Ian took six of the changes and made them in both cases where
-they apply (`../case-426/README.md`, "A community member's edit", has the full account; none of the member's files is in
+they apply (`../case-426/README.md`, "Emily B's edit", has the full account; none of the member's files is in
 the repo). What reaches the 3.68, all read back by `community.py` (build time, `out/<variant>/community.json`) and by
 `slice_check.py` (as laid), each check failing on main's built parts first:
 

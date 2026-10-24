@@ -718,7 +718,7 @@ Ian's screws are socket head caps (ISO 4762 / DIN 912, M2: head 3.8 across, 2.0 
 - **Lid: the counterbores are 2.0 deep** (`params.M2_HEAD_CB_DEPTH`, 10 layers; was 1.8, 9). A socket head's top is
   flush with the back, a pan head's 0.4 below it. Their diameter (4.2) is unchanged, so the back's first layer is too.
 - **The same M2 x 10** (`params.SCREW_L`), one layer further in: H3 / H4 3.6 mm in the pilot (3.3 with the lid 0.3
-  open; was 3.4 / 3.1), the top screw 9.0 (8.7; 3.6 (3.3) since 2026-10-23, see A community member's edit), each tip 0.2 short of its pilot's end and 0.8 from the front face (was
+  open; was 3.4 / 3.1), the top screw 9.0 (8.7; 3.6 (3.3) since 2026-10-23, see Emily B's edit), each tip 0.2 short of its pilot's end and 0.8 from the front face (was
   0.4 and 1.0). Every configuration has the same three screws and the same numbers, the light-strip ones included.
 - **The stepped bridge** over each counterbore is one layer higher and prints as before: the same Bridge and
   Overhang-wall lines, nothing floating. The H3 / H4 Ø6.0 bosses (and on a chinless lid their blocks) now run up to
@@ -734,7 +734,7 @@ Ian's screws are socket head caps (ISO 4762 / DIN 912, M2: head 3.8 across, 2.0 
 - **Reprint the lid** (`lid` or `lid-chinless`) for flush heads; with pan heads it is optional. The lid prints as
   before (the standard lid 31 min 57 s, 15.10 g; was 31 min 55 s); nothing else changes.
 
-## A community member's edit (2026-10-23)
+## Emily B's edit (2026-10-23)
 
 Emily B (mixmastermouse), from the Silkscreen community, edited the 4.26 standard case in Onshape and sent the result. Ian took six of the changes, and
 they are re-made here in this project's CadQuery from measurements: none of the member's files is in the repo, and the
@@ -744,7 +744,7 @@ Every row below is read back by
 main's built parts first and failed there (§8).
 
 - **Top screw relief, all 32 configurations.** The top screw thread-formed through a Ø1.70 pilot from the rim to
-  the front, 9.0 mm as printed (8.7 with the lid 0.3 open); the community member reports it stripped heads. It now has an M2_CLEAR (Ø2.4)
+  the front, 9.0 mm as printed (8.7 with the lid 0.3 open); Emily reports it stripped heads. It now has an M2_CLEAR (Ø2.4)
   clearance bore from the rim to z 1.6 (`params.TOP_SCREW_CLEAR_TO` = `PCB_FRONT`, a layer line of the face-down tub:
   the 1.4-1.6 layer is clearance and the 1.6-1.8 layer is pilot), so the screw bites the last 3.8 mm of the pilot:
   **3.6 mm in the pilot as printed, 3.3 with the lid 0.3 open**, the same as H3 / H4, which bite on Ian's prints. The
@@ -860,7 +860,8 @@ H2, H5 and H6 -0.10, and H5's pin full to at least 0.79 into the board at home. 
 and passes on all 32 builds now. Against cfce1c4's reports the 32 builds differ only where this change should: the lid's volume
 (-3.24 mm3; 24 builds also in `sides.json`; `chin.json`'s volumes), the midplate's, the spring count in `mechanics.json` (7 to 6; the
 light strip's `plain_stack` totals 6.5 / 4.1 / 8.8 N become 5.6 / 3.6 / 7.6 N), the dummy PCBA's overlap with the midplate (the
-springs' preload, 6.25 to 5.93 mm3) and the notch's run-on read-back, which is gone. `lid-close.json`, `insertion.json`,
+springs' preload, 6.25 to 5.93 mm3), the midplate's overlap with the thick display model (the filled window, 1152.4 to
+1155.8 and 149.8 to 150.2 mm3, both expected) and the notch's run-on read-back, which is gone. `lid-close.json`, `insertion.json`,
 `community.json`, `bottom-keys.json`, every read-back of the lid, the home, the screws and `usb_fit` are unchanged (the top screw's
 laid hole diameter reads 2.387 or 2.388 in six builds, as a seam falls: noise).
 
@@ -2494,7 +2495,7 @@ print failed without it.
 | I | 2026-09-21 | print 5 | print 4 |
 | J | 2026-09-22 | no | print 5 |
 | K | 2026-09-22 | no | Ian's questions on Rev J |
-| community | 2026-10-23 | no | a community member's edit of the 4.26 standard case (see A community member's edit) |
+| community | 2026-10-23 | no | Emily B (mixmastermouse)'s edit of the 4.26 standard case (see Emily B's edit) |
 | community, bulge | 2026-10-24 | no | the lid-bulge study of that edit: the lid's H2, H5 and H6 posts one layer lower, the dead Y-102 spring dropped (see The lid's bulge and the board's posts) |
 
 **Rev D**
