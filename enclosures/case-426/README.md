@@ -735,10 +735,10 @@ Ian's screws are socket head caps (ISO 4762 / DIN 912, M2: head 3.8 across, 2.0 
 
 ## A community member's edit (2026-10-23)
 
-A community member edited the 4.26 standard case in Onshape and sent the result. Ian took six of the changes, and
+Emily B (mixmastermouse), from the Silkscreen community, edited the 4.26 standard case in Onshape and sent the result. Ian took six of the changes, and
 they are re-made here in this project's CadQuery from measurements: none of the member's files is in the repo, and the
-lid, tub and midplate they sent are not used (their tub was an older one, from before the USB fix). The member is
-credited as "a community member" until Ian gives a name and permission. Every row below is read back by
+lid, tub and midplate they sent are not used (their tub was an older one, from before the USB fix). Thanks, Emily!
+Every row below is read back by
 `community.py` (build time, `out/<build>/community.json`) and by `slice_check.py` (as laid), and each check was run on
 main's built parts first and failed there (§8).
 

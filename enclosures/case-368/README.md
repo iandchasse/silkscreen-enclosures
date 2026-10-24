@@ -611,7 +611,7 @@ there would leave Rev 1.0's shell 0.07 from it). A tab on the board under J1 is 
 
 ## A community member's edit (2026-10-23)
 
-A community member edited the 4.26 standard case in Onshape; Ian took six of the changes and made them in both cases where
+Emily B (mixmastermouse), from the Silkscreen community, edited the 4.26 standard case in Onshape; Ian took six of the changes and made them in both cases where
 they apply (`../case-426/README.md`, "A community member's edit", has the full account; none of the member's files is in
 the repo). What reaches the 3.68, all read back by `community.py` (build time, `out/<variant>/community.json`) and by
 `slice_check.py` (as laid), each check failing on main's built parts first:

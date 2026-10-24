@@ -274,7 +274,7 @@ fails under 0.10 (`../enclosures/case-368/README.md`, "The USB port fits board R
 1.2 mm of J1 that overhangs the board's edge (on either board); a tab on the board under J1 would be the clean fix if a
 sample needs it.
 
-**Both cases, 2026-10-23 (a community member's edit; reprint the tub, the lid and the midplate):** a community member edited
+**Both cases, 2026-10-23 (Emily B (mixmastermouse)'s edit; reprint the tub, the lid and the midplate):** Emily B (mixmastermouse) edited
 the 4.26 standard case in Onshape and Ian took six of the changes, made here in both cases where they apply.
 - **Top screw (4.26, every configuration; the tub):** a 2.4 clearance bore from the rim to the board's front face, so the screw
   bites the last 3.8 mm of its pilot, 3.6 mm as printed (3.3 with the lid 0.3 open) like the two bottom screws, instead of 9.0
