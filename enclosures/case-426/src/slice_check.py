@@ -1433,6 +1433,68 @@ def community_readback(name, gcode):
     return [{**r, 'community': True} for r in rows]
 
 
+# The lid's board posts as laid (2026-10-24, the bulge fix): Ian's numbers, not params, so the check fails on the design before it
+# (all four posts laid +0.10) and passes on the new one. Heights are the top of the top layer that is laid, in the CAD frame (the
+# board's rear face is z 0): H1 on it (a layer mid-plane at 0.0 lays +0.10), H2, H5 and H6 one layer short of it. H5's pin keeps its
+# full section (laid d 1.79) up to +0.90, which at the lid's home (dz -0.10) is 0.80 into the board; FAIL under POST_PIN_MIN.
+POST_TOPS = {'H1': +0.10, 'H2': -0.10, 'H5': -0.10, 'H6': -0.10}
+POST_TOL = 0.011
+POST_RING = {'H1': (1.65, 2.05), 'H2': (1.65, 2.05), 'H5': (1.25, 1.95), 'H6': (1.65, 2.35)}   # round the bore / pin, inside the post
+POST_PIN_FULL = 1.75                                                            # across X and Y: the pin's full section (laid 1.79)
+POST_PIN_MIN = 0.79                                                             # of full section in the board, lid at home
+
+
+def board_posts(lid, dz):
+    """The lid's board posts H1 H2 H5 H6 as laid. lid: device_layers of the lid; dz: the lid's home (asprinted.home). Each
+    post's top is the top of the highest layer of an unbroken run of layers (from z -1) that cover the post's ring (half or more of
+    the ring between the bore or pin and the post's wall); at home it stands top + dz from the board's rear face (a gap > 0). H5's
+    pin: the highest layer in which the piece round its axis is at least POST_PIN_FULL across X and Y, + dz = its full section in
+    the board. -> a read-back row (ok when every top is Ian's and the pin has POST_PIN_MIN in the board)."""
+    from shapely.geometry import Point
+    fps = hw.footprints()
+    rows, ok = {}, True
+    h = P.LAYER / 2
+    for ref, want in POST_TOPS.items():
+        ax = Point(*fps[ref]['cad'][:2])
+        ri, ro = POST_RING[ref]
+        ring = ax.buffer(ro).difference(ax.buffer(ri))
+        top, cov = None, []
+        for c, g in lid:
+            if c < -1.0:
+                continue
+            f = g.intersection(ring).area / ring.area
+            if f < 0.5:
+                break
+            top = c + h
+            cov.append(round(f, 2))
+        row = {'laid_top': None if top is None else round(top, 3), 'want': want}
+        if top is not None and dz is not None:
+            row['gap_at_home'] = round(-(top + dz), 3) + 0.0
+        good = top is not None and abs(top - want) <= POST_TOL
+        if ref == 'H5':
+            win = ax.buffer(1.6)
+            full = None
+            for c, g in lid:
+                if c < -1.0:
+                    continue
+                pieces = [q for q in getattr(g.intersection(win), 'geoms', [g.intersection(win)])
+                          if not q.is_empty and q.distance(ax) < 0.2]
+                if pieces and min(pieces[0].bounds[2] - pieces[0].bounds[0], pieces[0].bounds[3] - pieces[0].bounds[1]) >= POST_PIN_FULL:
+                    full = c + h
+            row['pin_full_top'] = None if full is None else round(full, 3)
+            row['pin_full_in_board_at_home'] = None if full is None or dz is None else round(full + dz, 3)
+            good &= full is not None and dz is not None and full + dz >= POST_PIN_MIN
+        row['ok'] = bool(good)
+        rows[ref] = row
+        ok &= bool(good)
+    s = '; '.join(f"{r}: top {v['laid_top']:+.2f}" + (f" (home gap {v['gap_at_home']:+.2f})" if 'gap_at_home' in v else '')
+                  + (f", pin full to {v['pin_full_top']:+.2f} = {v['pin_full_in_board_at_home']:+.2f} into the board" if 'pin_full_top' in v and v['pin_full_top'] is not None else '')
+                  if v['laid_top'] is not None else f'{r}: no post found' for r, v in rows.items())
+    return {'what': f'lid board posts as laid, tops H1 {POST_TOPS["H1"]:+.2f}, H2 / H5 / H6 {POST_TOPS["H2"]:+.2f} from the board, the H5 pin '
+                    f'full section >= {POST_PIN_MIN} into it ({s})',
+            'posts': rows, 'ok': bool(ok)}
+
+
 def as_printed(report):
     """The screws as printed (2026-10-13, asprinted.py, the same module as the 3.68's): the lid's home on the tub, then
     each screw (H3, H4, the top screw) read from this build's lid and tub as sliced, put together where they meet: in
@@ -1457,8 +1519,9 @@ def as_printed(report):
     to = 1.6                                                  # Ian's number, not params: the check must not follow a change of it
     relief = {'what': f'top screw: the pilot starts at the end of the clearance bore ({to}), not at the rim',
               'pilot': top.get('pilot'), 'ok': bool(top.get('pilot') and top['pilot'][0] >= to - 0.05)}
-    return {'ok': bool(h['dz'] is not None and all(s['ok'] for s in sc) and usb['ok'] and relief['ok']), 'home': h, 'screws': sc,
-            'usb': usb, 'top_relief': relief}
+    bp = board_posts(L['lid'], h['dz'])
+    return {'ok': bool(h['dz'] is not None and all(s['ok'] for s in sc) and usb['ok'] and relief['ok'] and bp['ok']), 'home': h, 'screws': sc,
+            'usb': usb, 'top_relief': relief, 'community': [bp]}
 
 
 def usb_fit(report, dz, posts):

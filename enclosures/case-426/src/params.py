@@ -133,7 +133,7 @@ Y0 = BOT_IN - BOT_WALL                    # -9.4
 CORNER_R = 5.0                            # plan-view corner radius
 FRONT_EDGE_R = 1.8                        # front face to side: 9 layers at 0.2, keeps >=0.8 wall at the pocket step
 BACK_EDGE_R = 2.0                         # back face to side
-SEAM_CHAMFER = 0.0                        # no V at the parting line (2026-10-23, Ian, after a community member's edit: both
+SEAM_CHAMFER = 0.0                        # no V at the parting line (2026-10-23, Ian, after Emily B (mixmastermouse)'s edit: both
                                           # halves square; it was 0.4 x 45 degrees on each half)
 POCKET_STEP_Z = 4.05                      # above the EPD glass the pocket steps in over the inset LGP/touch layers
 POCKET_STEP_CLR = 0.45                    # to the touch film edge (its own position is +-0.15 on the drawing)
@@ -198,7 +198,7 @@ GRIP_GROOVES_Y = (-5.6, -3.6, -1.6) if BOTTOM_KEYS else (2.0, 4.0, 6.0)
 GRIP_GROOVE = dict(x=(8.0, 52.0), width=0.8, depth=0.35)
 LOGO = None                              # the chin is plain since 2026-10-23 (the wordmark is on the back: LOGO_BACK_WORDMARK;
                                           # LOGO_CHIN keeps the old place for the checks that prove the chin plain)
-# The wordmark on the back above the grip grooves (2026-10-23, Ian, after a community member's edit), mirrored so it
+# The wordmark on the back above the grip grooves (2026-10-23, Ian, after Emily B (mixmastermouse)'s edit), mirrored so it
 # reads right from behind. Ink 7.11 tall, 40.0 wide: keyed y 4.95 (ink 1.40..8.51, 2.6 above the top groove's edge),
 # chinless y 12.55 (ink 9.00..16.11; the grooves are at 2 / 4 / 6).
 LOGO_BACK_WORDMARK = dict(LOGO_CHIN, mirror=True, x=(X0 + X1) / 2, y=max(GRIP_GROOVES_Y) + 6.55)
@@ -464,7 +464,7 @@ TAB_HINGE = 3.0
 # 0.52 bead). TAB_BASE_C stays defined for every value (sidekeys evaluates its chamfer profile).
 TAB_BASE = 'teardrop'
 TAB_BASE_C = 1.0
-TAB_PAD_PROUD = 1.2                       # 1.5 until 2026-10-23 (a community member's edit: 1.2; our 45-degree faces kept). At the click
+TAB_PAD_PROUD = 1.2                       # 1.5 until 2026-10-23 (Emily B (mixmastermouse)'s edit: 1.2; our 45-degree faces kept). At the click
                                           # 0.80 (+X) / 0.70 (-X) proud (Rev E's 0.5 needed the thumb to sink in to reach the click)
 TAB_PAD_FACE = (-3.4, -1.0)               # the pad's flat face, as Rev I's; below it a 45-degree face runs
                                           # back to the key (it is an overhang now, in the lid's print), above
@@ -572,7 +572,7 @@ BOSS_D = 4.4                              # H3/H4 bosses are flattened on the sc
 # and H6 make a triangle that spans the board, so the PCBA clicks onto the midplate and is located
 # at its lower end as well as its upper one before any screw goes in.
 SNAP_POSTS = ('H1', 'H2', 'H6')
-# 'pole' (2026-10-23, Ian, after a community member's edit): a plain d1.90 pin, its tip edge rounded tip_r, no slot, no barb.
+# 'pole' (2026-10-23, Ian, after Emily B (mixmastermouse)'s edit): a plain d1.90 pin, its tip edge rounded tip_r, no slot, no barb.
 # As printed it locates the board +-0.155 both ways (the slotted post laid two fingers, 1.52 across X and 0.65 across Y each,
 # its barb caught 0.09 in Y only). tip -1.00, not -0.95: the midplate prints screen side down from DISP_REAR, so -1.00 is a
 # whole number of layers from the bed (a mid-plane at -0.90 / -0.95) and lays the pin's top where the barbs' tip laid, so
@@ -587,6 +587,15 @@ BOARD_SNAP_BORE = (3.0, -1.40)            # clearance bore in the lid's post for
 # H5 - and the lid has to fit the dummy too, so H2 and H5 stay under those. H5 moved 0.5 mm clear
 # of R56/C34 on the new board, which is what lets its post grow at all (Rev G 4.0).
 BOARD_POST_D = {'H1': 4.4, 'H2': 4.4, 'H5': 4.3, 'H6': 5.0}
+# Where each post stops (2026-10-24, Ian, after the lid-bulge study of 2026-10-23/24): H1 on the board's rear face as before (a layer
+# mid-plane, it lays +0.10 and sits on the board at home), H2, H5 and H6 one layer short of it (-0.1 is 33 whole layers from the bed: it
+# lays -0.10 and stands 0.2 off a nominal board at home). The four upper midplate springs push the board onto these posts and through
+# them the lid's middle; H1 is the lid's stiffest point (0.03 mm/N, against 0.06 at H2 and H5 and 0.10 at H6), so the board now lands
+# there first and the middle bows about 40 % less (model estimate, not measured on a print). Lowering all four also cuts the screen's hold
+# at its top end on a thin panel, which is why H1 stays. H5's pin keeps its own absolute top, so it reaches into the board exactly as
+# before (full section to +0.90 as laid, 0.80 into the board at home).
+BOARD_POST_TOP = {'H1': PCB_REAR, 'H2': PCB_REAR - 0.1, 'H5': PCB_REAR - 0.1, 'H6': PCB_REAR - 0.1}
+H5_PIN = dict(d=1.9, top=PCB_REAR + 1.19, cone=0.4, tip_d=1.2)      # the locating pin on H5: d1.9 cylinder, a 0.4 cone to d1.2, its tip at +1.19
 TOP_SCREW = (40.2, 112.8)                 # between the battery's corner and J6; boss clears the screen pocket
 TOP_SCREW_CLEAR_TO = PCB_FRONT              # 1.6: an M2_CLEAR bore from the rim to here, so the top screw thread-forms only the last 3.8 of its pilot, as H3/H4 do (2026-10-23)
 TOP_BOSS_D = 3.4
@@ -595,7 +604,7 @@ TOP_BOSS_D = 3.4
 # below it: 2.0 deep, 10 layers on the layer grid (until 2026-10-13 1.8, 9 layers, sized for a pan head, so a socket
 # head stood 0.2 proud of the back). One layer deeper puts each screw 0.2 further in: H3 / H4 3.6 mm in the pilot (3.3
 # with the lid 0.3 open), the tip 0.2 short of the pilot's end and 0.8 from the front face; the top screw 3.6 (3.3)
-# since 2026-10-23: it had 9.0 (8.7) of thread-forming, which the community member reports stripped heads, until TOP_SCREW_CLEAR_TO gave it a clearance
+# since 2026-10-23: it had 9.0 (8.7) of thread-forming, which Emily B (mixmastermouse) reports stripped heads, until TOP_SCREW_CLEAR_TO gave it a clearance
 # bore in front of its pilot (slice_check.as_printed reads all three on every build, as sliced).
 SCREW_L = 10.0
 M2_HEAD_CB = 4.2                          # counterbore for the head (dk 4.0 max)

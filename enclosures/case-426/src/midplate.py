@@ -28,7 +28,9 @@ LEAD_CLR = 0.5
 # Spring centres. They press the board back onto the lid's posts, so Rev G adds one on each side
 # near the side buttons (y 61.5 and 93.5 are the two that had no support near them) - the plunger
 # sitting where the nub expects it is what makes a side button land squarely.
-SPRINGS = [(8.0, 11.5, 'x'), (52.0, 11.5, 'x'), (52.5, 70.0, 'y'), (53.0, 102.0, 'x'), (14.0, 70.0, 'y'),
+# The x-axis spring at (53.0, 102.0) is gone (2026-10-24): J6's eight lead holes cut its strip through at every pin column, so as
+# sliced it was six loose islands over the open window and a nub that was a sliver of one: it pushed on nothing.
+SPRINGS = [(8.0, 11.5, 'x'), (52.0, 11.5, 'x'), (52.5, 70.0, 'y'), (14.0, 70.0, 'y'),
            (12.0, 61.5, 'y'), (52.5, 88.0, 'y')]
 
 

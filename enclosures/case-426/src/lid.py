@@ -91,16 +91,20 @@ def build(keys=True):
 
     # PCB support posts. H1, H2 and (Rev H) H6 take the midplate's snap posts through the board, so
     # they carry no locating pin, only a clearance bore for the barb; H5 keeps its pin, which is
-    # what still registers the board's top end in X and Y.
+    # what still registers the board's top end in X and Y. Since 2026-10-24 H2, H5 and H6 stop one layer short of the
+    # board (params.BOARD_POST_TOP): the board lands on H1, the lid's stiffest post, and the lid's middle bows less.
     for ref in ('H1', 'H2', 'H5', 'H6'):
         hx, hy = fps[ref]['cad']
-        adds.append(zcyl(hx, hy, P.LID_FLOOR_IN - 0.1, P.PCB_REAR, P.BOARD_POST_D[ref]))
+        top = P.BOARD_POST_TOP[ref]                       # H2, H5 and H6 one layer short of the board (2026-10-24), H1 on it
+        adds.append(zcyl(hx, hy, P.LID_FLOOR_IN - 0.1, top, P.BOARD_POST_D[ref]))
         if ref in P.SNAP_POSTS:
             bd, bz = P.BOARD_SNAP_BORE
-            cuts.append(zcyl(hx, hy, bz, P.PCB_REAR + 0.01, bd))
+            cuts.append(zcyl(hx, hy, bz, top + 0.01, bd))
         else:
-            adds.append(zcyl(hx, hy, P.PCB_REAR - 0.01, P.PCB_REAR + 0.8, 1.9))
-            adds.append(cq.Workplane(obj=cq.Solid.makeCone(0.95, 0.6, 0.4, cq.Vector(hx, hy, P.PCB_REAR + 0.79))))
+            q = P.H5_PIN                                  # the pin keeps its own absolute top: its reach into the board is as before
+            adds.append(zcyl(hx, hy, top - 0.01, q['top'] - q['cone'] + 0.01, q['d']))
+            adds.append(cq.Workplane(obj=cq.Solid.makeCone(q['d'] / 2, q['tip_d'] / 2, q['cone'],
+                                                           cq.Vector(hx, hy, q['top'] - q['cone']))))
 
     # USB: solid block under the receptacle, a mm wider than the recess each side; the recess's lower
     # part is cut into it (the tub has the rest), and a block rises from it into the tub floor's notch
