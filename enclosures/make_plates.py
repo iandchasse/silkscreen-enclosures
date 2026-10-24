@@ -59,6 +59,12 @@ them from their own bed face), and check_plate keeps each raft off its neighbour
 the lid, and on the lid they go only under its side keys' hinge notches (LID_SUPPORT, side_key_enforcers): manual
 supports with a support_enforcer part round each notch's roof, the part of the key that prints over air.
 
+The two-colour logo (2026-10-24): every lid in every file this script writes carries its two logo bodies (the wordmark and the
+book icon, plates.py's inlay_printed STLs) as modifier parts with no settings, which print nothing; the projects define two
+filaments, have the prime tower OFF and give each plate its clearest free tower spot (tower_point). OFF is the single-colour lid;
+the user switches the logo on with Change type -> Part and Change filament -> 2 on the two parts (the comment at INLAY_NAMES says
+why the parts carry no filament and why there is no tower). There are no separate two-colour files.
+
 Reads the print-oriented STLs that each project's src/plates.py writes to out/standard/print/ and
 out/light-strip/print/ (and on the 4.26 out/chinless/print/ and out/light-strip-chinless/print/; run it for every
 print build first), the lid and its
@@ -237,33 +243,29 @@ FIXED_DATE = (1980, 1, 1, 0, 0, 0)
 
 CRANK_T = 'crank-T {} - TS365ZJ, JLC boards'
 CRANK_M = 'crank-M {} - APEM MJTP1117 only'
-# The two-colour logo (2026-10-23, opt-in): the lid's two back engravings filled by their inlays (plates.py's
-# inlay_printed STLs, the lid's own print frame), as extra volumes of the lid object printed in filament 2. The lid is then
-# alone on a plate of its own (TWO_COLOUR_PLATE): only that plate changes filament (its first two layers, the logo), and
-# the prime tower has the rest of the bed. The normal projects are unchanged.
-TWO_COLOUR_PLATE = 'Lid in two colours (filament 2: the logo)'
-INLAY_NAMES = (('inlay_wordmark', 'logo, filament 2: wordmark'), ('inlay_icon', 'logo, filament 2: icon'))
+# The two-colour logo, a switch that is OFF (2026-10-24, Ian: one plate file per size and one project per configuration, the
+# whole case on one plate, the two-colour logo something you switch ON). Every lid carries the two logo inlays (plates.py's
+# inlay_printed STLs, the lid's own print frame) as MODIFIER parts of the lid object, with no settings of their own, not even a
+# filament: a modifier with nothing set changes nothing, so the lid slices exactly as the single-colour lid does (the recesses
+# stay empty). To switch the logo on, in OrcaSlicer: object list -> expand the lid -> select the two logo parts -> right-click
+# -> Change type -> Part, then right-click -> Change filament -> 2, and pick filament 2's colour. The project defines both
+# filaments. Why it is built this way (OrcaSlicer 2.4 CLI, 2026-10-24): a modifier that carries a filament counts that
+# filament as used, so the plate wants a prime tower, and OrcaSlicer refuses a prime tower on a plate whose objects have
+# different raft layers (the keys and cranks are on rafts: "The prime tower requires that all objects are printed over the same
+# number of raft layers"); on the chinless plate it moved the lid's side-key supports. So the inlays carry no filament, and
+# the prime tower is off in every project (enable_prime_tower 0): the colour change relies on the printer's own purge
+# (the CC2's M6211, a Bambu-style AMS, a tool changer). A printer that can only purge into a prime tower: drag the lid onto an
+# empty plate first and switch the tower on there (print/README.md). wipe_tower_x / _y still name the clearest free point of
+# every plate, for a tower that gets switched on (tower_point).
+INLAY_NAMES = (('inlay_wordmark', 'logo wordmark: change type to Part + filament 2 for a two-colour logo'),
+               ('inlay_icon', 'logo icon: change type to Part + filament 2 for a two-colour logo'))
+INLAY_SUBTYPE = 'modifier_part'
 
 
-def lid_part(src, build_dir, name='lid', two_colour=False):
-    """The lid Part of a build (print folder src, build folder build_dir); with two_colour, its two inlays (filament 2)."""
+def lid_part(src, build_dir, name='lid'):
+    """The lid Part of a build (print folder src, build folder build_dir) with its two logo inlays (modifier parts)."""
     return Part(name, src / 'lid.stl', side_keys=build_dir,
-                inlay_files=[(label, src / f'{stem}.stl') for stem, label in INLAY_NAMES] if two_colour else ())
-
-
-def split_lid(plates):
-    """A configuration's plates for two colours: the generic plate 1 (name, front, back, cols, side) without its lid, and
-    the lid (it must carry inlays) alone on a plate of its own, last. -> the plates."""
-    out, lids = [], []
-    for pl in plates:
-        name, front, back, cols, side = pl
-        mine = [p for p in back if p.side_keys]
-        if mine:
-            lids += mine
-            back = [p for p in back if not p.side_keys]
-        out.append((name, front, back, cols, side))
-    assert len(lids) == 1 and lids[0].inlay_files, 'one lid with inlays'
-    return out + [(TWO_COLOUR_PLATE, [], [lids[0]], [], [])]
+                inlay_files=[(label, src / f'{stem}.stl') for stem, label in INLAY_NAMES])
 
 
 def small_part(stem):
@@ -313,18 +315,19 @@ META_KEYS = {'name', 'from', 'type', 'setting_id', 'instantiation', 'inherits', 
 
 
 FILAMENT_COLOUR = '#F2754E'              # OrcaSlicer's own default filament colour
-# the two-colour projects (2026-10-23): filament 1 the case, filament 2 the logo. Only the slicer's preview colours: the
-# user loads any light filament as 1 and a contrasting one as 2.
+# Every project defines two filaments (2026-10-24): filament 1 the case, filament 2 the logo, for the switch above. Only the
+# slicer's preview colours: the user loads any light filament as 1 and a contrasting one as 2.
 FILAMENT_COLOURS_2 = ['#E8E1D0', '#000000']
-# The prime tower of the two-colour lid plate (OrcaSlicer, 2.4 CLI, 2026-10-23: it builds one on a plate that uses two
-# filaments, only in the layers with a change: here the lid's first two). Project settings, per plate (wipe_tower_x / _y are
-# lists with one entry per plate; the same on every plate, only the lid plate has a tower). Width 30 (stock 60): the lower-left
-# corner at (12, 12), so with its brim it spans x 8-46, y 6.7-28.5 (TOWER_BOX is that, as offsets from the corner and a
-# little more), clear of the lid (the plate is centred: x from 74.7 on the 4.26, 80 on the 3.68) and inside the 220 x 210 area.
-TOWER_XY = (12.0, 12.0)
+FILAMENTS = len(FILAMENT_COLOURS_2)
+# The prime tower is OFF in every project (enable_prime_tower 0, see above). wipe_tower_x / _y are lists with one entry per plate
+# (a project has at most 6 plates; TOWER_PLATES entries are written): the plate's clearest free point (tower_point), where
+# a tower that is switched on (the chinless plates; any plate once the lid is alone on one) lands clear of the parts. Width 30
+# (stock 60); TOWER_BOX is the tower and its brim as offsets from the set point (x0, y0, x1, y1), measured on the 4.26 chinless
+# plate (OrcaSlicer 2.4 CLI, 2026-10-24: tower x 176.2-214.8, y 22.5-44.7 for the point (180.5, 28)).
 TOWER_WIDTH = 30
-TOWER_BOX = (-4.5, -5.5, TOWER_WIDTH + 4.5, 17.5)        # x0, y0, x1, y1 from the tower's corner, brim included
-TOWER_PLATES = 8                                         # entries in wipe_tower_x / _y (a project has at most 6 plates)
+TOWER_BOX = (-4.29, -5.5, TOWER_WIDTH + 4.29, 16.7)
+TOWER_STEP = 0.5                                         # the grid tower_point searches
+TOWER_PLATES = 8                                         # entries in wipe_tower_x / _y
 ORCA = Path(r'C:\Program Files\OrcaSlicer\orca-slicer.exe')
 # The defaults OrcaSlicer fills in for every setting a project does not name: its own project_settings.config
 # (all FullPrintConfig keys, 631 in 2.4). 2026-10-21: OrcaSlicer 2.3.2 and later read "filament_colour" from a project's
@@ -363,9 +366,11 @@ def flush_matrix(nf):
     return [('0' if i == j else '140') for i in range(nf) for j in range(nf)]
 
 
-def project_settings(printer='cc2', filaments=1):
+def project_settings(printer='cc2', towers=None):
     """Metadata/project_settings.config: OrcaSlicer's defaults (DEFAULTS) with the flattened stock presets
-    (PRINTERS[printer]) over them, no brim, the one-loop skirt, the preset names and one filament colour per filament.
+    (PRINTERS[printer]) over them, no brim, the one-loop skirt, the preset names and one filament colour per filament
+    (two: the case and the switchable logo), the prime tower off and, per plate, the point a tower would stand at
+    (towers: [(x, y)] one per plate, from tower_point; default none).
     Keys the presets carry that this OrcaSlicer does not know (adaptive_layer_height, the scarf keys, ...: the June
     profiles' legacy ones, and a newer OrcaSlicer's) are kept, as the files always had them: 2.4 ignores them, a newer
     one reads them. -> (the file's text, the keys that differ from the stock process)."""
@@ -377,7 +382,7 @@ def project_settings(printer='cc2', filaments=1):
     changed = sorted({k for k, v in NO_BRIM.items() if pre['process'].get(k) != v} | set(SKIRT))
     out = dict(dump)
     out.update(cfg)
-    nf = filaments
+    nf = FILAMENTS
     ours = {
         **NO_BRIM, **SKIRT,
         'name': 'project_settings',
@@ -387,7 +392,7 @@ def project_settings(printer='cc2', filaments=1):
         'print_settings_id': names['process'],
         'filament_settings_id': [names['filament']] * nf,
         'filament_ids': [pre['filament'].get('filament_id', '')] * nf,
-        'filament_colour': [FILAMENT_COLOUR] if nf == 1 else list(FILAMENT_COLOURS_2),
+        'filament_colour': list(FILAMENT_COLOURS_2),
         'print_compatible_printers': pre['process'].get('compatible_printers', []),
         'inherits_group': ['', '', ''],
         # [process, filament, printer]: the keys that differ from the stock preset
@@ -398,22 +403,25 @@ def project_settings(printer='cc2', filaments=1):
     if unknown:
         sys.exit(f'{DEFAULTS.name} has no {", ".join(unknown)}: remake it (make_plates.py defaults)')
     out.update(ours)
-    if nf > 1:                                   # the filament preset's own keys, once per filament (see PER_FILAMENT)
-        for k in per_filament_keys(pre['filament'], dump):
-            out[k] = list(out[k]) * nf
-        out['filament_map'] = ['1'] * nf
-        out['flush_volumes_matrix'] = flush_matrix(nf)
-        out['enable_prime_tower'] = '1'
-        out['prime_tower_width'] = str(TOWER_WIDTH)
-        out['wipe_tower_x'] = [f'{TOWER_XY[0]:g}'] * TOWER_PLATES
-        out['wipe_tower_y'] = [f'{TOWER_XY[1]:g}'] * TOWER_PLATES
-        # the supports (the lid's side-key enforcers) stay filament 1: with 0 ("the current filament") layer 1 lays them in
-        # whichever filament is loaded then, and that is the logo's (the black ink would then be under the key hinges)
-        out['support_filament'] = '1'
-        out['support_interface_filament'] = '1'
-        out['different_settings_to_system'][0] = ';'.join(sorted({*changed, 'enable_prime_tower', 'prime_tower_width',
-                                                              'wipe_tower_x', 'wipe_tower_y', 'support_filament',
-                                                              'support_interface_filament'}))
+    for k in per_filament_keys(pre['filament'], dump):       # the filament preset's own keys, once per filament
+        out[k] = list(out[k]) * nf
+    out['filament_map'] = ['1'] * nf
+    out['flush_volumes_matrix'] = flush_matrix(nf)
+    # the prime tower is off (see INLAY_NAMES: a tower makes the keyed plates unsliceable); where it would stand is set anyway
+    xy = [tuple(q) for q in (towers or [])][:TOWER_PLATES]
+    xy += [xy[-1] if xy else (180.5, 10.5)] * (TOWER_PLATES - len(xy))
+    out['enable_prime_tower'] = '0'
+    out['prime_tower_width'] = str(TOWER_WIDTH)
+    out['wipe_tower_x'] = [f'{x:g}' for x, _ in xy]
+    out['wipe_tower_y'] = [f'{y:g}' for _, y in xy]
+    # the supports (the lid's side-key enforcers) stay filament 1: with 0 ("the current filament") layer 1 lays them in
+    # whichever filament is loaded then, and with the logo switched on that is the logo's (the black ink would then be
+    # under the key hinges)
+    out['support_filament'] = '1'
+    out['support_interface_filament'] = '1'
+    out['different_settings_to_system'][0] = ';'.join(sorted({*changed, 'enable_prime_tower', 'prime_tower_width',
+                                                          'wipe_tower_x', 'wipe_tower_y', 'support_filament',
+                                                          'support_interface_filament'}))
     # OrcaSlicer reads these without a check: present, one entry per filament
     short = [k for k in ('filament_colour', 'filament_ids', 'filament_type', 'filament_diameter', 'filament_settings_id') if len(out[k]) != nf]
     if short or set(dump) - set(out):
@@ -472,8 +480,8 @@ class Part:
                                          # its library file and base stay as they are): the generic layout's midplate
         self.side_keys = side_keys       # the lid: its build's folder, for side_key_enforcers()
         self.enforcers = []              # [(name, mesh)] in the oriented part's frame (min corner 0)
-        self.inlay_files = tuple(inlay_files)   # the lid's two-colour logo (2026-10-23): [(volume name, print STL)]; each is
-                                         # written as another volume of the lid object, printed in filament 2
+        self.inlay_files = tuple(inlay_files)   # the lid's two-colour logo (2026-10-24): [(volume name, print STL)]; each is
+                                         # written as a modifier volume of the lid object (INLAY_SUBTYPE), no settings
         self.inlays = []                 # [(name, mesh)] in the same frame (load_inlays)
         self.key_zones = []              # [(ref, [x0, y0, x1, y1, top])], the same frame (side_key_zones)
         self.key_bases = {}              # {ref: [x0, y0, x1, y1]}, the same frame (side_key_bases)
@@ -574,7 +582,7 @@ def side_key_bases(build_dir):
 def load_inlays(p):
     """The lid's two-colour logo (p.inlay_files: plates.py's inlay_printed STLs): each already in the lid's print frame (the
     lid prints as drawn, moved to its min corner), so as meshes in the oriented part's frame, like the enforcers. They must
-    lie inside the lid's own box and sit on the bed (its first two layers are the logo)."""
+    lie inside the lid's own box and sit on the bed (its first two layers are the logo, once switched on)."""
     assert not (p.turned or p.spin), (p.name, 'a lid with inlays is neither turned nor spun')
     ext = p.base.max(axis=0)
     out = []
@@ -679,19 +687,12 @@ def layout_compact(front, back, cols, side, area):
     return placed
 
 
-def tower_foot():
-    """The two-colour plate's prime tower, brim included: a shapely box on the plate."""
-    return shapely.box(TOWER_XY[0] + TOWER_BOX[0], TOWER_XY[1] + TOWER_BOX[1], TOWER_XY[0] + TOWER_BOX[2], TOWER_XY[1] + TOWER_BOX[3])
-
-
 def check_plate(parts, bed=BED, exclude=EXCLUDE, area=None):
     """Inside the bed, clear of the excluded corner and of the purge line (y > 0.5), >= 5 mm apart (XY boxes); a part
     on a raft (RAFT) also keeps its raft's first layer (RAFT_REACH past its box) RAFT_GAP_MIN off the next part's (or
     its raft's) and on the bed. With an area (the generic projects' 220 x 210), every part and raft stays AREA_MARGIN
-    inside it. The skirt round the plate (SKIRT_REACH) stays on the bed and out of the excluded corner. A two-colour plate
-    (parts with inlays) also holds its prime tower (TOWER_BOX): inside the area, 5 mm from every part, in the skirt's hull."""
+    inside it. The skirt round the plate (SKIRT_REACH) stays on the bed and out of the excluded corner."""
     errs = []
-    tower = tower_foot() if any(p.inlays for p in parts) else None
     for p in parts:
         (x0, y0, z0), (x1, y1, z1) = p.mesh.bounds
         if x0 < 0 or y0 < 0.5 or x1 > bed or y1 > bed:
@@ -713,7 +714,7 @@ def check_plate(parts, bed=BED, exclude=EXCLUDE, area=None):
     if parts:
         foot = [shapely.MultiPoint(p.mesh.vertices[p.mesh.vertices[:, 2] < 0.25][:, :2]).convex_hull
                 .buffer(RAFT_REACH if p.raft else 0.0) for p in parts]
-        skirt = shapely.union_all([*foot, *([tower] if tower else [])]).convex_hull.buffer(SKIRT_REACH)
+        skirt = shapely.union_all(foot).convex_hull.buffer(SKIRT_REACH)
         sx0, sy0, sx1, sy1 = skirt.bounds
         w, h = area or (bed, bed)
         if sx0 < 0 or sy0 < 0.5 or sx1 > w or sy1 > h:
@@ -721,15 +722,6 @@ def check_plate(parts, bed=BED, exclude=EXCLUDE, area=None):
                         f'({sx0:.2f} {sy0:.2f} {sx1:.2f} {sy1:.2f})')
         if exclude and skirt.intersects(shapely.box(*exclude)):
             errs.append('the skirt runs into the excluded corner')
-    if tower:
-        tx0, ty0, tx1, ty1 = tower.bounds
-        if tx0 < AREA_MARGIN - 1 or ty0 < AREA_MARGIN - 1 or (area and (tx1 > area[0] - AREA_MARGIN or ty1 > area[1] - AREA_MARGIN)):
-            errs.append(f'the prime tower ({tx0:.1f} {ty0:.1f} {tx1:.1f} {ty1:.1f}) is not inside the area')
-        for p in parts:
-            (px0, py0, _), (px1, py1, _) = p.mesh.bounds
-            gap = max(px0 - tx1, tx0 - px1, py0 - ty1, ty0 - py1)
-            if gap < 5.0:
-                errs.append(f'{p.name} / the prime tower: {gap:.2f} mm apart')
     gap_min = math.inf
     for i, a in enumerate(parts):
         for b in parts[i + 1:]:
@@ -743,6 +735,41 @@ def check_plate(parts, bed=BED, exclude=EXCLUDE, area=None):
             if rr and gap - rr < RAFT_GAP_MIN - 1e-9:
                 errs.append(f'{a.name} / {b.name}: rafts {gap - rr:.2f} mm apart')
     return errs, gap_min
+
+
+def tower_point(parts, bed=BED, exclude=EXCLUDE, area=None):
+    """The clearest free point for the prime tower of one plate (the project's wipe_tower_x / _y for it): on the
+    TOWER_STEP grid, the tower and its brim (TOWER_BOX) inside the bed (the generic projects' 220 x 210 area) AREA_MARGIN
+    from its edge and off the excluded corner, with the largest straight-line distance to the nearest part (a raft counts
+    RAFT_REACH wider), then the largest of the x and y gaps (check_plate's gap), then the left-most, lowest point.
+    -> (x, y, that distance)."""
+    w, h = area or (bed, bed)
+    bx0, by0, bx1, by1 = TOWER_BOX
+    xs = np.arange(math.ceil((AREA_MARGIN - bx0) / TOWER_STEP - 1e-9),
+                   math.floor((w - AREA_MARGIN - bx1) / TOWER_STEP + 1e-9) + 1) * TOWER_STEP
+    ys = np.arange(math.ceil((AREA_MARGIN - by0) / TOWER_STEP - 1e-9),
+                   math.floor((h - AREA_MARGIN - by1) / TOWER_STEP + 1e-9) + 1) * TOWER_STEP
+    X, Y = np.meshgrid(xs, ys, indexing='ij')
+    ok = np.ones(X.shape, dtype=bool)
+    if exclude:
+        ok &= ~((X + bx1 > exclude[0]) & (X + bx0 < exclude[2]) & (Y + by1 > exclude[1]) & (Y + by0 < exclude[3]))
+    cheb = np.full(X.shape, np.inf)
+    euc = np.full(X.shape, np.inf)
+    for part in parts:
+        (x0, y0, _), (x1, y1, _) = part.mesh.bounds
+        r = RAFT_REACH if part.raft else 0.0
+        gx = np.maximum(x0 - r - (X + bx1), (X + bx0) - (x1 + r))
+        gy = np.maximum(y0 - r - (Y + by1), (Y + by0) - (y1 + r))
+        cheb = np.minimum(cheb, np.maximum(gx, gy))
+        euc = np.minimum(euc, np.hypot(np.maximum(gx, 0.0), np.maximum(gy, 0.0)))
+    if not ok.any():
+        sys.exit('no room for the prime tower on the plate')
+    # lexicographic best: euc, then cheb, then the smallest x, then the smallest y (rounded: grid ties are exact)
+    cand = np.argwhere(ok)
+    keys = [(round(float(euc[i, j]), 4), round(float(cheb[i, j]), 4), -float(xs[i]), -float(ys[j])) for i, j in cand]
+    k = max(range(len(keys)), key=keys.__getitem__)
+    i, j = cand[k]
+    return float(xs[i]), float(ys[j]), float(euc[i, j])
 
 
 def plate_origins(n, bed=BED):
@@ -769,7 +796,7 @@ def case_426():
 
     def case_plate(src, tub):
         rows = [[Part('midplate', src / 'midplate.stl')],
-                [Part(tub, src / 'tub.stl'), Part('lid', src / 'lid.stl', side_keys=src.parent)]]
+                [Part(tub, src / 'tub.stl'), lid_part(src, src.parent)]]
         cols = [[Part(f'key-426 {i}', src / 'key-426.stl') for i in range(1, 5)],
                 [Part(CRANK_T.format(i), src / 'crank-T.stl') for i in range(1, 5)],
                 [Part('gate 1', src / 'gate.stl'), Part('gate 2 (spare)', src / 'gate.stl')]]
@@ -785,13 +812,13 @@ def case_426():
     # the chinless case (touch, no bottom keys): its own tub and lid (side keys and their enforcers as on plates 1-2),
     # the shared midplate; nothing for the bottom keys
     chinless = ([[Part('midplate', chin / 'midplate.stl')],
-                 [Part('tub (chinless)', chin / 'tub.stl'), Part('lid (chinless)', chin / 'lid.stl', side_keys=chin.parent)]],
+                 [Part('tub (chinless)', chin / 'tub.stl'), lid_part(chin, chin.parent, 'lid (chinless)')]],
                 [])
     # the light-strip chinless case (plain panel + light strip, no bottom keys): its own tub, the chinless lid (the
     # same file as plate 4's, asserted below with the midplate), its side keys' enforcers as on plates 1, 2 and 4
     ls_chinless = ([[Part('midplate', lsc / 'midplate.stl')],
                     [Part('tub (light-strip chinless)', lsc / 'tub.stl'),
-                     Part('lid (chinless)', lsc / 'lid.stl', side_keys=lsc.parent)]],
+                     lid_part(lsc, lsc.parent, 'lid (chinless)')]],
                    [])
     return dict(title='Silkscreen 4.26 case - all printed parts (Elegoo CC2)',
                 out=CC2_LOCAL / 'silkscreen-426-plates.3mf', printer='cc2',
@@ -811,7 +838,7 @@ def case_368():
 
     def case_plate(src, tub, key):
         rows = [[Part('midplate', src / 'midplate.stl')],
-                [Part(tub, src / 'tub.stl'), Part('lid', src / 'lid.stl', side_keys=src.parent)]]
+                [Part(tub, src / 'tub.stl'), lid_part(src, src.parent)]]
         cols = [[Part(f'{key} {i}', src / f'{key}.stl') for i in range(1, 5)],
                 [Part(CRANK_T.format(i), src / 'crank-T.stl') for i in range(1, 5)],
                 [Part('gate 1', src / 'gate.stl'), Part('gate 2 (spare)', src / 'gate.stl')]]
@@ -914,8 +941,8 @@ def write_3mf(path, title, plates, settings_text, printer='cc2'):
             local = trimesh.Trimesh(p.mesh.vertices - c, p.mesh.faces, process=False)
             vols = []
             assert not (p.enforcers and p.turned)
-            for j, (ename, em, kind) in enumerate([*((n, m, 'support_enforcer') for n, m in p.enforcers),
-                                                   *((n, m, 'inlay') for n, m in p.inlays)], start=1):
+            for j, (ename, em, kind) in enumerate([*((n, m, INLAY_SUBTYPE) for n, m in p.inlays),
+                                                   *((n, m, 'support_enforcer') for n, m in p.enforcers)], start=1):
                 eid += 1
                 emid = (em.bounds[0] + em.bounds[1]) / 2
                 ec = emid + p.mesh.bounds[0]               # the oriented part's frame (min corner 0) -> the plate
@@ -964,14 +991,11 @@ def write_3mf(path, title, plates, settings_text, printer='cc2'):
                 '    <metadata key="extruder" value="1"/>\n']
         cfg += [f'    <metadata key="{key}" value="{v}"/>\n' for key, v in object_settings(p, printer).items()]
         vols = [(2 * k - 1, 'normal_part', p.name, vol)]
-        vols += [(e, 'normal_part' if kind == 'inlay' else kind, n, t, 2 if kind == 'inlay' else None)
-                 for e, _, n, t, kind in extra.get(k, [])]
-        vols = [(*v, None) if len(v) == 4 else v for v in vols]
-        for vid, sub, vname, t, ext in vols:
+        vols += [(e, kind, n, t) for e, _, n, t, kind in extra.get(k, [])]
+        for vid, sub, vname, t in vols:
             cfg += [f'    <part id="{vid}" subtype="{sub}">\n',
                     f'      <metadata key="name" value={quoteattr(vname)}/>\n',
                     f'      <metadata key="matrix" value="1 0 0 {_f(t[0])} 0 1 0 {_f(t[1])} 0 0 1 {_f(t[2])} 0 0 0 1"/>\n',
-                    *([f'      <metadata key="extruder" value="{ext}"/>\n'] if ext else []),
                     '      <mesh_stat edges_fixed="0" degenerate_facets="0" facets_removed="0" facets_reversed="0" backwards_edges="0"/>\n',
                     '    </part>\n']
         cfg.append('  </object>\n')
@@ -1074,7 +1098,13 @@ def lay_out(case):
     return plates
 
 
-def build(case, settings_text):
+def tower_points(plates, printer):
+    """[(x, y)], one per plate: tower_point for the printer's bed."""
+    pr = PRINTERS[printer]
+    return [tower_point(parts, pr['bed'], pr['exclude'], pr['area'])[:2] for _, parts in plates]
+
+
+def build(case):
     for a, b in case['shared']:
         if a.read_bytes() != b.read_bytes():
             sys.exit(f'{a.name}: {a.parent.parent.name} and {b.parent.parent.name} differ; this script assumes one shared part')
@@ -1082,7 +1112,10 @@ def build(case, settings_text):
     if missing:
         sys.exit('missing (run src/plates.py for every print build): ' + ', '.join(missing))
     plates = lay_out(case)
-    write_3mf(case['out'], case['title'], plates, settings_text, case.get('printer', 'cc2'))
+    printer = case.get('printer', 'cc2')
+    towers = tower_points(plates, printer)
+    print('  prime tower off; where a tower would stand (wipe_tower_x, y): ' + ', '.join(f'({x:g}, {y:g})' for x, y in towers))
+    write_3mf(case['out'], case['title'], plates, project_settings(printer, towers)[0], printer)
     print(f'  -> {case["out"].relative_to(HERE.parent)} ({case["out"].stat().st_size} bytes)')
 
 
@@ -1111,7 +1144,7 @@ def load_variants():
     return mod
 
 
-def config_case(V, slug, printer='generic', two_colour=False):
+def config_case(V, slug, printer='generic'):
     """One configuration's plates: plate 1 the case (its tub, its lid, the midplate, and with bottom keys the keys,
     cranks, gates and the rod jig), plate 2 (bottom keys only) the APEM boards' cranks. cc2: laid out as the plate
     file's (256 bed); generic: layout_compact's (220 x 210, the midplate turned on the plate)."""
@@ -1120,7 +1153,7 @@ def config_case(V, slug, printer='generic', two_colour=False):
     src = build_dir / 'print'
     words = ', '.join(CONFIG_WORDS[x][a[x]] for x in V.AXES)
     rows = [[Part('midplate', src / 'midplate.stl')],
-            [Part('tub', src / 'tub.stl'), lid_part(src, build_dir, two_colour=two_colour)]]
+            [Part('tub', src / 'tub.stl'), lid_part(src, build_dir)]]
     cols = []
     if c.bottom_keys:
         cols = [[Part(f'key-426 {i}', src / 'key-426.stl') for i in range(1, 5)],
@@ -1134,10 +1167,7 @@ def config_case(V, slug, printer='generic', two_colour=False):
         rows[0][0].spin = True
         side = [cols[2].pop()] if cols else []          # the rod jig, beside the lid
         plates = [(plates[0][0], rows[0], rows[1], cols, side)] + [(n, [], [], cl, []) for n, _, cl in plates[1:]]
-    if two_colour:
-        assert printer == 'generic', 'the two-colour projects are generic only'
-        plates = split_lid(plates)
-    return dict(title=f'Silkscreen 4.26 case {slug} ({words})' + (', two-colour logo' if two_colour else ''), plates=plates,
+    return dict(title=f'Silkscreen 4.26 case {slug} ({words})', plates=plates,
                 side_keys=V.SIDE_SETS[c.sides],
                 cad=[build_dir / 'lid.stl', build_dir / 'lid_body.stl'], printer=printer)
 
@@ -1148,7 +1178,7 @@ CONFIGS_368 = ('standard',)
 SIDE_KEYS_368 = ('SW1', 'SW4', 'SW7')        # the 3.68 lid's side keys (build.py's skey_*.stl), one enforcer each
 
 
-def config_case_368(slug, printer='generic', two_colour=False):
+def config_case_368(slug, printer='generic'):
     """The 3.68 standard case's plates, as config_case lays out a 4.26 configuration with bottom keys: plate 1 its tub,
     lid and midplate, 4 key-x3std, 4 crank-T, 2 gates (one spare) and the rod jig; plate 2 the APEM boards' crank-M."""
     assert slug in CONFIGS_368, slug
@@ -1156,7 +1186,7 @@ def config_case_368(slug, printer='generic', two_colour=False):
     src = build_dir / 'print'
     words = 'standard: bare x3 panel, bottom keys, three side keys'
     rows = [[Part('midplate', src / 'midplate.stl')],
-            [Part('tub', src / 'tub.stl'), lid_part(src, build_dir, two_colour=two_colour)]]
+            [Part('tub', src / 'tub.stl'), lid_part(src, build_dir)]]
     cols = [[Part(f'key-x3std {i}', src / 'key-x3std.stl') for i in range(1, 5)],
             [Part(CRANK_T.format(i), src / 'crank-T.stl') for i in range(1, 5)],
             [Part('gate 1', src / 'gate.stl'), Part('gate 2 (spare)', src / 'gate.stl'),
@@ -1167,57 +1197,44 @@ def config_case_368(slug, printer='generic', two_colour=False):
         rows[0][0].spin = True
         side = [cols[2].pop()]                          # the rod jig, beside the lid
         plates = [(plates[0][0], rows[0], rows[1], cols, side), (plates[1][0], [], [], plates[1][2], [])]
-    if two_colour:
-        assert printer == 'generic', 'the two-colour projects are generic only'
-        plates = split_lid(plates)
-    return dict(title=f'Silkscreen 3.68 case {slug} ({words})' + (', two-colour logo' if two_colour else ''), plates=plates,
+    return dict(title=f'Silkscreen 3.68 case {slug} ({words})', plates=plates,
                 side_keys=SIDE_KEYS_368,
                 cad=[build_dir / 'lid.stl', build_dir / 'lid_body.stl'], printer=printer)
 
 
 # The public plate files (print/silkscreen-4xx-plates.3mf): generic projects with the released builds only, made of the
 # per-configuration projects' plates (so each plate is the one the website serves) and a plate of test prints
-def _lid_plates(plates, label):
-    """The case plates and, apart, the two-colour lid plate renamed with the build's name (the public two-colour files hold
-    more than one)."""
-    lid = [pl for pl in plates if pl[0] == TWO_COLOUR_PLATE]
-    return [pl for pl in plates if pl[0] != TWO_COLOUR_PLATE], [(f'{TWO_COLOUR_PLATE}: {label}', *pl[1:]) for pl in lid]
-
-
-def public_426(two_colour=False):
+def public_426():
     V = load_variants()
-    std = config_case(V, 'standard', 'generic', two_colour)
-    chin = config_case(V, 'chinless', 'generic', two_colour)
+    std = config_case(V, 'standard', 'generic')
+    chin = config_case(V, 'chinless', 'generic')
     src = HERE / 'case-426' / 'out' / 'standard' / 'print'
     test = ('Test prints (optional fit checks, print these first)',
             [Part('pcba-dummy (test fit)', src / 'pcba-dummy.stl')], [],
             [[Part('coupon-chin', src / 'coupon-chin.stl'), Part('key-426 (for the chin coupon)', src / 'key-426.stl')],
              [Part('coupon-gate', src / 'coupon-gate.stl'), Part('gate (for the gate coupon)', src / 'gate.stl')]], [])
-    sp, sl = _lid_plates(std['plates'], 'standard') if two_colour else (std['plates'], [])
-    cp, cl = _lid_plates(chin['plates'], 'chinless') if two_colour else (chin['plates'], [])
-    return dict(title='Silkscreen 4.26 case - standard and chinless builds' + (', two-colour logo' if two_colour else ''),
-                out=PRINT / ('silkscreen-426-plates-2colour.3mf' if two_colour else 'silkscreen-426-plates.3mf'),
-                printer='generic', plates=[*sp, *cp, test, *sl, *cl],
+    return dict(title='Silkscreen 4.26 case - standard and chinless builds',
+                out=PRINT / 'silkscreen-426-plates.3mf',
+                printer='generic', plates=[*std['plates'], *chin['plates'], test],
                 shared=[(src / 'midplate.stl', HERE / 'case-426' / 'out' / 'chinless' / 'print' / 'midplate.stl')])
 
 
-def public_368(two_colour=False):
-    std = config_case_368('standard', 'generic', two_colour)
+def public_368():
+    std = config_case_368('standard', 'generic')
     src = HERE / 'case-368' / 'out' / 'standard' / 'print'
     test = ('Test prints (optional fit checks, print these first)',
             [Part('pcba-dummy (test fit)', src / 'pcba-dummy.stl')], [],
             [[Part('coupon-strip', src / 'coupon-strip.stl'), Part('key-x3std (for the coupon strip)', src / 'key-x3std.stl')],
              [Part('coupon-gate', src / 'coupon-gate.stl'), Part('gate (for the gate coupon)', src / 'gate.stl')]], [])
-    sp, sl = _lid_plates(std['plates'], 'standard') if two_colour else (std['plates'], [])
-    return dict(title='Silkscreen 3.68 case - standard build' + (', two-colour logo' if two_colour else ''),
-                out=PRINT / ('silkscreen-368-plates-2colour.3mf' if two_colour else 'silkscreen-368-plates.3mf'),
-                printer='generic', plates=[*sp, test, *sl], shared=[])
+    return dict(title='Silkscreen 3.68 case - standard build',
+                out=PRINT / 'silkscreen-368-plates.3mf',
+                printer='generic', plates=[*std['plates'], test], shared=[])
 
 
 def part_model(p):
     """A distinct part's model file, as every per-configuration project holds it (3D/Objects/<name>.model): the
-    oriented part centred on its box as object ROLE_IDS[role], then its support enforcers (the lid's) as the next ids,
-    each centred on its own box, as write_3mf places them. -> (name, text, meta): the name is the role and the hash of
+    oriented part centred on its box as object ROLE_IDS[role], then the lid's logo inlays (modifier parts) and its support
+    enforcers as the next ids, each centred on its own box, as write_3mf places them. -> (name, text, meta): the name is the role and the hash of
     the text, so a name always holds the same bytes; meta is what the assembler needs (each volume's id, subtype, name
     and offset from the part's centre, z from the bed)."""
     role = p.stl.stem
@@ -1226,19 +1243,15 @@ def part_model(p):
     lo, hi = p.base.min(axis=0), p.base.max(axis=0)
     c0, size = (lo + hi) / 2, hi - lo
     vols = [(oid, 'normal_part', role, trimesh.Trimesh(p.base - c0, p.mesh.faces, process=False), (0.0, 0.0, c0[2]))]
-    inlay_ids = set()
-    for j, (ename, em, kind) in enumerate([*((n, m, 'support_enforcer') for n, m in p.enforcers),
-                                           *((n, m, 'normal_part') for n, m in p.inlays)], start=1):
+    for j, (ename, em, kind) in enumerate([*((n, m, INLAY_SUBTYPE) for n, m in p.inlays),
+                                           *((n, m, 'support_enforcer') for n, m in p.enforcers)], start=1):
         emid = (em.bounds[0] + em.bounds[1]) / 2
         vols.append((oid + j, kind, ename, trimesh.Trimesh(em.vertices - emid, em.faces, process=False),
                      (emid[0] - c0[0], emid[1] - c0[1], emid[2])))
-        if kind == 'normal_part':
-            inlay_ids.add(oid + j)                  # a second-colour volume of the lid: filament 2
     text = _model_xml([(i, f'{i:08x}-81cb-4c03-9d28-80fed5dfa1dc', m) for i, _, _, m, _ in vols])
     name = f'{role}-{hashlib.sha256(text.encode("ascii")).hexdigest()[:12]}'
     meta = {'role': role, 'size_mm': [round(float(s), 4) for s in size], 'turned': p.turned,
-            'volumes': [{'id': i, 'subtype': sub, 'name': n, 'offset': [float(t) for t in off],
-                         **({'extruder': 2} if i in inlay_ids else {})}
+            'volumes': [{'id': i, 'subtype': sub, 'name': n, 'offset': [float(t) for t in off]}
                         for i, sub, n, _, off in vols]}
     return name, text, meta
 
@@ -1304,12 +1317,11 @@ def assemble(rec, index):
                 '    <metadata key="extruder" value="1"/>\n']
         cfg += [f'    <metadata key="{key}" value="{val}"/>\n' for key, val in o['settings'].items()]
         for v in part['volumes']:
-            name = o['name'] if v['subtype'] == 'normal_part' and not v.get('extruder') else v['name']
+            name = o['name'] if v['subtype'] == 'normal_part' else v['name']
             t = v['offset']
             cfg += [f'    <part id="{v["id"]}" subtype="{v["subtype"]}">\n',
                     f'      <metadata key="name" value={quoteattr(name)}/>\n',
                     f'      <metadata key="matrix" value="1 0 0 {_f(t[0])} 0 1 0 {_f(t[1])} 0 0 1 {_f(t[2])} 0 0 0 1"/>\n',
-                    *([f'      <metadata key="extruder" value="{v["extruder"]}"/>\n'] if v.get('extruder') else []),
                     '      <mesh_stat edges_fixed="0" degenerate_facets="0" facets_removed="0" facets_reversed="0" backwards_edges="0"/>\n',
                     '    </part>\n']
         cfg.append('  </object>\n')
@@ -1415,21 +1427,26 @@ def code_hash(size='426'):
     return h.hexdigest()[:12]
 
 
-TWO_COLOUR_README = (
-    "\n## Two-colour logo (optional)\n\n"
-    "`{files}` are the same cases with the logo on the lid's back in a second colour: the lid is on a plate of its own,\n"
-    "{last}, and its two logo recesses are filled by two extra volumes printed in filament 2 (black in the project, the\n"
-    "colour is yours: load any contrasting filament as 2). They need a printer that changes filament (a multi-material\n"
-    "system or a tool changer; OrcaSlicer adds a prime tower on that plate): the logo is the lid's first two layers, so a\n"
-    "manual filament swap cannot make it. The normal `<name>.3mf` prints the same logo as an engraving in one colour, and\n"
-    "nothing else differs. They are listed in `index-2colour.json`, never in `index.json`, and are not made for the Elegoo\n"
-    "CC2 files.\n")
+LOGO_README = (
+    "\n## Two-colour logo (optional, off by default)\n\n"
+    "The lid's two back engravings (the wordmark and the book icon) print as empty recesses, in one colour. Each project also\n"
+    "carries the two logo bodies that fill them, as parts of the lid that do nothing until you switch them on, and it defines\n"
+    "two filaments (filament 1 the case, filament 2 the logo). To get a two-colour logo, in OrcaSlicer:\n\n"
+    "1. In the object list (left of the Prepare tab) click the arrow beside the lid to expand it.\n"
+    "2. Click the first \"logo\" part under it, Ctrl+click the second.\n"
+    "3. Right-click -> Change type -> Part.\n"
+    "4. With both still selected, right-click -> Change filament -> 2.\n"
+    "5. Set filament 2 to the logo's colour (and filament 1 to the case's).\n\n"
+    "The logo is the lid's first two layers, so a manual filament swap cannot make it: use a printer that changes filament\n"
+    "itself (a multi-material system or a tool changer). The prime tower is off in these projects (OrcaSlicer refuses one on a\n"
+    "plate whose keys and cranks are on rafts), so the colour change uses the printer's own purge; a printer that can only\n"
+    "purge into a prime tower should first drag the lid onto an empty plate and switch the prime tower on there.\n")
 
 
 SIDE_CHOICE = {'all': 'All four', 'leftkeys': 'Left pair', 'rightkeys': 'Right pair', 'upperkeys': 'Upper pair'}
 
 
-def configs_readme(V, listing, printer='generic', size='426', two=None):
+def configs_readme(V, listing, printer='generic', size='426'):
     """out/configs/README.md (cc2: out/configs-cc2/): which file each website-builder choice gets, and the builder
     note (print/SITE-BUILDER-NOTE.md: the side keys as one four-way choice; Ian changes the site later). The 3.68
     (size 368): its one file."""
@@ -1450,8 +1467,7 @@ def configs_readme(V, listing, printer='generic', size='426', two=None):
         else:
             head = ("Made by `make_plates.py configs --size 368 --printer cc2`; not in git. The Elegoo Centauri Carbon 2\n"
                     f"version of out/configs/standard.3mf: {f}. The website serves out/configs/, the generic one.\n")
-        extra = TWO_COLOUR_README.format(files='standard-2colour.3mf', last='the last') if two and printer == 'generic' else ''
-        return "# The 3.68 print file" + (" (Elegoo CC2)" if printer == 'cc2' else '') + "\n\n" + head + extra
+        return "# The 3.68 print file" + (" (Elegoo CC2)" if printer == 'cc2' else '') + "\n\n" + head + LOGO_README
     rows = []
     for s in V.ALL:
         c = V.parse(s)
@@ -1480,27 +1496,22 @@ def configs_readme(V, listing, printer='generic', size='426', two=None):
             "toggles (16 combinations) should become one four-way choice: all four, left pair, right pair, upper\n"
             "pair. Power is on every case. Left and right are as the reader is held, screen toward you.\n\n"
             "| Panel | Bottom row | Side keys | Dev header | File |\n|---|---|---|---|---|\n"
-            + '\n'.join(rows) + '\n'
-            + (TWO_COLOUR_README.format(files='<name>-2colour.3mf (one per configuration)', last='the last')
-               if two and printer == 'generic' else ''))
+            + '\n'.join(rows) + '\n' + LOGO_README)
 
 
-def configs(V, slugs, settings_text, printer='generic', size='426', two_colour=False):
+def configs(V, slugs, printer='generic', size='426'):
     """make_plates.py configs: each named configuration's project (out/configs/<slug>.3mf; cc2: out/configs-cc2/), its
     recipe, the library files it needs, and its entry in that folder's index.json (with the code that made it,
     code_hash); the configurations not named keep their last files, and a listing that then mixes code versions is
-    reported. size: the case, 426 (V: its variants module) or 368 (CONFIGS_368, config_case_368; V unused).
-    two_colour (2026-10-23, generic only): the opt-in two-colour projects, <slug>-2colour.3mf with recipes/<slug>-2colour.json,
-    listed in index-2colour.json (never in index.json: the website and configs_slice read that one). A run of either kind
-    keeps the other's files."""
+    reported. size: the case, 426 (V: its variants module) or 368 (CONFIGS_368, config_case_368; V unused). Each project
+    has the two-colour logo as a switch that is off (INLAY_NAMES) and its own project settings (the tower points are its
+    plates'); the library keeps one settings file per distinct text."""
     pr = PRINTERS[printer]
     CONFIGS = HERE / f'case-{size}' / 'out' / pr['dir']
     every = V.ALL if size == '426' else CONFIGS_368
     lib, recipes = CONFIGS / 'library', CONFIGS / 'recipes'
     index = _read_json(lib / 'index.json', {'parts': {}, 'settings': {}})
-    sfx, osfx = ('-2colour', '') if two_colour else ('', '-2colour')       # this kind's file suffix, the other kind's
-    listing = _read_json(CONFIGS / f'index{sfx}.json', {})
-    other = _read_json(CONFIGS / f'index{osfx}.json', {})
+    listing = _read_json(CONFIGS / 'index.json', {})
     code = code_hash(size)
 
     def put(name, text):
@@ -1511,11 +1522,9 @@ def configs(V, slugs, settings_text, printer='generic', size='426', two_colour=F
             _write(f, deflate_raw(b))
         return {'size': len(b), 'csize': f.stat().st_size, 'crc32': zlib.crc32(b)}
 
-    sname = f'settings-{hashlib.sha256(settings_text.encode("ascii")).hexdigest()[:12]}'
-    index['settings'][sname] = put(sname, settings_text)
     made = {}                       # the STL's bytes, its turn and its enforcers -> its library name (once a run)
     for slug in slugs:
-        case = config_case(V, slug, printer, two_colour) if size == '426' else config_case_368(slug, printer, two_colour)
+        case = config_case(V, slug, printer) if size == '426' else config_case_368(slug, printer)
         missing = missing_parts(case) + [str(f) for f in case['cad'] if not f.exists()]
         if missing:
             sys.exit(f'{slug}: missing (run its build and plates.py first): ' + ', '.join(missing))
@@ -1527,6 +1536,10 @@ def configs(V, slugs, settings_text, printer='generic', size='426', two_colour=F
             sys.exit(f'{slug}: {[len(p.enforcers) for p in lids]} support enforcers on its lid, but its layout has '
                      f'{len(keys)} side keys ({", ".join(keys)})')
         origins = plate_origins(len(plates), pr['bed'])
+        towers = tower_points(plates, printer)
+        settings_text = project_settings(printer, towers)[0]
+        sname = f'settings-{hashlib.sha256(settings_text.encode("ascii")).hexdigest()[:12]}'
+        index['settings'][sname] = put(sname, settings_text)
         rec = {'title': case['title'], 'settings': sname, 'plates': []}
         layout_info = []
         for pi, (pname, parts) in enumerate(plates):
@@ -1537,7 +1550,7 @@ def configs(V, slugs, settings_text, printer='generic', size='426', two_colour=F
                 h.update(b'T' if p.turned else b'-')
                 for n, m in p.enforcers:
                     h.update(n.encode() + np.ascontiguousarray(m.vertices, dtype='<f8').tobytes())
-                for n, m in p.inlays:                # the two-colour lid is never the plain one
+                for n, m in p.inlays:                # the logo parts (modifiers) are part of the lid's file
                     h.update(b'I' + n.encode() + np.ascontiguousarray(m.vertices, dtype='<f8').tobytes())
                 if h.digest() not in made:
                     name, text, meta = part_model(p)
@@ -1565,36 +1578,32 @@ def configs(V, slugs, settings_text, printer='generic', size='426', two_colour=F
                                 if p.key_zones else {})})
             rec['plates'].append({'name': pname, 'objects': objs})
             layout_info.append({'name': pname, 'objects': info})
-        _write(recipes / f'{slug}{sfx}.json', json.dumps(rec, indent=1).encode())
+        _write(recipes / f'{slug}.json', json.dumps(rec, indent=1).encode())
         data = zip_bytes(*assemble(rec, index), rec, index, lib)
-        _write(CONFIGS / f'{slug}{sfx}.3mf', data)
+        _write(CONFIGS / f'{slug}.3mf', data)
         parts = sorted({o['part'] for pl in rec['plates'] for o in pl['objects']})
-        listing[slug] = {'title': case['title'], 'file': f'{slug}{sfx}.3mf', 'bytes': len(data),
+        listing[slug] = {'title': case['title'], 'file': f'{slug}.3mf', 'bytes': len(data),
                          'sha256': hashlib.sha256(data).hexdigest(), 'side_keys': list(keys),
                          'objects': sum(len(pl['objects']) for pl in rec['plates']), 'parts': parts,
-                         'code': code, 'plates': layout_info}
-        print(f'  -> {CONFIGS.name}/{slug}{sfx}.3mf ({len(data)} bytes, {len(parts)} part files)')
+                         'code': code, 'prime_tower_at': [list(q) for q in towers], 'plates': layout_info}
+        print(f'  -> {CONFIGS.name}/{slug}.3mf ({len(data)} bytes, {len(parts)} part files)')
     # the listing in variants.ALL's order (an entry whose files are gone is dropped); the library keeps the files the
     # listed configurations' recipes use
     listing = {s: listing[s] for s in every
-               if s in listing and (recipes / f'{s}{sfx}.json').exists() and (CONFIGS / f'{s}{sfx}.3mf').exists()}
-    other = {s: other[s] for s in every
-             if s in other and (recipes / f'{s}{osfx}.json').exists() and (CONFIGS / f'{s}{osfx}.3mf').exists()}
+               if s in listing and (recipes / f'{s}.json').exists() and (CONFIGS / f'{s}.3mf').exists()}
     used = set()
-    for lst, x in ((listing, sfx), (other, osfx)):       # the library keeps what either kind's recipes use
-        for s in lst:
-            rec = json.loads((recipes / f'{s}{x}.json').read_text())
-            used |= {rec['settings'], *(o['part'] for pl in rec['plates'] for o in pl['objects'])}
-    keep = {f'{s}{sfx}' for s in listing} | {f'{s}{osfx}' for s in other}
+    for s in listing:                                    # the library keeps what the listed recipes use
+        rec = json.loads((recipes / f'{s}.json').read_text())
+        used |= {rec['settings'], *(o['part'] for pl in rec['plates'] for o in pl['objects'])}
     for kind in ('parts', 'settings'):
         index[kind] = {n: e for n, e in sorted(index[kind].items()) if n in used}
     for f in [*lib.glob('*.dfl'), *CONFIGS.glob('*.3mf'), *recipes.glob('*.json')]:
-        if f.stem not in used and f.stem not in keep:
+        if f.stem not in used and f.stem not in listing:  # also the -2colour files of 2026-10-23, gone since 2026-10-24
             f.unlink()
+    (CONFIGS / 'index-2colour.json').unlink(missing_ok=True)
     _write(lib / 'index.json', json.dumps(index, indent=1, sort_keys=True).encode())
-    _write(CONFIGS / f'index{sfx}.json', json.dumps(listing, indent=1).encode())
-    plain, two = (other, listing) if two_colour else (listing, other)
-    _write(CONFIGS / 'README.md', configs_readme(V, plain, printer, size, two).encode())
+    _write(CONFIGS / 'index.json', json.dumps(listing, indent=1).encode())
+    _write(CONFIGS / 'README.md', configs_readme(V, listing, printer, size).encode())
     roles = {}
     for n in index['parts']:
         roles[n.rsplit('-', 1)[0]] = roles.get(n.rsplit('-', 1)[0], 0) + 1
@@ -1628,16 +1637,14 @@ if __name__ == '__main__':
     if o.what == 'defaults':
         make_defaults(o.datadir)
         sys.exit(0)
-    text, changed = project_settings(o.printer)
+    changed = project_settings(o.printer)[1]
     print('project settings: stock presets', ', '.join(n for _, n in PRINTERS[o.printer]['presets'].values()),
-          '; different_settings_to_system:', changed or 'nothing', '; plate:', BED_TYPE)
+          '; different_settings_to_system:', changed or 'nothing', f'; plate: {BED_TYPE}; {FILAMENTS} filaments, prime tower off')
     if o.what == 'configs' and o.size == '368':
         slugs = list(CONFIGS_368) if o.builds == 'all' else [s for s in o.builds.split(',') if s]
         if not slugs or any(s not in CONFIGS_368 for s in slugs):
             sys.exit(f'--builds: the 3.68 has {", ".join(CONFIGS_368)} only (the light-strip 3.68 is not released)')
-        configs(None, slugs, text, o.printer, '368')
-        if o.printer == 'generic':
-            configs(None, slugs, project_settings('generic', filaments=2)[0], 'generic', '368', two_colour=True)
+        configs(None, slugs, o.printer, '368')
     elif o.what == 'configs':
         V = load_variants()
         slugs = list(V.ALL) if o.builds == 'all' else [s for s in o.builds.split(',') if s]
@@ -1646,17 +1653,9 @@ if __name__ == '__main__':
                 V.parse(s)
             except ValueError as ex:
                 sys.exit(f'--builds: {ex}')
-        configs(V, slugs, text, o.printer)
-        if o.printer == 'generic':
-            configs(V, slugs, project_settings('generic', filaments=2)[0], 'generic', '426', two_colour=True)
+        configs(V, slugs, o.printer)
     else:
         for make in ((public_426, public_368) if o.printer == 'generic' else (case_426, case_368)):
             c = make()
             print(c['title'])
-            build(c, text)
-        if o.printer == 'generic':                      # the opt-in two-colour plate files (2026-10-23)
-            text2 = project_settings('generic', filaments=2)[0]
-            for make in (public_426, public_368):
-                c = make(two_colour=True)
-                print(c['title'])
-                build(c, text2)
+            build(c)

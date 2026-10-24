@@ -753,22 +753,36 @@ main's built parts first and failed there (§8).
   now, in both cases (was 1.2): the pilot lays at r 0.85 and the clearance bore at r 1.19, and at 1.2 the relief read
   as pilot and failed on its laid Ø2.388. The tub changes; the lid and the midplate do not. The 3.68 takes the
   `PILOT_R` change only (its screws read as before: 7.2 / 6.9 at the corners, 6.2 / 5.9 at the tops).
-- **Two-colour logo, opt-in.** `logo.inlay` builds the body that exactly fills each back engraving (the wordmark and
-  the book icon: 0.4 deep, two whole layers), exported as `inlay_wordmark` and `inlay_icon` and into `print/4.26/` as
-  `lid-inlay-*` and `lid-chinless-inlay-*`. The normal lid and every normal project are unchanged. The optional
-  two-colour OrcaSlicer projects (`print/silkscreen-426-plates-2colour.3mf`; per configuration
-  `out/configs/<slug>-2colour.3mf`, listed in `index-2colour.json`) print the lid alone on a plate of its own, with the
-  inlays as parts on filament 2 (default colours: filament 1 `#E8E1D0`, a light case; filament 2 black, `#000000`; only
-  the slicer's preview colours, the user loads any light filament as 1 and a dark one as 2). They need a printer that
-  changes filament: the logo is the lid's first two layers, so a manual swap cannot make it. The prime tower is set
-  small (width 30) in a free corner of the plate, and `configs_slice.py` reads it back (§7). Read back (OrcaSlicer CLI,
-  generic presets, the keyed and the chinless lid; the other 30 projects carry the same inlays at the same place to 0.01): both
-  filaments print; filament 2 lays only the two logo layers and only inside the inlays (0.0 mm of line outside); the support
-  enforcers and the side keys stay filament 1 (`support_filament` 1: with 0 the first layer lays the key hinges' supports in
-  whichever filament is loaded, and that is the logo's); no filament-1 line lies inside a glyph; filament-2 lines cover 92 %
-  of the ink in each layer (every glyph 0.82-0.96 except the i's 1.5 mm dot, 0.74 / 0.68: the limits were set from this first
-  in-lid slice, 80 / 85 % of all the ink and 65 % of each piece). The CC2 files do not get two-colour versions, and the site
-  does not list them: Ian's later call.
+- **Two-colour logo, a switch that is off (2026-10-24; first an opt-in set of separate files, 2026-10-23).** `logo.inlay` builds
+  the body that exactly fills each back engraving (the wordmark and the book icon: 0.4 deep, two whole layers), exported as
+  `inlay_wordmark` and `inlay_icon` and into `print/4.26/` as `lid-inlay-*` and `lid-chinless-inlay-*`. The lid itself is unchanged.
+  Every lid in every OrcaSlicer file the case project writes (both plate files, the CC2 plate files, the 32 projects, generic and
+  CC2) carries the two bodies as **modifier parts** of the lid object, with a name and a place and no setting of their own, not even
+  a filament (`logo wordmark: change type to Part + filament 2 for a two-colour logo`, `logo icon: ...`). A modifier with nothing set
+  changes nothing, so the lid slices as the single-colour lid does and the engraving stays an empty recess. There is one plate file
+  and one project per configuration, with the whole case on one plate (the separate `-2colour` files are gone). To switch the logo
+  on, in OrcaSlicer: expand the lid in the object list, select both logo parts, right-click -> Change type -> Part, then
+  right-click -> Change filament -> 2, and set filament 2's colour (in the 3MF that is `subtype="normal_part"` and `extruder` 2 on
+  the two parts; `configs_slice.logo_switch` makes exactly that edit). The projects define two filaments (preview colours
+  `#E8E1D0` for the case and `#000000` for the logo), have `enable_prime_tower` 0 and `support_filament` / `support_interface_filament` 1
+  (with 0 the first layer lays the key hinges' supports in whichever filament is loaded, and that is the logo's), and name the
+  clearest free point of each plate in `wipe_tower_x` / `wipe_tower_y` (`make_plates.tower_point`).
+  **Why the parts carry no filament and the tower is off** (OrcaSlicer 2.4 CLI, 2026-10-24; the first plan was modifiers on
+  filament 2 with the tower on): a modifier that carries a filament makes the plate use it, so OrcaSlicer wants a prime tower, and
+  it refuses a tower on a plate whose objects print over different numbers of raft layers ("The prime tower requires that all
+  objects are printed over the same number of raft layers"). The keys and cranks sit on rafts, so the keyed 4.26 plate, the 3.68
+  plate and the CC2 standard plate did not slice at all, even with the logo off; on the chinless plate the tower moved the lid's
+  side-key supports; with the tower off the CC2 lid still changed (an internal bridge became solid infill). So a keyed plate cannot
+  have a prime tower, and the colour change relies on the printer's own purge (the CC2 profile purges in the machine, with
+  `M6211`; AMS-style systems and tool changers do; the generic Marlin profile does not purge at all). A printer that can only purge
+  into a tower takes the lid onto an empty plate first (`print/README.md`). Read back (OrcaSlicer CLI, `configs_slice.logo_switch`,
+  both printers, the keyed and the chinless lid; the other 30 projects carry the same parts at the same place to 0.01): the
+  shipped project (OFF) is the same job as the same project without the parts (same layers, time and filament within the
+  CLI's noise, no extrusion bucket by object, role and layer 0.3 mm apart); with the two clicks made (ON) both filaments print;
+  filament 2 lays only the two logo layers and only inside the inlays (0.0 mm of line outside); every support and raft line stays
+  filament 1; no filament-1 line lies inside a glyph; filament-2 lines cover 92 % of the ink in each layer (every glyph 0.82-0.96
+  except the i's 1.5 mm dot, 0.74 / 0.68: the limits were set from the first in-lid slice, 80 / 85 % of all the ink and 65 % of
+  each piece). ElegooSlicer (the CC2's own slicer) is untested with the clicks; the site does not list the logo yet: Ian's later call.
 - **Plain pins instead of the snap posts.** The midplate's posts through H1, H2 and H6 are plain Ø1.90 pins, their
   tip edge rounded (`BOARD_SNAP['style'] = 'pole'`; the barb style stays as an option). As printed the slotted post
   laid two fingers 1.42-1.52 wide in X (±0.36 of play in the 2.2 hole) and its barb caught only in Y, 0.09 a side; the
@@ -2328,7 +2342,7 @@ every lead. It backs the whole glass, so neither touches nor the battery load it
 - **Wordmark:** the site's logo SVG (`hardware/logo/silkscreen-logo.svg`), lettering only, 40 mm wide
   and engraved 0.4 mm deep in the lid's back, above the grip grooves (since 2026-10-23; before, in the tub's chin). It is
   mirrored so it reads from behind; `LOGO_BACK_WORDMARK` y 4.95 (ink y 1.40-8.51), y 12.55 on the chinless builds. The
-  chin face is plain. In the two-colour projects its recess is filled by a part in filament 2 (below).
+  chin face is plain. With the two-colour logo switched on its recess is filled by a part in filament 2 (below).
   - A 0.055 mm bold keeps the e's crossbar at about 0.38 mm.
   - Features under 0.24 mm are filtered out, because a face-down first layer can't make them.
   - At this size the s and the c just touch.
@@ -2409,7 +2423,7 @@ switch pressed. The bottom keys have no gap face up (each rests on its crank, an
 | Part | Orientation | Notes |
 |---|---|---|
 | tub | face down | every inward surface facing the screen is on the bed or ≤ 45° |
-| lid | back face down | the side keys stand on the bed; the book icon and the wordmark print as 0.4 mm gaps in the first layers; the floor under them stays 0.8 thick (two-colour: the gaps are filled by filament 2); supports under the side keys' hinge notches only (below) |
+| lid | back face down | the side keys stand on the bed; the book icon and the wordmark print as 0.4 mm gaps in the first layers; the floor under them stays 0.8 thick (two-colour logo switched on: the gaps are filled by filament 2); supports under the side keys' hinge notches only (below) |
 | midplate | screen side down | springs are short bridges; lips and the battery slot's barbs have 45° undersides; the board pins stand up from the plate (rounded tip); every slot is 0.5 mm so first-layer squash can't close it |
 | bottom keys (`key-426`) | on its -X end (+X up) | the -X hook on the 2-layer raft (since 2026-10-06), the +X hook's -X face a 45° lead; no supports; elephant-foot compensation 0 (per object) |
 | cranks | on the pad end, +Y up | every −Y face ≥ 45°; on a 2-layer raft (since 2026-10-06) |

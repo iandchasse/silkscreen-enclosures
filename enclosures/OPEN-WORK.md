@@ -8,8 +8,9 @@ the full records; the study notes named here are local (not in git).
 The six changes Ian took are in both cases (`case-426/README.md`, "Emily B's edit"). Left for Ian:
 - **The side gate's 0.2 mm top chamfer.** It was drawn to end level with the old seam V (`GATE['top_chamfer']`, both cases) and
   was kept: it is a separate part and squaring it reprints the gate and touches the gate checks. Set it to 0 if he wants it square.
-- **The two-colour files** (`print/*-2colour.3mf`, `out/configs/<slug>-2colour.3mf`, `index-2colour.json`): on the website or not; and
-  whether his CC2 gets two-colour files (`print/cc2-local/` has none).
+- **The two-colour logo switch** (2026-10-24; every lid carries the logo bodies as modifier parts, off by default; no separate
+  files any more): whether the site tells its users about the switch (`print/README.md`, "Two-colour logo"); and the clicks in
+  ElegooSlicer (the CC2's slicer), which are untested there (the OrcaSlicer 2.4 CLI reads the switch back; its GUI was not opened).
 - **The pin tip at -1.00** (the plan said -0.90, a layer's mid-plane on the midplate's print; -1.00 is whole layers and lays where the
   barbs' tip laid).
 - **Emily B's (mixmastermouse) questions:** which of the five side keys click on their lid (their nub cut-back, not taken); a photo

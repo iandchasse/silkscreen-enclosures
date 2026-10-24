@@ -301,16 +301,32 @@ lid and the midplate are the only parts that change; the tub, keys, cranks, gate
 the CC2 and generic presets and read back from the G-code; not printed. (`../enclosures/case-426/README.md`, "The lid's bulge and
 the board's posts".)
 
-**Two-colour logo (optional, 2026-10-23):** the lid's two back engravings (the wordmark and the book icon) can be filled
-with a second colour. It needs a printer that changes filament (a multi-material system or a tool changer): the logo is the
-lid's first two layers, so a manual swap cannot make it. The normal files print the same logo as an engraving in one colour
-and are what to use otherwise. The inlays are `4.26/lid-inlay-wordmark`, `lid-inlay-icon` (and `lid-chinless-inlay-*`) and
-`3.68/lid-inlay-*`, in the lid's own print frame: load them as parts of the lid on filament 2, or open
-[`silkscreen-426-plates-2colour.3mf`](silkscreen-426-plates-2colour.3mf) / [`silkscreen-368-plates-2colour.3mf`](silkscreen-368-plates-2colour.3mf),
-the plate files with the lid taken off its case plate and put on a plate of its own with the inlays on filament 2 (its
-filaments default to a light case colour and black; they are only preview colours, load what you have; OrcaSlicer adds a small
-prime tower on that plate and changes filament only for its first two layers). The per-configuration projects of the case
-project have `-2colour` versions too (`make_plates.py configs`, `index-2colour.json`).
+**Two-colour logo, a switch in the one file (2026-10-24; replaces the separate `-2colour` files of 2026-10-23):** the lid's two
+back engravings (the wordmark and the book icon) can be filled with a second colour. Every lid, in both plate files and in
+every per-configuration project, now carries the two bodies that fill them as parts that do nothing until you switch them on,
+so the whole case stays on one plate and the logo prints as an empty engraving in one colour by default (OFF is the same job as
+before: same layers, same time, same filament). The `silkscreen-426-plates-2colour.3mf` and `silkscreen-368-plates-2colour.3mf`
+files and the `-2colour` per-configuration projects (`index-2colour.json`) are gone. The logo is the lid's first two layers, so
+a manual filament swap cannot make it: you need a printer that changes filament by itself (a multi-material system or a tool
+changer). To switch it on, in OrcaSlicer:
+
+1. In the object list on the left, click the arrow beside the **lid** to expand it. Under it are the side-key support parts
+   and two parts named `logo wordmark: ...` and `logo icon: ...`.
+2. Click the first logo part, then Ctrl+click the second.
+3. Right-click -> **Change type** -> **Part**. (OrcaSlicer 2.3.1 asks in a dialog and takes one part at a time: do each, pick Part.)
+4. With both still selected, right-click -> **Change filament** -> **2** (or click each part's filament swatch in the list).
+5. Set filament 2 to the logo's colour and filament 1 to the case's (the files preview them as a light colour and black).
+6. Slice. Only the lid's first two layers use filament 2; the rest of the case, the lid's supports and the rafts stay filament 1.
+
+The projects define both filaments and have **Prime tower off**, and a keyed plate cannot have one: OrcaSlicer refuses a prime
+tower on a plate whose objects print over different numbers of raft layers ("The prime tower requires that all objects are
+printed over the same number of raft layers"), and the keys and cranks sit on rafts. So the colour change uses your printer's
+own purge: the Elegoo CC2 profile, an AMS-style system and a tool changer purge in the machine. Choose your printer's own
+profile when you switch the logo on, because the generic Marlin profile in these files has no purge of its own. A printer that
+can only purge into a prime tower (a Prusa MMU, for example) should first drag the lid onto an empty plate, then switch on
+Others -> Prime tower for that plate; every plate's tower position is already set to a free spot (`wipe_tower_x`, `wipe_tower_y`).
+On the chinless plate, which has no rafts, you can switch the tower on without moving the lid. The bodies are also single
+files: `4.26/lid-inlay-wordmark`, `lid-inlay-icon` (and `lid-chinless-inlay-*`), `3.68/lid-inlay-*`, in the lid's own print frame.
 
 ## Start here: the plate file
 
@@ -325,7 +341,8 @@ for a 220 x 210 mm bed. It should open in OrcaSlicer 2.3.2 and later (checked in
 printer and filament; keep the project's changed settings if OrcaSlicer asks. Files from before 2026-10-21 crash
 OrcaSlicer 2.3.2 and later on opening (they had no `filament_colour`); if yours does, take the current file.
 The keys, cranks and gates already carry elephant-foot compensation 0, and the cranks Arachne walls. Every key and
-crank already sits on a 2-layer raft ("Rafts" below). The lid already carries its side-key supports (below). The files
+crank already sits on a 2-layer raft ("Rafts" below). The lid already carries its side-key supports (below) and a two-colour
+logo that is switched off (above). The files
 hold the released builds only: the standard build, and on the 4.26 the chinless one. The 3.68 file has three plates, the
 4.26 file four:
 
@@ -505,7 +522,6 @@ under every key and crank, supports only in the lid's 3 enforcers, each key 50 l
 | Path | What |
 |---|---|
 | `silkscreen-426-plates.3mf`, `silkscreen-368-plates.3mf` | the plate files above |
-| `silkscreen-426-plates-2colour.3mf`, `silkscreen-368-plates-2colour.3mf` | the optional two-colour logo versions of the plate files (below) |
 | `rod-jig.stl`, `rod-jig.step` | the rod jig, the same for both sizes (also on plate 1 of the plate files) |
 | [`4.26/`](4.26/) | every 4.26 part on its own, and `ROD.txt` |
 | [`3.68/`](3.68/) | every 3.68 part on its own, and `ROD.txt` |
@@ -514,7 +530,8 @@ In the size folders each part comes twice: `<part>.stl`, oriented and placed as 
 case's CAD frame (the board's coordinates) for editing. The gate's STEP is in its print pose, like its STL.
 
 - **Two-colour logo (optional):** `lid-inlay-wordmark`, `lid-inlay-icon` on both sizes, and `lid-chinless-inlay-wordmark`, `lid-chinless-inlay-icon` on the 4.26: the
-  bodies that fill the lid's back engravings, in the lid's print frame (filament 2; not needed for the normal files).
+  bodies that fill the lid's back engravings, in the lid's print frame. The plate files and projects already carry them in the
+  lid, switched off ("Two-colour logo" above); the loose files are for other slicers or for editing.
 - **Tubs:** `tub-standard`. `tub-light-strip` is for the light-strip case, which is in development and not released.
 - **4.26 chinless:** `tub-chinless` and `lid-chinless`, its own tub and lid, with the shared `midplate`. The board
   must not have the bottom-row buttons (SW9/SW8/SW3/SW2) fitted.
@@ -534,8 +551,7 @@ case's CAD frame (the board's coordinates) for editing. The gate's STEP is in it
 | Files | Written by |
 |---|---|
 | `4.26/`, `3.68/` | `enclosures/case-426/src/build.py` and `enclosures/case-368/src/build.py`, at the end of a full build (every print build: on the 4.26 standard, light-strip, chinless and light-strip chinless) |
-| the two-colour plate files | `enclosures/make_plates.py` (with the plate files): the same projects with the lid on a plate of its own, the inlays on filament 2 |
-| the two plate files | `enclosures/make_plates.py`, from each build's print-oriented STLs (`src/plates.py`, in `out/<build>/print/`): generic projects, the released builds only. `make_plates.py --printer cc2` writes the author's CC2 versions with every build to `cc2-local/` (git-ignored) |
+| the two plate files | `enclosures/make_plates.py`, from each build's print-oriented STLs (`src/plates.py`, in `out/<build>/print/`, the logo bodies included): generic projects, the released builds only. `make_plates.py --printer cc2` writes the author's CC2 versions with every build to `cc2-local/` (git-ignored) |
 | one OrcaSlicer project per 4.26 configuration (not in this folder) | `enclosures/make_plates.py configs`, into `enclosures/case-426/out/configs/` (OrcaSlicer's generic presets, what the website serves; `--printer cc2`: `out/configs-cc2/`; build output, not in git; above) |
 | the 3.68 standard build's OrcaSlicer project (not in this folder) | `enclosures/make_plates.py configs --size 368`, into `enclosures/case-368/out/configs/standard.3mf` (the same generic presets, what the website serves; `--printer cc2`: `out/configs-cc2/`; build output, not in git; above) |
 | `rod-jig.*` | `enclosures/rod_jig.py` |

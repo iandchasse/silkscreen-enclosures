@@ -632,11 +632,13 @@ the repo). What reaches the 3.68, all read back by `community.py` (build time, `
   the chin is plain (the chin web stays, it also carries the keys' rail).
 - **The parting line is square** (`SEAM_CHAMFER` = 0; it was a 0.4 V, left off the tub's half over the key row). The
   key bars lost their V with it (`TAB_BAR_V`).
-- **Two-colour logo, opt-in:** `logo.inlay` bodies for the icon (0.2, one layer) and the wordmark (0.4), exported as
-  `inlay_icon` and `inlay_wordmark` and into `print/3.68/` as `lid-inlay-icon` and `lid-inlay-wordmark`; with both builds
-  at whole-layer depths both can have them. `print/silkscreen-368-plates-2colour.3mf` and
-  `out/configs/standard-2colour.3mf` print the lid alone with the inlays on filament 2 (multi-material printers only; the
-  normal files print the engraving).
+- **Two-colour logo, a switch that is off (2026-10-24):** `logo.inlay` bodies for the icon (0.2, one layer) and the wordmark
+  (0.4), exported as `inlay_icon` and `inlay_wordmark` and into `print/3.68/` as `lid-inlay-icon` and `lid-inlay-wordmark`; with
+  both builds at whole-layer depths both can have them. `print/silkscreen-368-plates.3mf` and `out/configs/standard.3mf` (and the
+  CC2 ones) carry both bodies in the lid as modifier parts with no setting, so the lid prints the engraving as before; Change type
+  -> Part and Change filament -> 2 on the two parts make the logo two-colour (multi-material printers only; the prime tower is off
+  in every project, so the colour change uses the printer's own purge). The separate `-2colour` files of 2026-10-23 are gone. How
+  it is built, why, and what was read back: `case-426/README.md`, "Two-colour logo, a switch that is off".
 
 ## Screen bevel (the standard build, 2026-10-10)
 
