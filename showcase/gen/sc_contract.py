@@ -364,7 +364,10 @@ def download_groups(size):
 # models-426.js was 16.64 MB, at the published page's 16 MB per file. 2026-10-07: the 4.26 light-strip chinless case
 # (plate 5) is the fourth build ('lc'): its tub's STL is in the zip, its STEP stays out like the chinless ones (with
 # it models-426.js would be about 16.3 MB).
-ZIP_NOT_SHOWN = {'426': ('tub-chinless.step', 'lid-chinless.step', 'tub-light-strip-chinless.step'), '368': ()}
+# 2026-10-23: the logo inlays (the optional two-colour logo, print/*/lid-inlay-*, lid-chinless-inlay-*) are not listed: whether the
+# site offers the two-colour files is Ian's later call.
+ZIP_NOT_SHOWN = {'426': ('tub-chinless.step', 'lid-chinless.step', 'tub-light-strip-chinless.step', 'lid-inlay-', 'lid-chinless-inlay-'),
+                 '368': ('lid-inlay-',)}
 # a shared file may carry skip_builds [B]: a build that does not use it (the chinless cases have their own lid and no
 # keys, cranks, gate or rod), so the files card's "only this build" download leaves it out. A file in a build's group
 # lists that build first and may list others that print it too (lid-chinless: ['cl', 'lc']).

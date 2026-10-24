@@ -760,8 +760,14 @@ main's built parts first and failed there (§8).
   inlays as parts on filament 2 (default colours: filament 1 `#E8E1D0`, a light case; filament 2 black, `#000000`; only
   the slicer's preview colours, the user loads any light filament as 1 and a dark one as 2). They need a printer that
   changes filament: the logo is the lid's first two layers, so a manual swap cannot make it. The prime tower is set
-  small (width 30) in a free corner of the plate, and `configs_slice.py` reads it back (§7). The CC2 files do not get
-  two-colour versions, and the site does not list them: Ian's later call.
+  small (width 30) in a free corner of the plate, and `configs_slice.py` reads it back (§7). Read back (OrcaSlicer CLI,
+  generic presets, the keyed and the chinless lid; the other 30 projects carry the same inlays at the same place to 0.01): both
+  filaments print; filament 2 lays only the two logo layers and only inside the inlays (0.0 mm of line outside); the support
+  enforcers and the side keys stay filament 1 (`support_filament` 1: with 0 the first layer lays the key hinges' supports in
+  whichever filament is loaded, and that is the logo's); no filament-1 line lies inside a glyph; filament-2 lines cover 92 %
+  of the ink in each layer (every glyph 0.82-0.96 except the i's 1.5 mm dot, 0.74 / 0.68: the limits were set from this first
+  in-lid slice, 80 / 85 % of all the ink and 65 % of each piece). The CC2 files do not get two-colour versions, and the site
+  does not list them: Ian's later call.
 - **Plain pins instead of the snap posts.** The midplate's posts through H1, H2 and H6 are plain Ø1.90 pins, their
   tip edge rounded (`BOARD_SNAP['style'] = 'pole'`; the barb style stays as an option). As printed the slotted post
   laid two fingers 1.42-1.52 wide in X (±0.36 of play in the 2.2 hole) and its barb caught only in Y, 0.09 a side; the

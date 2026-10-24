@@ -1574,7 +1574,8 @@ def models_zip(P):
                 row['builds'] = GROUP_BUILDS[gid]
             fl.append(row)
         groups.append({'id': gid, 'label': label, 'what': what, 'files': fl})
-    missing = sorted(p.name for p in pdir.iterdir() if p.is_file() and p.name not in listed)
+    missing = sorted(p.name for p in pdir.iterdir() if p.is_file() and p.name not in listed
+                     and not (C.ZIP_NOT_SHOWN['368'] and p.name.startswith(C.ZIP_NOT_SHOWN['368'])))
     assert not missing, f'print/3.68/ files not in the zip groups: {missing}'
     zname = 'silkscreen-case-3.68.zip'
     readme = readme_txt(groups, zname)
