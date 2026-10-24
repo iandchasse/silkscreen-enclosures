@@ -278,7 +278,7 @@ sample needs it.
 the 4.26 standard case in Onshape and Ian took six of the changes, made here in both cases where they apply.
 - **Top screw (4.26, every configuration; the tub):** a 2.4 clearance bore from the rim to the board's front face, so the screw
   bites the last 3.8 mm of its pilot, 3.6 mm as printed (3.3 with the lid 0.3 open) like the two bottom screws, instead of 9.0
-  (the community member reports it stripped heads). The 3.68's screws are unchanged.
+  (Emily B reports it stripped heads). The 3.68's screws are unchanged.
 - **The wordmark is on the lid's back, above the grip grooves** (the lid), and the chin is plain (the tub). On the 4.26 it
   sits 2.6 mm above the top groove (the chinless case: above its grooves at 2 / 4 / 6); on the 3.68 the same distance. The
   book icon stays in the centre.
@@ -291,6 +291,15 @@ Reprint `tub-*`, `lid` (`lid-chinless`) and `midplate` for your size and configu
 unchanged. Both plate files and every configuration's project carry the new parts, and nothing else in them moved. Sliced in
 the OrcaSlicer CLI with the CC2 and generic presets and read back from the G-code; not printed. (`../enclosures/case-426/README.md`,
 "A community member's edit"; the 3.68's section of the same name.)
+
+**4.26 lid and midplate, 2026-10-24 (the same reprint: the bulge fix):** the 4.26 lid (`lid`, `lid-chinless`) and midplate that you
+reprint for the 2026-10-23 changes also carry this, so there is nothing more to print. The lid's board posts H2, H5 and H6 stand one
+layer (0.2) shorter, so the board rests on H1 and the lid's middle bows about 40 % less (a model estimate, not measured on a print;
+H5's pin still reaches 0.8 mm into the board and still locates its top end). The midplate loses one screen spring, at the J6 header,
+that printed as loose islands and pushed on nothing. The 3.68 is unchanged by this. If you already printed the 2026-10-23 files, the
+lid and the midplate are the only parts that change; the tub, keys, cranks, gate and rod do not. Sliced in the OrcaSlicer CLI with
+the CC2 and generic presets and read back from the G-code; not printed. (`../enclosures/case-426/README.md`, "The lid's bulge and
+the board's posts".)
 
 **Two-colour logo (optional, 2026-10-23):** the lid's two back engravings (the wordmark and the book icon) can be filled
 with a second colour. It needs a printer that changes filament (a multi-material system or a tool changer): the logo is the

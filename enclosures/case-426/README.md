@@ -668,7 +668,8 @@ go for it". `src/lid_close.py` now checks it on every build.
   where a notch would leave less than `midplate.MIN_WEB` (0.5) to a spring window, it runs on into the window over
   their common span (X 59.9-61.21, Y 100.0-102.85), and the notches are cut again after the springs are added, which
   takes 0.56 mm³ off the end of that spring's strip and nothing else. (That spring was already out of use: see
-  §11, *the Y-102 spring*.)
+  §11, *the Y-102 spring*. Since 2026-10-24 the spring and its window are gone, and the run-on with them: the right Y-100.3
+  notch is the plain 0.85 notch.)
 - **Beside a detent strip the notch's last 0.1 mm stays 0.7 deep.** Four notches end less than `MIN_WEB` short of a
   click-in detent strip's root on the same wall: both Y-12 notches (0.35 short of the Y-14.9 strips) and left Y 83 and
   right Y 82.3 (0.45 short of theirs). The old 0.7 notch was flush with the strip's inner edge; at 0.85 the Y-14.9
@@ -794,9 +795,74 @@ main's built parts first and failed there (§8).
 model four of the five keys could not click, and test 1 already failed at a 0.39 gap); their reshaped pads (a 1.15 mm
 shelf over air, and the plate build would stop on it); the lid posts 1.0 shorter, the flat H5 pin and the removed
 battery springs (the pin would no longer enter the board, and the screen's hold at the top end falls about 5x on a
-thin panel; a bulge study needs the member's photo first); filling the grip grooves; any taper on the top screw; and
+thin panel; a smaller version of the idea was taken on 2026-10-24, see *The lid's bulge and the board's posts*); filling the grip grooves; any taper on the top screw; and
 their tub. Questions for the member (which keys click, a photo of the bulge, their screws, the old USB edge in their
 tub, credit) are in `../OPEN-WORK.md`.
+
+## The lid's bulge and the board's posts (2026-10-24)
+
+Emily B (mixmastermouse) shortened the lid's four board posts by 1.0 mm, cut H5's pin down to its post and removed the battery
+springs, and reports about 90 % less bulge in the middle of the lid. Ian did not take that as it was. A study of the stack
+(the lid and the board as printed, each modelled and then re-derived independently with a 3-D finite-element model; the notes are
+local, not in git) found that the same change also takes the screen's hold at its top end down about five times on a thin panel,
+takes H5's pin out of the board, and leaves J6, J1 and the board with new places to rest. Ian took the smallest part of it that keeps all
+three.
+
+![Sections through the lid's H2, H5 and H6 posts as sliced, before and now](../../docs/images/lid426-posts.png)
+
+**What changed (4.26 only; the lid and the midplate).**
+- **H2, H5 and H6 stop one layer short of the board** (`params.BOARD_POST_TOP`: H1 0.0, the others -0.1). As laid their tops are at
+  -0.10 (they were +0.10); with the lid home (-0.100) that leaves **0.20 of air** under a nominal board. **H1 is unchanged**: it
+  lays +0.10 and the board sits on it at home. The lid is 3.24 mm3 lighter, exactly the three 0.1-thick rings.
+- **H5's pin keeps its own absolute top** (`params.H5_PIN`, +1.19), so it reaches into the board exactly as before: its full
+  section (laid 1.79 across) runs to +0.90, **0.80 into the board at home**, tip at +1.00. The board's top end is still located by
+  it, and the pin has at least 0.79 of full section in the board in every tolerance case of the study.
+- The battery springs, the nubs, the latches, the side keys and the rest of the lid are as before, so `lid_close` and
+  `side_key_reach` give the same reports.
+- **The midplate's x-axis spring at (53.0, 102.0) is gone** (`midplate.SPRINGS`: six springs, was seven). It was already out of use
+  (section 11, *the Y-102 spring*): J6's lead holes cut its strip through at every pin column, so as sliced it was six loose
+  islands over the open window and a nub that was a sliver of one. The midplate gains 11 mm3 (7.58 g to 7.60 g), the window being
+  plate again, and the right Y-100.3 latch notch no longer runs on into that window.
+
+**Why H1 stays.** The four upper springs push the panel onto the lip and the board onto the lid's posts with the same force. The
+board is soft (0.6 to 1.2 mm/N at the posts), so it carries little of that force back to the screws: anything that takes force
+off the lid's middle also takes it off the screen's top end, unless it moves the force to a stiffer part of the lid. The lid is
+about twice as stiff under H1 (0.03 mm/N: 17 mm from the top screw and the top wall) as under H2 or H5 (0.06), and three times as
+stiff as under H6 (0.09 to 0.10). So the board now lands on H1 first and reaches H2, H5 and H6 only in a thick stack, when the load is
+shared. Lowering all four posts (Emily's change, or -0.1 or -0.3 on all four) leaves the top end's hold at 0.3 to 0.4 N on a thin
+panel, against 1.8 N today.
+
+**Result.** These are **model estimates, not measured on a print**: nothing here has been checked against a real lid, and it is
+unproven that a 4.26 bulges visibly today (Ian has not reported it).
+- **The lid's bow (y > 15) goes down about 37 / 40 / 46 %** for a nominal / a thick (+0.2 panel, +0.16 board) / the worst stack
+  (the thick one with the printed stack +0.1 too): **0.133 / 0.216 / 0.361 mm to 0.083 / 0.131 / 0.196 mm** in the re-check's model
+  (the first model gave 0.148 / 0.239 / 0.385 to 0.091 / 0.141 / 0.205, -38 / -41 / -47 %). The force into the lid's middle falls from
+  4.2 to 3.1 N at nominal, and most of what is left goes to H1 (2.0 N).
+- **The screen's top end is still held.** On a thin panel the four upper springs hold it with 1.46 N (1.8 N today), against 1.18 N
+  at the bottom edge today. **On a thin board (-0.16) the top end's hold is a tie with today's bottom edge, not a margin**: it
+  runs from 0.04 N under to equal in the model, and from 0.20 N under to 0.11 N over as the springs' stiffness varies by 25 %.
+- The latches' least catch left (of 0.45) rises from 0.22 to 0.29. The cell's hold is unchanged.
+- **Not changed (and not made worse):** in the thinnest stack (-0.2 panel, -0.16 board, -0.1 print) every spring is free, and the
+  screen and board rattle, today and now.
+
+**What it costs.**
+- **No cost at the side switches.** The first model had SW5's body touching the lid's lip in the two thickest stacks; that was a
+  bounding-box artifact. The switch bodies' lowest face (-4.493) stands over the lid's floor (-5.50), 1.1 mm of room.
+- **J1's shell takes a little load in the one worst corner** (+0.2 panel, +0.16 board, +0.1 print): about 1.2 N, against 0.14 N today.
+- **On Rev 1.0 boards the USB opening's far side drops by up to 0.08 mm** (the board sits a little further back at J1). One of the
+  27 tolerance cases (+0.2 panel, nominal board, +0.1 print) falls under the 0.10 floor of `usb_fit`: 0.14 to 0.07 in the
+  re-check, 0.134 to 0.080 in the first model. Over the nine panel x board cases the least stays at 0.12. Rev 1.02 has 0.14 more
+  everywhere. (`usb_fit` itself still puts the board on the H3 / H4 posts, which is optimistic at J1: the springs push it back.)
+- **Reprint the lid and the midplate** (`print/README.md`, 2026-10-23 entry).
+
+**Checked.** `slice_check.board_posts` (a row of `as_printed`, every build) reads the posts from the lid's G-code: H1's top laid +0.10,
+H2, H5 and H6 -0.10, and H5's pin full to at least 0.79 into the board at home. It FAILs on cfce1c4's lid slice (H2, H5, H6 at +0.10)
+and passes on all 32 builds now. Against cfce1c4's reports the 32 builds differ only where this change should: the lid's volume
+(-3.24 mm3; 24 builds also in `sides.json`; `chin.json`'s volumes), the midplate's, the spring count in `mechanics.json` (7 to 6; the
+light strip's `plain_stack` totals 6.5 / 4.1 / 8.8 N become 5.6 / 3.6 / 7.6 N), the dummy PCBA's overlap with the midplate (the
+springs' preload, 6.25 to 5.93 mm3) and the notch's run-on read-back, which is gone. `lid-close.json`, `insertion.json`,
+`community.json`, `bottom-keys.json`, every read-back of the lid, the home, the screws and `usb_fit` are unchanged (the top screw's
+laid hole diameter reads 2.387 or 2.388 in six builds, as a seam falls: noise).
 
 ## Bottom keys (Rev L): bell crank and sliding key
 
@@ -1396,7 +1462,7 @@ Where the strip sits across the bar:
 | Hold-downs over bar with FPL under it | 0.085 wide, 1.1 mm2 over the seven pads with the glass centred; 0-3.7 mm2 with the FPL's +-0.2 from centred to 0.125 right. At the FPL's nominal inset they reach none once the glass is more than 0.085 right of centre, which includes fitting step 5's nominal position (+0.125, the glass on the USB-C port floor); there it is 2.08 mm2 only with the FPL at -0.2. Ending at 0.60 they reached none from centred to the right. |
 | Foot to the bottom stop rail | as drawn 1.07, as placed 0.93; worst 0.31 (X +0.58, Y +0.55) |
 | Foot to the skin / its left end to the wall above the relief | 0.595 / 0.274 (as drawn) |
-| Springs (`mechanics.py` `plain_stack`) | deflection 0.276 of 0.6 for a nominal panel, 0.93 N each and 6.5 N for all 7. A -0.1 panel gives 0.176 (0.59 N, 4.1 N); a +0.1 panel gives 0.376 (1.26 N, 8.8 N). A nominal FT01C gives 0.35 (1.18 N). Every other `mechanics.json` entry is identical to Rev K's. |
+| Springs (`mechanics.py` `plain_stack`) | deflection 0.276 of 0.6 for a nominal panel, 0.93 N each and 5.6 N for all 6 (6.5 N for 7 until 2026-10-24). A -0.1 panel gives 0.176 (0.59 N, 3.6 N); a +0.1 panel gives 0.376 (1.26 N, 7.6 N). A nominal FT01C gives 0.35 (1.18 N). Every other `mechanics.json` entry is identical to Rev K's. |
 | Tail (nominal; furthest-reaching U) to the tub | 0.546 (the neck to the gap edge), as drawn and as placed; 0.377 at the left end of the box (X -0.17) |
 | to SW9's left mounting-lug lead, as it comes | as drawn 0.100 / 0.102; as placed 0.255 / 0.256. At the left end of the box (the glass against the left wall, the bar on its edge) they still **overlap**: 0.007 / 0.005 mm3 (0.030 / 0.033 before the placement rule, at X -0.425). See fitting step 1. |
 | to that lead trimmed to Z 1.7 and covered with Kapton | as drawn 0.11 / 0.037; as placed 0.218 / 0.192. At the left end of the box the nominal U clears it by 0.104 and the largest rests on the tape (0.012 mm3). |
@@ -1554,7 +1620,7 @@ mouth. Whatever length the path does not use goes into the U. There are two case
   nominal in Y. Higher, its lower part is over the hinge's bare flex, and at +0.55 only a 0.025 sliver
   is on the piece. The top piece between the hinge and D1's solder pads is too short to move it
   (`P.STRIP_HOLD`). Without it, the pads either side are 30 mm apart (Y 77.55 to 107.7).
-- The springs push a little less than with the FT01C: 6.5 N in all at nominal, against 8.2 N.
+- The springs push a little less than with the FT01C: 5.6 N in all at nominal (six springs since 2026-10-24), against 7.1 N.
 - The plain panel's EPD FPC is modelled from its width at the glass (31.3) and the FT01C's taper
   beyond that.
 - Light bleed through the 0.60 skin; see the print notes.
@@ -1963,7 +2029,9 @@ prints face down without supports.
 The lid (`src/lid.py`) is a shallow tray: the outer body below the parting line, hollowed to 1.2 mm
 walls and floor. It carries:
 - **Posts under the board:** H1 Ø4.4, H2 Ø4.4, H5 Ø4.3 with a Ø1.9 locating pin, and H6 Ø5.0.
-  H1, H2 and H6 have Ø3.0 bores that the midplate's pins (snap barbs until 2026-10-23) go into.
+  H1, H2 and H6 have Ø3.0 bores that the midplate's pins (snap barbs until 2026-10-23) go into. Since 2026-10-24 H1 stands on
+  the board's rear face and H2, H5 and H6 one layer (0.2 at home) short of it, which takes load off the lid's soft middle;
+  H5's pin keeps its reach (*The lid's bulge and the board's posts*).
 - **Screws:** the H3/H4 screws pass through it, the board and into the tub bosses. The top screw at
   (40.2, 112.8) goes lid to tub, between the battery's corner and J6. The heads' counterbores print
   with no supports (§5.8 Screws).
@@ -2131,7 +2199,7 @@ Rev L replaced Rev K's rocker keys with a bell crank and a sliding key: see [Bot
 every lead. It backs the whole glass, so neither touches nor the battery load it through a point.
 
 - **Screen springs:**
-  - Seven bridge springs (0.4 mm strips across windows in the plate) have nubs that rest on the
+  - Six bridge springs (seven until 2026-10-24; 0.4 mm strips across windows in the plate) have nubs that rest on the
     board and push the plate, and so the glass, against the bezel lip.
   - They take up the panel's ±0.2 mm: 0.15 mm of deflection with a thin panel, 0.55 with a thick
     one, out of 0.6 available. That gives 0.5 N to 1.85 N per spring, and no gap in front of the glass.
@@ -2366,7 +2434,7 @@ switch pressed. The bottom keys have no gap face up (each rests on its crank, an
 - The lid's chamfered latch arms and the midplate's latch notches (2026-10-12, [The lid closing](#the-lid-closing-2026-10-12))
   are read back on every build (`slice_check.latch_readback`, `latch_no_support`): nothing over each arm's inner top
   corner in its top two layers, the arm present below them, nothing over any arm that would need a support; each
-  notch open to 0.85 in every layer, the right Y-100.3 notch run on into the Y-102 spring's window, and the four
+  notch open to 0.85 in every layer (until 2026-10-24 the right Y-100.3 notch also ran on into the Y-102 spring's window), and the four
   detent strips beside a notch's end joined to the plate (their lines within 0.02 of the plate's in every layer
   above the first; `detent_join`).
 - Rev I's slices stand for the rest:
@@ -2396,6 +2464,7 @@ print failed without it.
 | Twins | `build.share_check`, `build.twin_shares` → `out/<build>/shared.json`, `out/shares-all.json` | each configuration's parts against its twins' ("What the builds share") | every claim equal |
 | Per-configuration projects | `configs_slice.py` → `out/configs/slice-report.json` | each configuration's OrcaSlicer project sliced by the CLI and read back: every object prints, supports only in the rafts and the lid's enforcers; since 2026-10-12 the lid's side keys stand on what is under them | 32 of 32 |
 | Screws as printed | `slice_check.as_printed` (`asprinted.py`) | 2026-10-13: the lid and the tub as sliced, the lid at its as-printed home; each screw's seat for a socket head and a pan head (neither proud of the back), and the M2 × 10's thread in its pilot, tip and face ([Socket head screws](#socket-head-screws-2026-10-13)); a FAIL stops `slice_check.py` | 3 of 3 on all 32 (main: every socket head 0.2 proud) |
+| Board posts as laid | `slice_check.board_posts` (a row of `as_printed`) | 2026-10-24: the lid's G-code: H1's top laid +0.10, H2 / H5 / H6 -0.10 (0.20 of air at home), H5's pin full section at least 0.79 into the board at home; a FAIL stops `slice_check.py` | passes on all 32 (cfce1c4: H2, H5, H6 at +0.10) |
 | Side-key sweep | `mechanics.side_key_sweep` | each side key swung about its root to 115 % of its stop | only the plungers and the intended stops are touched |
 | Side-key reach | `mechanics.side_key_reach` | test 1: under a press, the travel each side key has left for its switch, with the board free on the lid's H5 pin and USB block, the screws, print growth (`KEY_FDM`) and the tub in its groove; and the rest gap with the board toward the key | at least 0.39 mm typical / 0.34 worst, rest gap at least 0.09 |
 | Forces | `mechanics.py` | beam models from each part's own sections, PLA E = 3000 MPa, μ = 0.3: key forces, spring rates, latch, snap and detent forces and strains | as quoted in §5 |
@@ -2426,6 +2495,7 @@ print failed without it.
 | J | 2026-09-22 | no | print 5 |
 | K | 2026-09-22 | no | Ian's questions on Rev J |
 | community | 2026-10-23 | no | a community member's edit of the 4.26 standard case (see A community member's edit) |
+| community, bulge | 2026-10-24 | no | the lid-bulge study of that edit: the lid's H2, H5 and H6 posts one layer lower, the dead Y-102 spring dropped (see The lid's bulge and the board's posts) |
 
 **Rev D**
 - **Screen:** panel and ribbons rebuilt 1:1 from the drawing's vectors, and the site's battery model
@@ -2602,6 +2672,8 @@ open to a taller button face or supports. "A functional button is better than a 
   `-nodev` builds cut the same holes (the midplate is shared).
 - The six other springs are whole. Whether the board needs a spring there (it is beside the right side switches) is
   for Ian; moving it is not simple, since the header's two rows fill that end of the plate.
+- **Resolved 2026-10-24:** the spring is dropped from `midplate.SPRINGS` (it printed as six loose islands and a nub sliver, and
+  pushed on nothing); the plate is whole there and the notch's run-on went with it (*The lid's bulge and the board's posts*).
 - Not changed by the lid fix, which only takes the end of its strip off where the right Y-100.3 latch notch now runs
   into its window.
 

@@ -12,10 +12,14 @@ The six changes Ian took are in both cases (`case-426/README.md`, "A community m
   whether his CC2 gets two-colour files (`print/cc2-local/` has none).
 - **The pin tip at -1.00** (the plan said -0.90, a layer's mid-plane on the midplate's print; -1.00 is whole layers and lays where the
   barbs' tip laid).
-- **The member's questions and credit:** which of the five side keys click on their lid (their nub cut-back, not taken); a photo of
-  their bulge (their shorter lid posts, flat H5 pin and removed battery springs, not taken: a bulge study needs it first); their
-  screws; that their tub has the old USB edge; and their name and permission for the credit (the READMEs say "a community
-  member" until then).
+- **Emily B's (mixmastermouse) questions:** which of the five side keys click on their lid (their nub cut-back, not taken); a photo
+  of their bulge (their shorter lid posts, flat H5 pin and removed battery springs: a smaller version was taken on 2026-10-24, the
+  4.26 lid's H2, H5 and H6 posts one layer short and the dead midplate spring at J6 dropped; `case-426/README.md`, "The lid's bulge
+  and the board's posts"; model estimates, not measured on a print, so a photo of a real bulge still decides whether more is worth
+  doing); their screws; and that their tub has the old USB edge. The credit is given (the READMEs name Emily).
+- **Behind the bulge fix, on record, not done:** the midplate springs' 0.6 mm travel is narrower than the stack's tolerance window
+  (every spring is free in the thinnest corner, the two lower strips bottom out on a thick panel with a thick print), and `usb_fit`
+  puts the board on the H3 / H4 posts although the springs push it back at J1. Both are today's, not the community edit's.
 
 ## The 3.68 lid: rebuilt, not printed
 
