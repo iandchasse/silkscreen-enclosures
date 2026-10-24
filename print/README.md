@@ -310,13 +310,16 @@ files and the `-2colour` per-configuration projects (`index-2colour.json`) are g
 a manual filament swap cannot make it: you need a printer that changes filament by itself (a multi-material system or a tool
 changer). To switch it on, in OrcaSlicer:
 
-1. In the object list on the left, click the arrow beside the **lid** to expand it. Under it are the side-key support parts
-   and two parts named `logo wordmark: ...` and `logo icon: ...`.
-2. Click the first logo part, then Ctrl+click the second.
-3. Right-click -> **Change type** -> **Part**. (OrcaSlicer 2.3.1 asks in a dialog and takes one part at a time: do each, pick Part.)
-4. With both still selected, right-click -> **Set Filament for selected items** (it reads **Change Filament** when one part is
-   selected) -> the second filament in the list, shown by its colour swatch (not "Default"). Or click each part's filament
-   cell in the object list.
+1. On the **Prepare** tab, in the object list on the left, click the arrow beside the **lid** to expand it. Under it are the
+   side-key support parts and two parts named `logo wordmark: ...` and `logo icon: ...`. Right-click the parts' rows in this
+   list, not the model in the 3D view.
+2. Click **one** logo part (no Ctrl), right-click its row -> **Change type** -> **Part**. Newer OrcaSlicer shows a submenu;
+   ElegooSlicer and older OrcaSlicer open a small "Choose part type" dialog: pick Part, then OK. With two parts selected,
+   some versions leave Change type out of the menu, so do one at a time.
+3. Do the same for the other logo part.
+4. Ctrl+click both logo parts, right-click -> **Set Filament for selected items** (it reads **Change Filament** when one part
+   is selected) -> the second filament in the list, shown by its colour swatch (not "Default"). Or click each part's
+   filament cell in the object list.
 5. Set filament 2 to the logo's colour and filament 1 to the case's (the files preview them as a light colour and black).
 6. Slice. Only the lid's first two layers use filament 2; the rest of the case, the lid's supports and the rafts stay filament 1.
 

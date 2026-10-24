@@ -761,8 +761,9 @@ main's built parts first and failed there (§8).
   a filament (`logo wordmark: change type to Part + filament 2 for a two-colour logo`, `logo icon: ...`). A modifier with nothing set
   changes nothing, so the lid slices as the single-colour lid does and the engraving stays an empty recess. There is one plate file
   and one project per configuration, with the whole case on one plate (the separate `-2colour` files are gone). To switch the logo
-  on, in OrcaSlicer: expand the lid in the object list, select both logo parts, right-click -> Change type -> Part, then
-  right-click -> Set Filament for selected items -> the second filament, and set filament 2's colour (in the 3MF that is `subtype="normal_part"` and `extruder` 2 on
+  on, in OrcaSlicer: expand the lid in the object list, right-click each logo part's row in turn -> Change type -> Part
+  (one part at a time: ElegooSlicer 1.5 and OrcaSlicer 2.3.x leave Change type out of the multi-selection menu), then select
+  both, right-click -> Set Filament for selected items -> the second filament, and set filament 2's colour (in the 3MF that is `subtype="normal_part"` and `extruder` 2 on
   the two parts; `configs_slice.logo_switch` makes exactly that edit). The projects define two filaments (preview colours
   `#E8E1D0` for the case and `#000000` for the logo), have `enable_prime_tower` 0 and `support_filament` / `support_interface_filament` 1
   (with 0 the first layer lays the key hinges' supports in whichever filament is loaded, and that is the logo's), and name the
