@@ -79,7 +79,7 @@ backstops 0.065 mm too tall. The method that caught each one:
      (its pilot starts at 1.6, 3.6 mm of thread). Their limits are Ian's literal numbers, so they failed on main and pass now.
      `configs_slice.logo_switch()` reads the two-colour logo switch back by tool, from the ONE project of a configuration (both
      printers): every lid carries its two logo bodies as modifier parts with no setting, and the prime tower is off. OFF is the
-     no-logo control; ON (subtype normal_part, extruder 2: what Change type -> Part and Change filament -> 2 write) lays filament 2
+     no-logo control; ON (subtype normal_part, extruder 2: what Change type -> Part and Set Filament for selected items -> filament 2 write) lays filament 2
      only in the logo. Never give those parts a filament in the file: it makes the keyed plates unsliceable (the prime-tower raft
      error). There are no `-2colour` files.
    - `slice_check.board_posts` (4.26, a row of `as_printed`): the lid's board posts as laid, H1 +0.10 and H2 / H5 / H6 -0.10 from the

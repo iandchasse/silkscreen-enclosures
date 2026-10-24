@@ -636,7 +636,7 @@ the repo). What reaches the 3.68, all read back by `community.py` (build time, `
   (0.4), exported as `inlay_icon` and `inlay_wordmark` and into `print/3.68/` as `lid-inlay-icon` and `lid-inlay-wordmark`; with
   both builds at whole-layer depths both can have them. `print/silkscreen-368-plates.3mf` and `out/configs/standard.3mf` (and the
   CC2 ones) carry both bodies in the lid as modifier parts with no setting, so the lid prints the engraving as before; Change type
-  -> Part and Change filament -> 2 on the two parts make the logo two-colour (multi-material printers only; the prime tower is off
+  -> Part and Set Filament for selected items -> the second filament on the two parts make the logo two-colour (multi-material printers only; the prime tower is off
   in every project, so the colour change uses the printer's own purge). The separate `-2colour` files of 2026-10-23 are gone. How
   it is built, why, and what was read back: `case-426/README.md`, "Two-colour logo, a switch that is off".
 

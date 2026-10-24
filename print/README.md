@@ -305,7 +305,7 @@ the board's posts".)
 back engravings (the wordmark and the book icon) can be filled with a second colour. Every lid, in both plate files and in
 every per-configuration project, now carries the two bodies that fill them as parts that do nothing until you switch them on,
 so the whole case stays on one plate and the logo prints as an empty engraving in one colour by default (OFF is the same job as
-before: same layers, same time, same filament). The `silkscreen-426-plates-2colour.3mf` and `silkscreen-368-plates-2colour.3mf`
+before: same layers and filament, time within a few seconds). The `silkscreen-426-plates-2colour.3mf` and `silkscreen-368-plates-2colour.3mf`
 files and the `-2colour` per-configuration projects (`index-2colour.json`) are gone. The logo is the lid's first two layers, so
 a manual filament swap cannot make it: you need a printer that changes filament by itself (a multi-material system or a tool
 changer). To switch it on, in OrcaSlicer:
@@ -314,7 +314,9 @@ changer). To switch it on, in OrcaSlicer:
    and two parts named `logo wordmark: ...` and `logo icon: ...`.
 2. Click the first logo part, then Ctrl+click the second.
 3. Right-click -> **Change type** -> **Part**. (OrcaSlicer 2.3.1 asks in a dialog and takes one part at a time: do each, pick Part.)
-4. With both still selected, right-click -> **Change filament** -> **2** (or click each part's filament swatch in the list).
+4. With both still selected, right-click -> **Set Filament for selected items** (it reads **Change Filament** when one part is
+   selected) -> the second filament in the list, shown by its colour swatch (not "Default"). Or click each part's filament
+   cell in the object list.
 5. Set filament 2 to the logo's colour and filament 1 to the case's (the files preview them as a light colour and black).
 6. Slice. Only the lid's first two layers use filament 2; the rest of the case, the lid's supports and the rafts stay filament 1.
 
@@ -323,8 +325,8 @@ tower on a plate whose objects print over different numbers of raft layers ("The
 printed over the same number of raft layers"), and the keys and cranks sit on rafts. So the colour change uses your printer's
 own purge: the Elegoo CC2 profile, an AMS-style system and a tool changer purge in the machine. Choose your printer's own
 profile when you switch the logo on, because the generic Marlin profile in these files has no purge of its own. A printer that
-can only purge into a prime tower (a Prusa MMU, for example) should first drag the lid onto an empty plate, then switch on
-Others -> Prime tower for that plate; every plate's tower position is already set to a free spot (`wipe_tower_x`, `wipe_tower_y`).
+can only purge into a prime tower (a Prusa MMU, for example) should first drag the lid onto an empty plate, then switch the
+prime tower on (process settings, **Multimaterial** tab -> **Prime tower** -> **Enable**); every plate's tower position is already set to a free spot (`wipe_tower_x`, `wipe_tower_y`).
 On the chinless plate, which has no rafts, you can switch the tower on without moving the lid. The bodies are also single
 files: `4.26/lid-inlay-wordmark`, `lid-inlay-icon` (and `lid-chinless-inlay-*`), `3.68/lid-inlay-*`, in the lid's own print frame.
 
