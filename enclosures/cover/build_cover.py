@@ -78,7 +78,7 @@ def build_all(design_only=False):
             d = PRINT / folder
             d.mkdir(parents=True, exist_ok=True)
             stl(p, d / f'{name}.stl')
-            cq.exporters.export(p, str(d / f'{name}.step'))
+            cq.exporters.export(full, str(d / f'{name}.step'))        # the STEP in the case's CAD frame (the cover on the front, at its drawn pose)
             bb = p.val().BoundingBox()
             print(f'  -> print/cover/{folder}/{name}.stl/.step  {bb.xlen:.1f} x {bb.ylen:.1f} x {bb.zlen:.1f} mm, '
                   f'{p.val().Volume() / 1000:.2f} cm3')
@@ -87,13 +87,13 @@ def build_all(design_only=False):
         for k in keys:
             s, c = coupon_body(g, k)
             stl(c, OUT / f'coupon-{g}-{k}.stl')
-            c = label(s, k, c)
+            c = label(s, k if g == 'keyed' else '3', c)          # the 3.68's coupon is marked 3, the 4.26's A, B, C
             if not design_only:
                 p = M.to_print_frame(c, s)
                 name = f'{base}-{k}' if g == 'keyed' else base
                 d = PRINT / folder
                 stl(p, d / f'{name}.stl')
-                cq.exporters.export(p, str(d / f'{name}.step'))
+                cq.exporters.export(c, str(d / f'{name}.step'))      # in the case's CAD frame, as the covers' STEP files
                 bb = p.val().BoundingBox()
                 print(f'  coupon {g} {k}: {bb.xlen:.1f} x {bb.ylen:.1f} x {bb.zlen:.1f} mm, {p.val().Volume() / 1000:.2f} cm3'
                       f' -> print/cover/{folder}/{name}.stl')

@@ -21,8 +21,8 @@ case's long sides, and **the case itself does not change**, so it fits every cas
 | `4.26/cover-chinless` | the 16 chinless builds: `chinless` and `light-strip-chinless`, every layout | 3 | 72.2 x 121.2 x 16.4 | 1 h 01 / 28 min | 18.7 g |
 | `3.68/cover-standard` | the 3.68 standard build | 4 | 72.2 x 111.8 x 17.4 | 1 h 04 / 30 min | 19.3 g |
 
-The 4.26 light-strip builds share the standard's envelope (same length, thickness, faces, corners and edges: the bounding boxes of
-all 32 builds agree), so one cover serves both. The 3.68 light strip is unreleased and has no cover. The side-key layouts and J6 do
+The 4.26 light-strip builds share the standard's envelope (same length, thickness, faces, corners and edges: for the same side-key
+layout the built tub + lid bounding boxes are identical), so one cover serves both. The 3.68 light strip is unreleased and has no cover. The side-key layouts and J6 do
 not need separate covers: the stop wall has gaps for the union of every layout's keys, and J6 is not in the cover's way. Times and
 grams are the OrcaSlicer 2.4 CLI's for the plate file's presets (generic: Generic PLA, 0.20 mm Standard; CC2: Elegoo CC2 presets).
 
@@ -110,7 +110,7 @@ Not measured: every force and the fit as printed. The coupons exist to settle th
 ## The fit coupons
 
 `print/cover/4.26/cover-coupon-A, -B, -C` and `print/cover/3.68/cover-coupon`: 30 mm of the top channel from the prong's tip, with
-the plate strip, wall, lip, prong and ridge; about 8 minutes each (5 on the CC2); the letter is engraved in the outer face. They are the end of
+the plate strip, wall, lip, prong and ridge; about 8 minutes each (5 on the CC2); the letter (the 3.68's is a 3) is engraved in the outer face. They are the end of
 the cover, so to feel the slide and the snap, start one with its prong end at the case's **top-right** corner (the plate strip over the
 front, the lip under the back) and push it left along the top end: it rubs the end face, passes J6 without catching, and clicks
 into the top-left corner. Try it on the back too (turn it over). There is no stop wall on a coupon, so it is the click you judge.
@@ -127,7 +127,7 @@ into the top-left corner. Try it on the back too (turn it over). There is no sto
 
 `check.py` (run: `python -B check.py`) works on the **real STLs** of every build the covers serve: tub, lid with its side keys and
 the bottom-key caps from `case-426/out/<build>/` and `case-368/out/standard/`, 33 builds in all, in both orientations, with
-manifold3d (overlap volumes, least distances) and vtk ray casts of the end faces. All 1107 rows pass.
+manifold3d (overlap volumes, least distances) and vtk ray casts of the end faces. All 1140 rows pass.
 - **Home**: the cover's rigid frame has no overlap with the case (front and back), least distance 0.30 with the stop 0.5 off,
   still none with the cover moved a play-width in Z or Y. The ridge's overlap at home (0.5 mm3) is the snap, not a collision.
 - **Slide**: the frame swept along the whole path, cover entirely off the case to home, 1 mm steps, both orientations: zero overlap.

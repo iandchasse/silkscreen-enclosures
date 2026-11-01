@@ -217,6 +217,14 @@ def check_build(group, case, slug, cov, frame, step=1.0, full_sweep=True, key_po
             g = min(cm.min_gap(cov, mat(s, sh, False, 0.0, -s['gp']), 3.0, part=n) for n in cm.caps)
             row(f'front: cover to the bottom-key caps, plate touching the face, s={sh:.1f} (the slot)', g >= s['key_clr'] - 0.02,
                 f'{g:.3f} mm')
+    # 2b. the display (the reference panel model in out/<build>/): the plate at its nearest, front orientation
+    dpath = ENC / case / 'out' / slug / 'ref_display.stl'
+    if dpath.exists():
+        wx0, wx1, wy0, wy1 = s['window']
+        disp = to_man(trimesh.load(dpath, force='mesh')) ^ box_man(wx0, wx1, wy0, wy1, -10, 20)   # the glass seen through the window
+        g = apply(cov, mat(s, home, False, 0.0, -s['gp'])).min_gap(disp, 8.0)
+        row('front: cover to the display glass seen through the window, plate touching the face (the screen relief)', g >= 1.2,
+            f'{g:.2f} mm (the nearest point is the edge of the relief; over the relief 2.2; the case skin keeps the plate off the rest of the glass)')
     # 3. the slide path
     lo, hi = -s['cx'] + 0.01, 78.0
     shifts = np.arange(lo, hi + 1e-9, step)
