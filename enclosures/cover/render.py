@@ -27,8 +27,8 @@ def _actor(m, rgb, opacity, smooth_deg=30.0):
     pr.SetOpacity(opacity)
     pr.SetSpecular(0.25)
     pr.SetSpecularPower(30)
-    pr.SetAmbient(0.25)
-    pr.SetDiffuse(0.8)
+    pr.SetAmbient(0.30)
+    pr.SetDiffuse(0.75)
     return a
 
 
@@ -52,10 +52,11 @@ def render(meshes, path, position, focal, up=(0, 0, 1), size=(1400, 900), parall
         cam.ParallelProjectionOn()
         cam.SetParallelScale(parallel_scale)
     ren.ResetCameraClippingRange()
-    light = vtk.vtkLight()
-    light.SetLightTypeToHeadlight()
-    light.SetIntensity(0.55)
-    ren.AddLight(light)
+    ren.AutomaticLightCreationOff()
+    kit = vtk.vtkLightKit()
+    kit.SetKeyLightIntensity(0.9)
+    kit.SetKeyToFillRatio(2.2)
+    kit.AddLightsToRenderer(ren)
     rw = vtk.vtkRenderWindow()
     rw.SetOffScreenRendering(1)
     rw.SetMultiSamples(8)
