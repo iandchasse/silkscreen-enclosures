@@ -3,6 +3,21 @@
 What is built but not printed, what is unproven, and the options that are studied but parked. The case READMEs have
 the full records; the study notes named here are local (not in git).
 
+## The slide-on cover (2026-11-01): built, checked in CAD, NOT printed
+
+A reversible TI-84 style cover, one printed part per envelope (`enclosures/cover/`; `print/cover/`, `print/silkscreen-cover-plates.3mf`): on the front
+it carries the reader over the screen, on the back it stays on while reading. Everything about it is **untested**: nothing is printed, and the
+fit and the snap forces are beam estimates. **Print the fit coupons first** (plate 1 of the cover plate file; `cover-coupon-A` the design, `-B`
+a looser slide, `-C` a firmer snap, and the 3.68's) and tell us how the slide fits, whether the click is too weak or too strong, and whether it
+rattles in Z. What Ian still decides or has to find out:
+- the channel clearance (0.30 a side; as printed 0.20 / 0.10 / 0.00 at best / typical / worst: coupon B is 0.40) and the snap's ridge depth
+  (0.7; coupon C 1.0);
+- J6 is covered by the end wall in both orientations (a window would have to be in the prong's zone one way up); the cover comes off to use it;
+- no Z clamp (0.70 mm of Z play); and the cover cannot be turned top to bottom, only about the long axis;
+- the brief's "slide it on from the left" cannot be literal (the rigid stop wall must be the trailing end): with the stop on the right the cover
+  goes on moving left;
+- whether the site offers it (`print/SITE-BUILDER-NOTE.md` says not until it has been printed).
+
 ## Emily B's edit (2026-10-23): what Ian still decides
 
 The six changes Ian took are in both cases (`case-426/README.md`, "Emily B's edit"). Left for Ian:

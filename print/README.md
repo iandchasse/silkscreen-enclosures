@@ -333,6 +333,17 @@ prime tower on (process settings, **Multimaterial** tab -> **Prime tower** -> **
 On the chinless plate, which has no rafts, you can switch the tower on without moving the lid. The bodies are also single
 files: `4.26/lid-inlay-wordmark`, `lid-inlay-icon` (and `lid-chinless-inlay-*`), `3.68/lid-inlay-*`, in the lid's own print frame.
 
+**Slide-on cover, 2026-11-01 (new, not printed yet; print the coupons first):** a TI-84 style reversible cover, one printed part, that goes over
+the screen to carry the reader and over the back while you read it. It slides on sideways (along the case's width), gripping the top and
+bottom end walls; a snap at its open end clicks it home in the case's rounded corners, and a stop wall (with gaps over every side key) sets
+the other end. **The case does not change**, so it fits every case already printed. Three covers, by envelope: `cover/4.26/cover-keyed` (the 16
+4.26 builds with bottom keys, light strip included), `cover/4.26/cover-chinless` (the 16 chinless builds), `cover/3.68/cover-standard`. They have
+their own plate file, `silkscreen-cover-plates.3mf` (plate 1 the fit coupons, `cover/4.26/cover-coupon-A, -B, -C` and `cover/3.68/cover-coupon`;
+then a plate per cover), and are not in the case plate files or the configuration projects. Each is 18 to 21 g and 1 to 1 h 10 min (the CC2
+presets: about 30 min), with no supports. Print the coupons first and see [`../enclosures/cover/README.md`](../enclosures/cover/README.md) for how
+to put it on in both orientations, the fit numbers and what is estimated, not measured. The files are in `cover/`, not in `4.26/` or `3.68/`:
+both case builds delete any file in their size folder that they did not make.
+
 ## Start here: the plate file
 
 Open the plate file for your reader in OrcaSlicer:
@@ -527,6 +538,7 @@ under every key and crank, supports only in the lid's 3 enforcers, each key 50 l
 | Path | What |
 |---|---|
 | `silkscreen-426-plates.3mf`, `silkscreen-368-plates.3mf` | the plate files above |
+| `silkscreen-cover-plates.3mf`, [`cover/`](cover/) | the slide-on cover's plate file (coupons first, then one plate per cover) and its parts, `cover/4.26/` and `cover/3.68/` (`.stl` as printed, `.step` in the case's CAD frame): 2026-11-01, not printed |
 | `rod-jig.stl`, `rod-jig.step` | the rod jig, the same for both sizes (also on plate 1 of the plate files) |
 | [`4.26/`](4.26/) | every 4.26 part on its own, and `ROD.txt` |
 | [`3.68/`](3.68/) | every 3.68 part on its own, and `ROD.txt` |
@@ -560,6 +572,7 @@ case's CAD frame (the board's coordinates) for editing. The gate's STEP is in it
 | one OrcaSlicer project per 4.26 configuration (not in this folder) | `enclosures/make_plates.py configs`, into `enclosures/case-426/out/configs/` (OrcaSlicer's generic presets, what the website serves; `--printer cc2`: `out/configs-cc2/`; build output, not in git; above) |
 | the 3.68 standard build's OrcaSlicer project (not in this folder) | `enclosures/make_plates.py configs --size 368`, into `enclosures/case-368/out/configs/standard.3mf` (the same generic presets, what the website serves; `--printer cc2`: `out/configs-cc2/`; build output, not in git; above) |
 | `rod-jig.*` | `enclosures/rod_jig.py` |
+| `silkscreen-cover-plates.3mf`, `cover/` | `enclosures/cover/` (`build_cover.py`, then `make_cover_plates.py`; `--printer cc2` writes `cc2-local/silkscreen-cover-plates.3mf`) |
 
 The run order and the Python to use are in [`../enclosures/README.md`](../enclosures/README.md). A build removes any
 file in its size folder that it no longer makes, so put nothing else there.

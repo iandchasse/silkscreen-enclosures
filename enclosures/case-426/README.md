@@ -26,6 +26,8 @@ built into the repo's `docs/showcase/` (its data files are generated, not in git
 `showcase/gen/adapt_426.py`, see the repo README). **This folder is `enclosures/case-426`**; what it makes to print is in the repo's `print/` folder, and the generic OrcaSlicer
 projects the website serves are described in the [top-level README](../../README.md#print-a-case).
 
+**Slide-on cover (2026-11-01, new, not printed yet):** a TI-84 style reversible cover for every build in this folder (one cover for the builds with bottom keys, one for the chinless builds), gripping the end walls and clicking home in the corners; the case does not change. See [`../cover/README.md`](../cover/README.md); print its fit coupons first.
+
 **Board parts named in this file.** The board prints its reference designators on its back (H5's on the front). The page keys are SW7
 (left, upper), SW5 (left, lower), SW4 (right, upper) and SW1 (right, lower); SW10 is the power button (top of the right
 edge) and SW11 the reset button; SW9, SW8, SW3 and SW2 are the bottom-row buttons, left to right (Back, OK, Left,

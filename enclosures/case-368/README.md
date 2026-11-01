@@ -10,6 +10,8 @@ project the website serves for the 3.68 is described in the [top-level README](.
 light-strip build below is in development and not released. It has no `.venv`:
 run it with a Python 3.11 virtual environment made from `requirements.txt`, from this folder (`python` below).
 
+**Slide-on cover (2026-11-01, new, not printed yet):** a TI-84 style reversible cover for the standard build, gripping the end walls and clicking home in the corners; the case does not change. See [`../cover/README.md`](../cover/README.md); print its fit coupon first.
+
 **Board parts named in this file.** The board prints its reference designators on its back (H5's on the front). On the trimmed x3 board
 SW7, the left upper page key, is the power key; SW4 and SW1 are the right upper and lower page keys; SW5, the left lower
 one, is left off; SW10, the board's own power button, goes with the cut; SW11 is the reset button; SW9, SW8, SW3 and

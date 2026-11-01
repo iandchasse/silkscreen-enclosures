@@ -132,6 +132,12 @@ The 4.26:
    (and `make_plates.py --printer cc2` for his CC2 plate files).
 3. From `enclosures/case-426`, run `src/configs_slice.py`, and again with `--printer cc2`.
 
+The slide-on cover (`enclosures/cover/`, 2026-11-01; untested, nothing printed): after the case builds exist (`out/<build>/`), from
+`enclosures/cover` with the 4.26 Python (it also reads the 3.68's params in a subprocess): `build_cover.py` (the covers and coupons into
+`print/cover/`: never `print/4.26` or `print/3.68`, which the case builds clean), `check.py` (33 builds, both orientations; `--wrong` must
+fail), `printcheck.py`, `make_cover_plates.py` and `--printer cc2` (the plate files; make_plates.py itself is not edited), `slice_read.py`
+(OrcaSlicer CLI, then the G-code read-back). Delete `cover/out/case_info.json` after a case change. Do not edit `case-*/src` for it.
+
 After a merge:
 - `out/` is not in git. Sync the worktree's `enclosures/*/out` into the main checkout; `out/configs*` must mirror the
   build exactly, with no stale `library/*.dfl`.
