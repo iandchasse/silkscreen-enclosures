@@ -3,20 +3,25 @@
 What is built but not printed, what is unproven, and the options that are studied but parked. The case READMEs have
 the full records; the study notes named here are local (not in git).
 
-## The slide-on cover (2026-11-01): built, checked in CAD, NOT printed
+## The slide-on cover (2026-11-01, round 2): checked in CAD, no whole cover printed
 
-A reversible TI-84 style cover, one printed part per envelope (`enclosures/cover/`; `print/cover/`, `print/silkscreen-cover-plates.3mf`): on the front
-it carries the reader over the screen, on the back it stays on while reading. Everything about it is **untested**: nothing is printed, and the
-fit and the snap forces are beam estimates. **Print the fit coupons first** (plate 1 of the cover plate file; `cover-coupon-A` the design, `-B`
-a looser slide, `-C` a firmer snap, and the 3.68's) and tell us how the slide fits, whether the click is too weak or too strong, and whether it
-rattles in Z. What Ian still decides or has to find out:
-- the channel clearance (0.30 a side; as printed 0.20 / 0.10 / 0.00 at best / typical / worst: coupon B is 0.40) and the snap's ridge depth
-  (0.7; coupon C 1.0);
-- J6 is covered by the end wall in both orientations (a window would have to be in the prong's zone one way up); the cover comes off to use it;
-- no Z clamp (0.70 mm of Z play); and the cover cannot be turned top to bottom, only about the long axis;
-- the brief's "slide it on from the left" cannot be literal (the rigid stop wall must be the trailing end): with the stop on the right the cover
-  goes on moving left;
-- whether the site offers it (`print/SITE-BUILDER-NOTE.md` says not until it has been printed).
+A reversible TI-84 style cover, one printed part per envelope (`enclosures/cover/`; `print/cover/`, `print/silkscreen-cover-plates.3mf`, a
+**temporary** plate file with one cover per plate): on the front it carries the reader over the screen, on the back it stays on while
+reading. Round 1's fit coupon A was printed and "feels fine" (Ian, 2026-11-01); round 2 added the Silkscreen logo engraved on the outer face
+(with the two-colour switch, OFF), rounded edges, all four poses, no long stop wall (corner pieces only) and a scalloped side. Everything else
+about it is **untested**: no whole cover is printed, and the snap forces are beam estimates. What Ian still decides or has to find out:
+- **Phase 2:** put the covers into the case plate files (not started; the temporary file goes away);
+- print one cover and check the fit, the click, the scallop's finger room, the rounded edges and (if wanted) the two-colour switch in the CC2's
+  slicer (the CLI read-back is the only test so far);
+- sharp edges that remain (`enclosures/cover/README.md`, "Sharp-edge result"): the key slots' roof edges at the leading face (two 4.1 mm
+  edges on the keyed cover, 4.4 mm on the 3.68), the 0.3 mm step where each prong's foot meets the plate's chamfer, the logo's engraving rims (the
+  case's own treatment); a bevel cut on the slot roofs left mesher artefacts on the keyed cover and was not kept;
+- the scallop is limited by the screen (2.4 mm inset on the 4.26, 3.0 on the 3.68; 2.0 mm of plate stays past the screen opening): more would
+  uncover display;
+- the corner extensions are 4.7 mm (4.2 on the 3.68), set by the scallop's ease and the finger margin; a longer contact patch would shorten the ease;
+- J6 is covered by the end wall in every pose (a window would have to be in the prong's zone one way up); the cover comes off to use it;
+- no Z clamp (0.70 mm of Z play);
+- whether the site offers it (`print/SITE-BUILDER-NOTE.md` says not until a whole cover has been printed).
 
 ## Emily B's edit (2026-10-23): what Ian still decides
 

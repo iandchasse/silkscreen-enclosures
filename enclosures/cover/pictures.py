@@ -1,16 +1,18 @@
-"""The slide cover's pictures for docs/images/: renders of the real meshes (vtk, offscreen: no GUI window) and two section drawings.
+"""The slide cover's pictures for docs/images/: renders of the real meshes (vtk, offscreen: no GUI window) and one section drawing.
 
-    python -B pictures.py          cover-front.png, cover-back.png, cover-stop-side.png, cover-snap-corner.png, cover-coupon.png
+    python -B pictures.py          cover-front.png, cover-back.png, cover-poses.png, cover-turned.png, cover-scallop.png,
+                                   cover-open-end.png (old next to new), cover-logo.png, cover-snap-corner.png
 
-The case is the built 4.26 standard (out/standard/: tub, lid with its side keys, bottom keys); the cover is the design-frame
-STL of build_cover.py placed on the front or the back (check.mat). Nothing was printed: these show the CAD.
+The case is the built 4.26 standard (out/standard/: tub, lid with its side keys, bottom keys); the cover is the design-frame STL of
+build_cover.py placed in one of its four poses (check.mat). cover-open-end.png sets 27bbdaf's cover (coupon A's geometry, ref/old-27bbdaf-
+keyed.stl) beside this one. Nothing was printed: these show the CAD.
 """
 from pathlib import Path
 
 import matplotlib
 import numpy as np
-import shapely
 import trimesh
+from PIL import Image, ImageDraw
 
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt  # noqa: E402
@@ -22,16 +24,19 @@ import render       # noqa: E402
 HERE = Path(__file__).resolve().parent
 ENC = HERE.parent
 IMG = ENC.parent / 'docs' / 'images'
+TMP = HERE / 'out' / 'pics'
 
 CASE = (0.90, 0.91, 0.93)
 LID = (0.80, 0.83, 0.88)
 KEYS = (0.22, 0.45, 0.85)
 CAPS = (0.28, 0.30, 0.34)
 COVER = (0.98, 0.58, 0.20)
+OLD = (0.62, 0.64, 0.68)
+INK = (0.10, 0.12, 0.35)
 
 
-def posed(tm, s, shift, flip):
-    m = C.mat(s, shift, flip)
+def posed(tm, s, shift, flip, turn=False):
+    m = C.mat(s, shift, flip, turn)
     v = (m[:3, :3] @ np.asarray(tm.vertices).T).T + m[:3, 3]
     return trimesh.Trimesh(v, tm.faces, process=False)
 
@@ -41,8 +46,6 @@ def case_parts(slug='standard'):
     out = [(trimesh.load(d / 'tub.stl', force='mesh'), CASE, 1.0), (trimesh.load(d / 'lid.stl', force='mesh'), LID, 1.0)]
     for k in sorted(d.glob('key_SW*.stl')):
         out.append((trimesh.load(k, force='mesh'), CAPS, 1.0))
-    for k in sorted(d.glob('skey_*.stl')):
-        out.append((trimesh.load(k, force='mesh'), KEYS, 1.0))
     return out
 
 
@@ -51,10 +54,27 @@ def sec_polys(m, z):
     return [] if s is None else s.discrete
 
 
+def label(path, text):
+    im = Image.open(path).convert('RGB')
+    d = ImageDraw.Draw(im)
+    d.rectangle([0, 0, im.width, 34], fill=(255, 255, 255))
+    d.text((10, 10), text, fill=(20, 20, 20))
+    im.save(path)
+
+
+def montage(paths, out, cols):
+    ims = [Image.open(p).convert('RGB') for p in paths]
+    w, h = ims[0].size
+    rows = (len(ims) + cols - 1) // cols
+    sheet = Image.new('RGB', (w * cols, h * rows), (255, 255, 255))
+    for i, im in enumerate(ims):
+        sheet.paste(im, ((i % cols) * w, (i // cols) * h))
+    sheet.save(out)
+
+
 def snap_figure(s, cov, path):
     """The top-left corner at home, seen from the screen side, cut at z = zm (through the ridge): case (blue), cover (orange), and
     the deflection the prong makes along the slide (from the real end faces)."""
-    import check
     case = trimesh.util.concatenate([trimesh.load(ENC / 'case-426' / 'out' / 'standard' / f'{n}.stl', force='mesh')
                                      for n in ('tub', 'lid')])
     home = -s['cx']
@@ -79,10 +99,10 @@ def snap_figure(s, cov, path):
     ax.annotate('prong root (wall 1.6)', xy=(s['u_root'] - s['cx'], 116.8), xytext=(11, 108.2), fontsize=9,
                 arrowprops=dict(arrowstyle='->'))
     ax.annotate('end face', xy=(14, 115.6), xytext=(15, 111), fontsize=9, arrowprops=dict(arrowstyle='->'))
-    cm = check.Case('case-426', 'standard')
-    maps = check.end_maps(cm, s)
+    cm = C.Case('case-426', 'standard')
+    maps = C.end_maps(cm, s)
     sh = np.arange(-s['cx'], 78.0, 0.25)
-    d0 = check.deflection_path(s, maps, sh, False, 'top', 0.0)
+    d0 = C.deflection_path(s, maps, sh, False, False, 'top', 0.0, C.ridge_samples_mesh(cov, s))
     ax = axs[1]
     ax.plot(sh, d0, lw=2, color=(0.85, 0.35, 0.0))
     ax.axhline(s['d_eng'], color='gray', ls=':')
@@ -103,33 +123,63 @@ def snap_figure(s, cov, path):
 
 def main():
     IMG.mkdir(parents=True, exist_ok=True)
+    TMP.mkdir(parents=True, exist_ok=True)
     s = M.spec('keyed')
     cov = trimesh.load(HERE / 'out' / 'design' / 'keyed.stl', force='mesh')
+    old = trimesh.load(HERE / 'ref' / 'old-27bbdaf-keyed.stl', force='mesh')
     home = -s['cx']
     parts = case_parts()
+    side = [(trimesh.load(f, force='mesh'), KEYS, 1.0) for f in sorted((ENC / 'case-426' / 'out' / 'standard').glob('skey_*.stl'))]
     c = np.array([30.0, 52.0, 0.0])
-    # the cover going on from the right (front): 38 mm short of home, so the case and the open end show
-    f = posed(cov, s, home + 38.0, False)
-    render.render(parts + [(f, COVER, 1.0)], IMG / 'cover-front.png', position=(c[0] + 120, c[1] - 175, 150), focal=c,
+    # front and back at home: straight down on the screen, and straight up at the back (the case turned over about its long axis)
+    f = posed(cov, s, home, False)
+    render.render(parts + side + [(f, COVER, 1.0)], IMG / 'cover-front.png', position=(c[0], c[1] - 60, 330), focal=c, up=(0, 1, 0),
+                  size=(1100, 1300), view_angle=26)
+    b = posed(cov, s, home, True)
+    render.render(parts + side + [(b, COVER, 1.0)], IMG / 'cover-back.png', position=(c[0], c[1] - 60, -330), focal=c, up=(0, 1, 0),
+                  size=(1100, 1300), view_angle=26)
+    # the four poses at home, one sheet
+    names = {'front': 'FRONT, stop on the right', 'back': 'BACK, stop on the left', 'front-turned': 'FRONT turned 180 degrees in the plane (logo upside down)',
+             'back-turned': 'BACK turned 180 degrees in the plane (logo upside down)'}
+    paths = []
+    for pose, (flip, turn) in C.POSES.items():
+        p = TMP / f'pose-{pose}.png'
+        m = posed(cov, s, home, flip, turn)
+        z = -330 if flip else 330
+        render.render(parts + side + [(m, COVER, 1.0)], p, position=(c[0], c[1] - 40, z), focal=c, up=(0, 1, 0), size=(700, 860), view_angle=26)
+        label(p, names[pose])
+        paths.append(p)
+    montage(paths, IMG / 'cover-poses.png', 4)
+    # a turned pose, part way on: the front, turned, coming from the left
+    t = posed(cov, s, home + 40.0, False, True)
+    render.render(parts + side + [(t, COVER, 1.0)], IMG / 'cover-turned.png', position=(c[0] - 60, c[1] - 175, 150), focal=c + np.array([-8, 0, 0]),
                   up=(0, 0, 1), size=(1500, 1000))
-    b = posed(cov, s, home + 38.0, True)
-    render.render(parts + [(b, COVER, 1.0)], IMG / 'cover-back.png', position=(c[0] - 175, c[1] - 255, -205), focal=c,
-                  up=(0, 0, 1), size=(1500, 1000))
-    # the stop side and its gaps: cover home on the back, the stop wall on the left; look at the left side from outside
-    bh = posed(cov, s, home, True)
-    f2 = np.array([-4.0, 68.0, -3.0])
-    render.render(parts + [(bh, COVER, 1.0)], IMG / 'cover-stop-side.png', position=(f2[0] - 100, f2[1] - 40, f2[2] - 55),
-                  focal=f2, up=(0, 0, 1), size=(1500, 1000), view_angle=32)
+    # the scallop with a key on the back: the cover on the back at home, the right side (the three pads SW1, SW4, SW10) and a fingertip
+    sc = posed(cov, s, home, True)
+    tip = trimesh.creation.icosphere(subdivisions=4, radius=C.FINGER_R)
+    pads = C.case_info.info('case-426', 'standard')['pads']
+    sd, y0, y1, z0, z1, xf = pads['SW4']
+    tip.apply_translation((xf + sd * C.FINGER_R, (y0 + y1) / 2, (z0 + z1) / 2))
+    fc = np.array([64.0, 80.0, -3.0])
+    render.render(parts + side + [(sc, COVER, 1.0), (tip, (0.35, 0.8, 0.45), 0.55)], IMG / 'cover-scallop.png',
+                  position=(fc[0] + 95, fc[1] - 20, fc[2] - 75), focal=fc, up=(0, 0, 1), size=(1500, 1000), view_angle=34)
+    # the open end and the prong, old next to new: the screen side, oblique, at the top-left corner of the front pose, cover alone
+    ctr = np.array([8.0, 104.0, 2.0])
+    pos = (ctr[0] - 62, ctr[1] - 62, ctr[2] + 78)
+    ps = []
+    for nm, mesh, col in (('27bbdaf (coupon A geometry)', old, OLD), ('round 2', cov, COVER)):
+        p = TMP / f'open-{nm[:3]}.png'
+        render.render([(posed(mesh, s, home, False), col, 1.0)], p, position=pos, focal=ctr, up=(0, 0, 1), size=(900, 800), view_angle=34)
+        label(p, nm)
+        ps.append(p)
+    montage(ps, IMG / 'cover-open-end.png', 2)
+    # the logo face, as printed: the outer face on the bed, seen from below the bed, with the two inlay bodies (the two-colour switch on)
+    pf = trimesh.load(ENC.parent / 'print' / 'cover' / '4.26' / 'cover-keyed.stl', force='mesh')
+    inl = [(trimesh.load(ENC.parent / 'print' / 'cover' / '4.26' / f'cover-keyed-inlay-{n}.stl', force='mesh'), INK, 1.0) for n in ('wordmark', 'icon')]
+    pc = np.array(pf.bounds).mean(axis=0)
+    render.render([(pf, COVER, 1.0)] + inl, IMG / 'cover-logo.png', position=(pc[0], pc[1] - 25, -300), focal=pc, up=(0, 1, 0),
+                  size=(1100, 1300), view_angle=26)
     snap_figure(s, cov, IMG / 'cover-snap-corner.png')
-    # the coupons as printed (plate down): A, B, C side by side, from above at an angle
-    ms = []
-    for i, k in enumerate('ABC'):
-        m = trimesh.load(ENC.parent / 'print' / 'cover' / '4.26' / f'cover-coupon-{k}.stl', force='mesh')
-        m.apply_translation((i * 38.0, 0, 0))
-        ms.append((m, COVER, 1.0))
-    ctr = np.array([53.0, 9.0, 6.0])
-    render.render(ms, IMG / 'cover-coupon.png', position=(ctr[0] + 22, ctr[1] - 120, 95), focal=ctr, up=(0, 0, 1),
-                  size=(1500, 760), view_angle=28)
     print('pictures in', IMG)
 
 
