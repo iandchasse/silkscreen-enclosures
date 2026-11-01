@@ -1,6 +1,6 @@
 """Slice the cover plate file with the OrcaSlicer CLI (never a GUI) and read the G-code back.
 
-    python -B slice_read.py [--printer generic|cc2] [--plates 1,2,3,4] [--no-slice]
+    python -B slice_read.py [--printer generic|cc2] [--plates 1,2,3] [--no-slice]
 
 For every plate: (1) the roles in the G-code and the extrusion of each (supports must be 0); (2) layer by layer, each part's
 section (the mesh at the layer's mid-plane, in the plate's frame) against what the slicer laid (its lines thickened to their
@@ -263,7 +263,7 @@ def cover_probes(part, layers, group):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--printer', choices=('generic', 'cc2'), default='generic')
-    ap.add_argument('--plates', default='1,2,3,4')
+    ap.add_argument('--plates', default='1,2,3')
     ap.add_argument('--no-slice', action='store_true')
     a = ap.parse_args()
     c = MC.case(a.printer)
@@ -284,8 +284,8 @@ def main():
         head, layers = parse(gcode)
         rep = read_plate(parts, layers, head, name, None)
         report[n] = rep
-        if n >= 2:
-            rep['probes'] = cover_probes(parts[0], layers, {2: 'keyed', 3: 'chinless', 4: 'x3'}[n])
+        if True:
+            rep['probes'] = cover_probes(parts[0], layers, {1: 'keyed', 2: 'chinless', 3: 'x3'}[n])
             for k, v in rep['probes'].items():
                 print(f'   {k}: {v["layers"]} layers probed, mesh vs laid ends differ by at most {v["max_dev"]:.2f} mm; {v["note"]}')
         print(f'plate {n} "{name}": {rep["layers"]} layers, {head["time"]}, {head["grams"]} g, support extrusion '

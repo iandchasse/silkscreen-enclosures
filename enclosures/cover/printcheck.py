@@ -1,11 +1,11 @@
-"""Does the print frame need supports? A layer-by-layer overhang audit of the cover and coupon STLs in print/ (plate face down),
+"""Does the print frame need supports? A layer-by-layer overhang audit of the cover STLs in print/ (plate face down),
 from the mesh alone; the G-code read-back (slice_read.py) is the proof, this is the cheap pre-check.
 
 For every layer (sliced at its mid-plane, 0.2 mm layers) the part of the layer that lies farther than REACH from the layer
 below counts as unsupported area; REACH is 0.30 mm (a layer's line is 0.42 wide: it can hang out about 0.3 over air without
 drooping; the 47-degree lip face steps out only 0.19 a layer).
 
-    python -B printcheck.py            all the cover and coupon STLs
+    python -B printcheck.py            all the cover STLs (not the inlay bodies)
 """
 import sys
 from pathlib import Path
@@ -68,7 +68,7 @@ def audit(path):
 
 
 if __name__ == '__main__':
-    files = [*sorted((PRINT / '4.26').glob('cover-*.stl')), *sorted((PRINT / '3.68').glob('cover-*.stl'))]
+    files = [f for f in (*sorted((PRINT / '4.26').glob('cover-*.stl')), *sorted((PRINT / '3.68').glob('cover-*.stl'))) if 'inlay' not in f.name]
     bad = 0
     for f in files:
         r = audit(f)

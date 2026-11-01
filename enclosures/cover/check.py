@@ -1,24 +1,30 @@
 """Checks of the slide covers against the REAL case STLs (tub + lid + side keys + bottom keys, as built in
-enclosures/case-*/out/<build>/), for every build a cover serves, in both orientations.
+enclosures/case-*/out/<build>/), for every build a cover serves, in all FOUR poses.  Round 2 (2026-11-01).
 
-    python -B check.py [--group keyed|chinless|x3|all] [--builds a,b,...] [--step 1.0] [--wrong]
+    python -B check.py [--group keyed|chinless|x3|all] [--builds a,b,...] [--step 1.0] [--quiet]
+    python -B check.py --wrong          the deliberately wrong covers: each must FAIL
+    python -B check.py --snap           snap forces before / after the round-2 rework (27bbdaf's cover against this one)
 
-What it proves (and what it does not: nothing here was printed, and the force and strain numbers are beam estimates):
-  home        the cover's rigid frame (no ridge) has ZERO overlap volume with the case at home, on the front and turned over
-              on the back, at the nominal pose and at the extremes of its play (plate toward / away, channel toward each
-              end wall by cy - 0.05); the ridge's own overlap at home is the snap engagement and is reported;
-  clearance   the least distance from the frame to the case at the nominal pose, and from the plate to every bottom-key cap
-              with the plate at its nearest;
-  slide       the frame swept along the whole slide path (the cover entirely off the case to home) never touches the case
-              (zero overlap volume at every step); the ridge's deflection along the path, read from the real end faces
-              (ray casts through the J6 opening and over both corners), its flatness along the straight stretch (a
-              catch in an opening shows as a dip) and its peak;
-  snap        the engagement at home (the arc's height over the ridge's tip), the deflection on the removal path, and the
-              force estimates (beam model, snap.py);
-  access      the USB-C opening is clear of the cover in both orientations; with the cover on the back the screen window
-              is clear; the key caps' pockets clear the caps.
---wrong runs the same checks on two deliberately wrong covers (no stop-wall gaps; the ridge moved into J6's band): each
-must FAIL, or the check proves nothing.
+The four poses (the cover is symmetric about its own mid-length, so each is a legal way to put it on):
+    front          on the screen, stop on the right (the original)
+    back           turned over about the long axis (x -> 2 xc - x, z -> 2 zm - z): on the back, stop on the left
+    front-turned   on the screen, turned 180 degrees in the plane (x -> 2 xc - x, y -> 2 ym - y): top and bottom swapped, goes on from the
+                   other side, stop on the left
+    back-turned    on the back, turned 180 degrees in the plane: (x, y, z) -> (x, 2 ym - y, 2 zm - z): stop on the right
+What it checks (nothing here was printed; the force and strain numbers are beam estimates):
+  home        the rigid frame has ZERO overlap volume with the case at home in every pose, at the nominal pose and at the extremes of its
+              play; the ridge's own overlap at home is the snap engagement and is reported;
+  clearance   the least distance frame-to-case (stop 0.5 off); the plate to every bottom-key cap and to the display glass at its nearest;
+  slide       the frame swept along the whole slide path (the cover entirely off the case to home) never touches the case, in every pose;
+              the ridge's deflection along the path, read from the real end faces through the cover's own mesh (ray casts through the
+              J6 opening and over both corners: the ridge's rounding is in it), its flatness along the straight stretch, its peak;
+  access      the USB-C opening plus plug room is clear in every pose; with the cover on the back the screen window is clear;
+  screen      in the front pose the plate stays 2 mm or more past the screen opening on each side (opening measured from the tub STL);
+  fingertip   an r 7 mm sphere touching each pad face's centre, approaching from the side, is clear of the cover in every pose;
+  logo        with the cover on the back, its engraving lies over the case's own back logo (area overlap against the lid STL), and the
+              plate behind the engraving is solid for at least 0.6 everywhere (no break into the screen relief or the key slots).
+--wrong runs deliberately wrong covers through the same checks: a one-ended key slot, an over-long corner extension, the ridge in J6's band,
+and a cover without the scallop (the fingertip test); each must FAIL.
 """
 import argparse
 import json
@@ -28,7 +34,10 @@ from pathlib import Path
 
 import manifold3d as m3d
 import numpy as np
+import shapely
 import trimesh
+from scipy.interpolate import RegularGridInterpolator
+from shapely import wkt
 
 import case_info
 import model as M
@@ -43,29 +52,34 @@ OUTJ = HERE / 'out'
 
 EPS_VOL = 0.02          # mm3: overlap volumes below this are float32 noise
 MIN_CLEAR = 0.10        # mm: the least frame-to-case distance at the nominal pose
-FLAT_TOL = 0.12         # mm: the ridge's deflection may vary this much along the straight end face (the case's own
-                        # print error is about +-0.1); a catch in an opening shows as a dip far larger than that
+FLAT_TOL = 0.12         # mm: the ridge's deflection may vary this much along the straight end face
 D_MAX_ALLOW = 0.95      # mm: peak deflection along the whole path (the design deflection is d_eng = 0.7)
+FINGER_R = 7.0          # mm: the fingertip
+BEHIND_MIN = 0.6        # mm: plate left behind the engraving
+POSES = {'front': (False, False), 'back': (True, False), 'front-turned': (False, True), 'back-turned': (True, True)}
 
 
 def to_man(tm):
-    return m3d.Manifold(m3d.Mesh(vert_properties=np.asarray(tm.vertices, dtype=np.float32),
-                                 tri_verts=np.asarray(tm.faces, dtype=np.uint32)))
+    return m3d.Manifold(m3d.Mesh(vert_properties=np.asarray(tm.vertices, dtype=np.float32), tri_verts=np.asarray(tm.faces, dtype=np.uint32)))
 
 
-def mat(s, shift, flip, dy=0.0, dz=0.0):
-    """4x4: design frame -> case frame. The cover moves by `shift` along x (case x = u + shift on the front); turned over:
-    x -> 2 xc - x, z -> 2 zm - z (a half turn about the long axis); then dy, dz in the case frame."""
-    sx = -1.0 if flip else 1.0
-    m = np.eye(4)
-    m[0, 0] = sx
-    m[2, 2] = sx
-    m[0, 3] = (2 * s['xc'] - shift) if flip else shift
-    m[2, 3] = (2 * s['zm'] + dz) if flip else dz
-    # x' = sx * (u + shift) + (2 xc if flip) ; for flip: 2xc - u - shift  ->  m00 = -1, m03 = 2xc - shift   (as set)
-    # z' = sx * z + (2 zm if flip) + dz
-    m[1, 3] = dy
-    return m
+def mat(s, shift, flip, turn=False, dy=0.0, dz=0.0):
+    """4x4: design frame -> case frame for one pose. The cover moves by `shift` along its own x (case x = u + shift on the front); flip: a
+    half turn about the long axis (x -> 2 xc - x, z -> 2 zm - z); turn: a half turn in the plane (x -> 2 xc - x, y -> 2 ym - y); then
+    dy, dz in the case frame."""
+    A = np.eye(4)
+    A[0, 3] = shift
+    F = np.eye(4)
+    if flip:
+        F[0, 0], F[0, 3] = -1.0, 2 * s['xc']
+        F[2, 2], F[2, 3] = -1.0, 2 * s['zm']
+    T = np.eye(4)
+    if turn:
+        T[0, 0], T[0, 3] = -1.0, 2 * s['xc']
+        T[1, 1], T[1, 3] = -1.0, 2 * s['ym']
+    D = np.eye(4)
+    D[1, 3], D[2, 3] = dy, dz
+    return D @ T @ F @ A
 
 
 def apply(man, m):
@@ -85,40 +99,32 @@ class Case:
         u = None
         for n in names:
             u = self.man[n] if u is None else u + self.man[n]
+        sk = [p.stem for p in sorted(d.glob('skey_*.stl'))]          # the side keys (pads, bars, blocks): part of the case for every check
+        for n in sk:
+            self.meshes[n] = trimesh.load(d / f'{n}.stl', force='mesh')
+            self.man[n] = to_man(self.meshes[n])
+            u = u + self.man[n]
         self.union = u
         self.caps = [n for n in names if n.startswith('key_SW')]
         self.info = case_info.info(case, slug)
-        allm = trimesh.util.concatenate([self.meshes[n] for n in names])
-        self.caster = raycast.Caster(allm)
-        self.side_ref = {}
-        for ref, b in self.info['side_keys'].items():
-            self.side_ref[ref] = b
+        self.caster = raycast.Caster(trimesh.util.concatenate([self.meshes[n] for n in names]))
 
     def overlap(self, cov, m=None):
-        c = cov if m is None else apply(cov, m)
-        return float((c ^ self.union).volume())
+        return float(((cov if m is None else apply(cov, m)) ^ self.union).volume())
 
     def min_gap(self, cov, m, search=3.0, part=None):
-        c = apply(cov, m)
-        tgt = self.union if part is None else self.man[part]
-        return float(c.min_gap(tgt, search))
-
-
-def usb_box(case):
-    """The USB-C recess as a box on the right side, from case_info (a vtk ray over the side face)."""
-    return tuple(case.info['usb'])
+        return float(apply(cov, m).min_gap(self.union if part is None else self.man[part], search))
 
 
 def box_man(x0, x1, y0, y1, z0, z1):
     return to_man(trimesh.creation.box(bounds=[[x0, y0, z0], [x1, y1, z1]]))
 
 
-# ---- the ridge on the real end faces ------------------------------------------------------------------------------
+# ---- the ridge on the real end faces, read through the cover's own mesh ----------------------------------------------
 
 def end_maps(case, s):
-    """The real end faces as depth maps over the ridge's reach: depth(x, z) = how far the case's surface is inside the end
-    plane (<= 0; 0 on the flat), top end (rays along -y from above Y1) and bottom end (along +y). -inf where a ray finds
-    nothing within 30 mm."""
+    """The real end faces as depth maps over the ridge's reach: depth(x, z) = how far the case's surface is inside the end plane (<= 0; 0
+    on the flat), top end (rays along -y from above Y1) and bottom end (along +y). -50 where a ray finds nothing."""
     c = case.caster
     Y0, Y1 = s['Y0'], s['Y1']
     xs = np.arange(s['X0'] - 8.0, s['X1'] + 8.0, 0.1)
@@ -139,51 +145,142 @@ def end_maps(case, s):
     return out
 
 
-def ridge_samples(s):
-    """Sample points of the ridge in the design frame: u, z and the protrusion p(u, z) from the wall plane (0 outside)."""
-    b = s['b']
+def ridge_samples_mesh(cov_mesh, s, du=0.02):
+    """The cover's own ridge as built: rays along +y through the top prong (design frame) over the ridge's u and z reach; the protrusion p
+    = how far the surface standing there is inside the wall's inner plane (0 where there is none: the prong's own inner face is 0.8
+    outside it)."""
+    cast = raycast.Caster(cov_mesh)
+    yw = s['yw_t']
     ua = s['u_a']
-    us = np.arange(ua, ua + s['r_i'] + s['f_top'] + s['r_r'] + 1e-9, 0.1)
+    us = np.arange(ua - 0.5, ua + s["r_i"] + s["f_top"] + s["r_r"] + 0.5 + 1e-9, du)
     zlo, zhi = s['ridge_z']
-    zs = np.arange(zlo, zhi + 1e-9, 0.1)
+    zs = np.arange(zlo - 0.8, zhi + 0.8 + 1e-9, 0.1)
+    P = np.full((len(us), len(zs)), 0.0)
+    for i, u in enumerate(us):
+        for j, z in enumerate(zs):
+            h = cast.first_hit([u, yw - 2.5, z], [u, yw + 2.5, z])
+            P[i, j] = 0.0 if h is None else max(0.0, yw - h[1])
     U, Z = np.meshgrid(us, zs, indexing='ij')
-    pu = np.interp(U, [ua, ua + s['r_i'], ua + s['r_i'] + s['f_top'], ua + s['r_i'] + s['f_top'] + s['r_r']],
-                   [0.0, b, b, 0.0])
-    pz = np.minimum(np.minimum(Z - zlo, zhi - Z), b)
-    p = np.minimum(pu, np.maximum(pz, 0.0))
-    return U, Z, p
+    return U, Z, P
 
 
-def deflection_path(s, maps, shifts, flip, end, dz=0.0):
-    """The prong's required deflection (mm) at each shift, for one end and one orientation (end = the cover's own end:
-    'top' = the cover's top channel, which is the case's top on either side of the turn: the half turn is about Y)."""
-    from scipy.interpolate import RegularGridInterpolator
-    xs, zs, grid = maps[end]
+def deflection_path(s, maps, shifts, flip, turn, case_end, dz=0.0, samples=None):
+    """The prong's required deflection (mm) at each shift for the prong that lands on `case_end` ('top' or 'bottom') in one pose. The two
+    prongs are mirror images, so the ridge samples (the top prong's) serve both; x is mirrored when exactly one of flip / turn is on."""
+    xs, zs, grid = maps[case_end]
     f = RegularGridInterpolator((xs, zs), grid, bounds_error=False, fill_value=-50.0)
-    U, Z, p = ridge_samples(s)
-    sel = p > 1e-6
-    u, z, pp = U[sel], Z[sel], p[sel]
+    U, Z, P = samples
+    sel = P > 1e-6
+    u, z, pp = U[sel], Z[sel], P[sel]
+    mirror_x = flip != turn
     out = []
     for sh in shifts:
-        x = (2 * s['xc'] - (u + sh)) if flip else (u + sh)
+        x = (2 * s['xc'] - (u + sh)) if mirror_x else (u + sh)
         zz = ((2 * s['zm'] - z) if flip else z) + dz
-        depth = f(np.c_[x, zz])
-        out.append(max(0.0, float(np.max(depth + pp - s['cy']))))
+        out.append(max(0.0, float(np.max(f(np.c_[x, zz]) + pp - s['cy']))))
     return np.array(out)
 
 
-def flat_range(s, flip=False):
+def flat_range(s):
     """The shifts over which the whole ridge lies over the straight end face (clear of the corner arcs by 0.5)."""
     xa, xb = s['X0'] + s['CORNER_R'] + 0.5, s['X1'] - s['CORNER_R'] - 0.5
-    u0 = s['u_a']
-    u1 = s['u_a'] + s['r_i'] + s['f_top'] + s['r_r']
-    return xa - u0, xb - u1                          # shifts: ridge from the left arc's end to the right arc's start
+    return xa - s['u_a'], xb - (s['u_a'] + s['r_i'] + s['f_top'] + s['r_r'])
+
+
+def section_polygon(mesh, z):
+    """The mesh's cross-section at height z as a shapely geometry (even-odd over its closed loops: holes come out as holes)."""
+    sec = mesh.section(plane_origin=[0, 0, z], plane_normal=[0, 0, 1])
+    g = shapely.Polygon()
+    if sec is None:
+        return g
+    for p in sec.discrete:
+        g = g.symmetric_difference(shapely.Polygon(p[:, :2]).buffer(0))
+    return g
+
+
+def screen_overlap(cov_mesh, s, opening):
+    """In the front pose at home: how far the plate reaches past the screen opening at the face, on each side (mm), over the whole of the
+    opening's height. The section is taken above the cavity's ceiling (z_o - 0.7: the relief and slots are cut from the inner face)."""
+    g = section_polygon(cov_mesh, s['z_o'] - 0.7)
+    x0, x1, y0, y1 = opening
+    left, right = [], []
+    for y in np.arange(y0, y1 + 1e-9, 0.5):
+        i = g.intersection(shapely.LineString([(-20.0, y), (90.0, y)]))
+        if i.is_empty:
+            continue
+        b = i.bounds
+        left.append(x0 - (b[0] - s['cx']))                   # home: case x = u - cx
+        right.append((b[2] - s['cx']) - x1)
+    return min(left), min(right)
+
+
+def _rings(g):
+    out = []
+    for p in getattr(g, 'geoms', [g]):
+        if p.area < 1e-6:
+            continue
+        out.append(np.asarray(p.exterior.coords[:-1], dtype=np.float64))
+        out += [np.asarray(r.coords[:-1], dtype=np.float64) for r in p.interiors]
+    return out
+
+
+def prism(g, z0, z1):
+    cs = m3d.CrossSection(_rings(g), m3d.FillRule.EvenOdd)
+    return m3d.Manifold.extrude(cs, z1 - z0).translate((0.0, 0.0, z0))
+
+
+def finger_capsule(side, xf, yc, zc, reach=40.0):
+    """The fingertip's approach: an r 7 sphere touching the pad's face centre, swept in from `reach` mm out along the side's normal."""
+    sph = m3d.Manifold.sphere(FINGER_R, 64)
+    a = sph.translate((xf + side * FINGER_R, yc, zc))
+    b = sph.translate((xf + side * (FINGER_R + reach), yc, zc))
+    return m3d.Manifold.batch_hull([a, b])
+
+
+def finger_clearances(cov, pads, s, home):
+    """{(pad, pose): clearance mm} of the fingertip's approach path (finger_capsule) to the cover at home; 0 where it meets the cover."""
+    out = {}
+    for ref, (side, py0, py1, pz0, pz1, xf) in pads.items():
+        cap = finger_capsule(side, xf, (py0 + py1) / 2, (pz0 + pz1) / 2)
+        for pose, (flip, turn) in POSES.items():
+            c = apply(cov, mat(s, home, flip, turn))
+            out[(ref, pose)] = 0.0 if float((c ^ cap).volume()) > 1e-3 else float(c.min_gap(cap, 20.0))
+    return out
+
+
+def logo_checks(cov_mesh, cov, s, cm):
+    """With the cover on the back at home: the area overlap (IoU) of its engraving with the case's own logo cut in the lid (the lid STL's
+    section just inside its back face), and the centroid offset; and the plate behind each engraving (the largest slab t, below the
+    engraving's floor, that the cover fills solid everywhere under the logo's footprint)."""
+    m = mat(s, -s['cx'], True)
+    posed = trimesh.Trimesh((m[:3, :3] @ np.asarray(cov_mesh.vertices).T).T + m[:3, 3], cov_mesh.faces, process=False)
+    lid = cm.meshes['lid']
+    out = dict(iou={}, shift={}, behind={})
+    for name in ('icon', 'wordmark'):
+        d = s['logos'][name]
+        cg = wkt.loads(d['wkt'])
+        win = shapely.box(*cg.buffer(0.6).bounds)
+        cb = cg.buffer(0.3)
+        vc = win.difference(section_polygon(posed, 2 * s['zm'] - s['z_o'] + 0.5 * d['depth'])).intersection(cb)
+        vl = win.difference(section_polygon(lid, s['Z_BACK'] + 0.5 * d['depth'])).intersection(cb)
+        out['iou'][name] = vc.intersection(vl).area / max(vc.union(vl).area, 1e-9)
+        out['shift'][name] = float(np.hypot(vc.centroid.x - vl.centroid.x, vc.centroid.y - vl.centroid.y))
+        g, depth = M.logo_polys(s)[name]
+        zf = s['z_o'] - depth
+        best = 0.0
+        for t in np.arange(0.2, 3.01, 0.1):
+            void = float((prism(g, zf - t, zf) - cov).volume())
+            if void > 0.002:
+                break
+            best = t
+        out['behind'][name] = round(best, 1)
+    return out
 
 
 # ---- the checks -----------------------------------------------------------------------------------------------------
 
-def check_build(group, case, slug, cov, frame, step=1.0, full_sweep=True, key_pockets=True, verbose=True):
-    s = M.spec(group)
+def check_build(group, case, slug, cov, frame, cov_mesh, step=1.0, verbose=True, s=None):
+    s = s or M.spec(group)
     cm = Case(case, slug)
     rows = []
 
@@ -193,148 +290,248 @@ def check_build(group, case, slug, cov, frame, step=1.0, full_sweep=True, key_po
             print(f'   {"ok  " if ok else "FAIL"} {name}: {value}')
 
     G2 = s['G'] / 2
-    # 1. home (the stop wall 10 microns off the side: touching faces read as float noise), both orientations
     home = -s['cx'] + 0.01
-    for flip, pose in ((False, 'front'), (True, 'back')):
-        v = cm.overlap(frame, mat(s, home, flip))
+    # 1. home, every pose
+    for pose, (flip, turn) in POSES.items():
+        v = cm.overlap(frame, mat(s, home, flip, turn))
         row(f'home {pose}: frame overlap', abs(v) < EPS_VOL, f'{v:.4f} mm3')
-        vr = cm.overlap(cov, mat(s, home, flip))
+        vr = cm.overlap(cov, mat(s, home, flip, turn))
         row(f'home {pose}: ridge overlap (the snap engagement)', True, f'{vr - v:.3f} mm3 (the preload; the prong flexes it away)')
-        g = cm.min_gap(frame, mat(s, home + 0.5, flip), 3.0)
-        row(f'home {pose}: least frame-to-case distance with the stop wall 0.5 off', g >= MIN_CLEAR, f'{g:.3f} mm')
-        g = cm.min_gap(frame, mat(s, home, flip), 3.0)
-        row(f'home {pose}: least distance at the stop (the wall 0.01 off the side)', g >= 0.005, f'{g:.3f} mm')
+        g = cm.min_gap(frame, mat(s, home + 0.5, flip, turn), 3.0)
+        row(f'home {pose}: least frame-to-case distance with the stop 0.5 off', g >= MIN_CLEAR, f'{g:.3f} mm')
+        g = cm.min_gap(frame, mat(s, home, flip, turn), 3.0)
+        row(f'home {pose}: least distance at the stop (0.01 off the side)', g >= 0.005, f'{g:.3f} mm')
         worst = 0.0
         for dz in (-(s['gp'] - 0.05), s['gp'] - 0.05):
-            worst = max(worst, cm.overlap(frame, mat(s, home + 0.5, flip, 0.0, dz)))
+            worst = max(worst, cm.overlap(frame, mat(s, home + 0.5, flip, turn, 0.0, dz)))
         for dy in (-(s['cy'] - 0.05), s['cy'] - 0.05):
-            worst = max(worst, cm.overlap(frame, mat(s, home + 0.5, flip, dy, 0.0)))
+            worst = max(worst, cm.overlap(frame, mat(s, home + 0.5, flip, turn, dy, 0.0)))
         row(f'home {pose}: frame overlap with the cover moved a play-width in z (+-{s["gp"] - 0.05:.2f}) or y (+-{s["cy"] - 0.05:.2f})',
             worst < EPS_VOL, f'{worst:.4f} mm3 worst')
-    # 2. the key slot (bottom keys): plate at its nearest, front orientation, at home and half way along the path
-    if cm.caps and key_pockets:
-        for sh in (home, 30.0, 55.0):
-            g = min(cm.min_gap(cov, mat(s, sh, False, 0.0, -s['gp']), 3.0, part=n) for n in cm.caps)
-            row(f'front: cover to the bottom-key caps, plate touching the face, s={sh:.1f} (the slot)', g >= s['key_clr'] - 0.02,
-                f'{g:.3f} mm')
-    # 2b. the display (the reference panel model in out/<build>/): the plate at its nearest, front orientation
+    # 2. the key slots (bottom keys): plate at its nearest, both front poses, at home and along the path
+    if cm.caps:
+        for pose in ('front', 'front-turned'):
+            flip, turn = POSES[pose]
+            for sh in (home, 30.0, 55.0):
+                g = min(cm.min_gap(frame, mat(s, sh, flip, turn, 0.0, -s['gp']), 3.0, part=n) for n in cm.caps)       # the frame: the undeflected ridge tip stands 0.7 inside the end wall, near the caps' stems, and never gets there (the prong deflects)
+                row(f'{pose}: cover frame to the bottom-key caps, plate touching the face, s={sh:.1f} (the slots)', g >= s['key_clr'] - 0.02,
+                    f'{g:.3f} mm')
+    # 2b. the display glass seen through the window
     dpath = ENC / case / 'out' / slug / 'ref_display.stl'
     if dpath.exists():
         wx0, wx1, wy0, wy1 = s['window']
-        disp = to_man(trimesh.load(dpath, force='mesh')) ^ box_man(wx0, wx1, wy0, wy1, -10, 20)   # the glass seen through the window
-        g = apply(cov, mat(s, home, False, 0.0, -s['gp'])).min_gap(disp, 8.0)
-        row('front: cover to the display glass seen through the window, plate touching the face (the screen relief)', g >= 1.2,
-            f'{g:.2f} mm (the nearest point is the edge of the relief; over the relief 2.2; the case skin keeps the plate off the rest of the glass)')
-    # 3. the slide path
-    lo, hi = -s['cx'] + 0.01, 78.0
-    shifts = np.arange(lo, hi + 1e-9, step)
-    for flip, pose in ((False, 'front'), (True, 'back')):
+        dm = trimesh.load(dpath, force='mesh')
+        depth = s['Z_FRONT'] - float(dm.bounds[1][2])                  # the glass's top sits this far below the front face
+        disp = to_man(dm) ^ box_man(wx0, wx1, wy0, wy1, -10, 20)
+        g = min(apply(cov, mat(s, home, False, t, 0.0, -s['gp'])).min_gap(disp, 8.0) for t in (False, True))
+        row('front poses: cover to the display glass seen through the window, plate resting on the face (never nearer than the face)', g >= depth - 0.05,
+            f'{g:.2f} mm (the glass is {depth:.2f} below the face; the nearest point is plate over a rounded corner of the relief)')
+    # 3. the slide path, every pose
+    shifts = np.arange(home, 78.0 + 1e-9, step)
+    for pose, (flip, turn) in POSES.items():
         worst, at = 0.0, None
-        gmin = 9.0
         for sh in shifts:
-            v = cm.overlap(frame, mat(s, sh, flip))
+            v = cm.overlap(frame, mat(s, sh, flip, turn))
             if v > worst:
                 worst, at = v, sh
-        row(f'slide {pose}: frame overlap along the path (s {lo:.2f}..{hi:.0f}, step {step:g})', worst < EPS_VOL,
+        row(f'slide {pose}: frame overlap along the path (s {home:.2f}..78, step {step:g})', worst < EPS_VOL,
             f'{worst:.4f} mm3' + (f' at s={at:.1f}' if at is not None else ''))
-    # 4. the ridge on the real end faces
+    # 4. the ridge on the real end faces, through the cover's own mesh
     maps = end_maps(cm, s)
+    samples = ridge_samples_mesh(cov_mesh, s)
     sh = np.arange(-s['cx'], 78.0, 0.25)
     fa, fb = flat_range(s)
-    for flip, pose in ((False, 'front'), (True, 'back')):
+    iflat = (sh >= fa) & (sh <= fb)
+    iw = (sh >= -s['cx']) & (sh <= fa + 2.0)
+    home_i = int(np.argmin(np.abs(sh + s['cx'])))
+    d_front_top = None
+    for pose, (flip, turn) in POSES.items():
         for end in ('top', 'bottom'):
-            dls = {}
-            for dz in (-G2, 0.0, G2):
-                dls[dz] = deflection_path(s, maps, sh, flip, end, dz)
+            dls = {dz: deflection_path(s, maps, sh, flip, turn, end, dz, samples) for dz in (-G2, 0.0, G2)}
             d0 = dls[0.0]
-            iflat = (sh >= fa) & (sh <= fb)
             var = max(float(np.ptp(dl[iflat])) for dl in dls.values())
             dmax = max(float(dl.max()) for dl in dls.values())
-            row(f'ridge {pose} {end}: deflection on the straight face (all Z play)', var <= FLAT_TOL,
+            row(f'ridge {pose}, case {end} end: deflection on the straight face (all Z play)', var <= FLAT_TOL,
                 f'{d0[iflat].min():.2f}..{d0[iflat].max():.2f} mm (spread {var:.2f} at worst Z play; design {s["d_eng"]})')
-            row(f'ridge {pose} {end}: peak deflection on the whole path (all Z play)', dmax <= D_MAX_ALLOW,
+            row(f'ridge {pose}, case {end} end: peak deflection on the whole path (all Z play)', dmax <= D_MAX_ALLOW,
                 f'{dmax:.2f} mm (design {s["d_eng"]})')
-            home = int(np.argmin(np.abs(sh + s['cx'])))
-            pre = float(d0[home])
-            row(f'ridge {pose} {end}: preload at home', 0.0 <= pre <= s['d_pre'] + 0.15, f'{pre:.2f} mm (design {s["d_pre"]})')
-            # the removal path: from home to where the ridge is on the flat
-            iw = (sh >= -s['cx']) & (sh <= fa + 2.0)
+            pre = float(d0[home_i])
+            row(f'ridge {pose}, case {end} end: preload at home', 0.0 <= pre <= s['d_pre'] + 0.15, f'{pre:.2f} mm (design {s["d_pre"]})')
             engage = float(d0[iw].max())
-            row(f'ridge {pose} {end}: catch depth (the deflection the prong makes to leave the corner)',
+            row(f'ridge {pose}, case {end} end: catch depth (the deflection the prong makes to leave the corner)',
                 abs(engage - s['d_eng']) <= 0.15, f'{engage:.2f} mm')
-            if end == 'top' and not flip:
-                k_lo, _, _ = snap.stiffness(s, 3000.0, 2 * s['ridge_half'])
-                k_hi, _, _ = snap.stiffness(s, 3000.0, s['z_o'] - s['prong_z_lo'])
-                fr = snap.wedge(sh, d0, k_lo, 0.3, s)
-                row('snap force estimate, one prong (beam model, E 3000, mu 0.3, soft bound)', True,
-                    f'pull off peak {fr["pull_peak"]:.2f} N, push on peak {fr["push_peak"]:.2f} N, sliding drag '
-                    f'{fr["drag"]:.2f} N, preload {fr["preload"]:.2f} N')
+            if end == 'top' and pose == 'front':
+                d_front_top = d0
+    k_lo, _, _ = snap.stiffness(s, 3000.0, 2 * s['ridge_half'])
+    fr = snap.wedge(sh, d_front_top, k_lo, 0.3, s)
+    row('snap force estimate, one prong (beam model, E 3000, mu 0.3, soft bound)', True,
+        f'pull off peak {fr["pull_peak"]:.2f} N, push on peak {fr["push_peak"]:.2f} N, sliding drag {fr["drag"]:.2f} N, preload {fr["preload"]:.2f} N')
     # 5. access
-    ub = usb_box(cm)
-    if ub is None:
-        row('USB-C opening located', False, 'not found')
-    else:
-        y0, y1, z0, z1 = ub
-        probe = box_man(s['X1'] - 0.3, s['X1'] + 30, y0 - 0.5, y1 + 0.5, z0 - 0.5, z1 + 0.5)
-        for flip, pose in ((False, 'front'), (True, 'back')):
-            v = float((apply(frame, mat(s, -s['cx'] + 0.01, flip)) ^ probe).volume())
-            row(f'USB-C access {pose}: cover inside the recess + 30 mm of plug room (y {y0:.1f}..{y1:.1f}, z {z0:.1f}..{z1:.1f})',
-                v < EPS_VOL, f'{v:.4f} mm3')
+    y0, y1, z0, z1 = cm.info['usb']
+    probe = box_man(s['X1'] - 0.3, s['X1'] + 30, y0 - 0.5, y1 + 0.5, z0 - 0.5, z1 + 0.5)
+    for pose, (flip, turn) in POSES.items():
+        v = float((apply(frame, mat(s, home, flip, turn)) ^ probe).volume())
+        row(f'USB-C access {pose}: cover inside the recess + 30 mm of plug room (y {y0:.1f}..{y1:.1f}, z {z0:.1f}..{z1:.1f})', v < EPS_VOL,
+            f'{v:.4f} mm3')
     wx0, wx1, wy0, wy1 = s['window']
     screen = box_man(wx0, wx1, wy0, wy1, s['Z_FRONT'] - 0.5, s['Z_FRONT'] + 30)
-    v = float((apply(cov, mat(s, -s['cx'] + 0.01, True)) ^ screen).volume())
-    row('back: the screen window is clear of the cover', v < EPS_VOL, f'{v:.4f} mm3')
+    for pose in ('back', 'back-turned'):
+        flip, turn = POSES[pose]
+        v = float((apply(cov, mat(s, home, flip, turn)) ^ screen).volume())
+        row(f'{pose}: the screen window is clear of the cover', v < EPS_VOL, f'{v:.4f} mm3')
+    # 6. the scallop: the screen stays covered; the fingertip stays clear of the cover
+    ov = screen_overlap(cov_mesh, s, cm.info['window_face'])
+    row('front pose: the plate stays past the screen opening (left, right)', min(ov) >= s['scallop_overlap'] - 0.02,
+        f'{ov[0]:.2f} / {ov[1]:.2f} mm (the opening measured from the tub STL at its face; need {s["scallop_overlap"]})')
+    fm = finger_clearances(cov, cm.info['pads'], s, home)
+    if fm:
+        worst = min(fm.items(), key=lambda kv: kv[1])
+        backs = {r: v for (r, p), v in fm.items() if p == 'back'}
+        row(f'fingertip (r {FINGER_R:g} sphere touching each pad face centre, swept in from the side), every pad, every pose: least clearance',
+            worst[1] > 0.0, f'{worst[1]:.2f} mm ({worst[0][0]}, {worst[0][1]}); back pose by pad: '
+            + ', '.join(f'{r} {v:.1f}' for r, v in sorted(backs.items())))
+    # 7. the logo
+    if s['logo']:
+        lg = logo_checks(cov_mesh, cov, s, cm)
+        row('back: the cover\'s engraving over the case\'s own logo (area overlap with the lid STL, icon / wordmark; centroid offset)',
+            min(lg['iou'].values()) > 0.9,
+            f'{lg["iou"]["icon"]:.3f} / {lg["iou"]["wordmark"]:.3f}; offset {lg["shift"]["icon"]:.2f} / {lg["shift"]["wordmark"]:.2f} mm')
+        row('plate behind the engraving is solid (no break into the relief or the slots), icon / wordmark',
+            min(lg['behind'].values()) >= BEHIND_MIN, f'{lg["behind"]["icon"]:.1f} / {lg["behind"]["wordmark"]:.1f} mm solid below the floor')
     return rows
 
 
-def run(groups, builds=None, step=1.0, wrong=False, verbose=True):
+def run(groups, builds=None, step=1.0, verbose=True):
     res = {}
     for g in groups:
-        folder = DESIGN
-        cov = to_man(trimesh.load(folder / f'{g}.stl', force='mesh'))
-        frame = to_man(trimesh.load(folder / f'{g}-frame.stl', force='mesh'))
+        s = M.spec(g)
+        cov_mesh = trimesh.load(DESIGN / f'{g}.stl', force='mesh')
+        cov = to_man(cov_mesh)
+        frame = to_man(trimesh.load(DESIGN / f'{g}-frame.stl', force='mesh'))
         for case, slug in V.builds(g, builds):
             t = time.time()
             if verbose:
-                print(f'{g}: {case}/{slug}')
-            res[f'{g}/{slug}'] = check_build(g, case, slug, cov, frame, step=step, verbose=verbose)
+                print(f'{g}: {case}/{slug}', flush=True)
+            res[f'{g}/{slug}'] = check_build(g, case, slug, cov, frame, cov_mesh, step=step, verbose=verbose, s=s)
             if verbose:
-                print(f'   ({time.time() - t:.0f} s)')
+                print(f'   ({time.time() - t:.0f} s)', flush=True)
     return res
 
 
-def wrong_covers(step=2.0):
-    """The checks must FAIL on a cover that is wrong: (1) no stop-wall gaps (the wall meets the left keys' pads when the cover
-    is on the back); (2) the ridge moved into J6's z band (it drops into the opening on the top end)."""
+# ---- the deliberately wrong covers ------------------------------------------------------------------------------------
+
+def _home_overlaps(frame, s, builds, shifts):
+    """Frame overlap volume at the given shifts, every pose, over the builds: {(slug, pose): worst}."""
     out = {}
-    g = 'keyed'
-    s = M.spec(g)
-    frame = to_man(trimesh.load(DESIGN / f'{g}-frame.stl', force='mesh'))
-    for name, f in (('no gaps', DESIGN / f'{g}-wrong-nogaps.stl'), ('ridge in the J6 band', DESIGN / f'{g}-wrong-ridge.stl')):
-        cov = to_man(trimesh.load(f, force='mesh'))
-        fr = to_man(trimesh.load(f, force='mesh'))      # (for 'no gaps' the whole cover is the frame; the ridge is tested by deflection)
-        print(f'wrong cover: {name}')
-        if name == 'no gaps':
-            rows = check_build(g, 'case-426', 'standard', cov, fr, step=step, verbose=False)
-            bad = [r for r in rows if not r['ok']]
-            for r in bad:
-                print('   FAIL (as it must):', r['check'], '->', r['value'])
-            out[name] = dict(failed=[r['check'] for r in bad], caught=bool(bad))
-        else:
-            sw = M.spec(g, ridge_shift=4.2, ridge_half=1.4)
-            cm = Case('case-426', 'standard')
-            maps = end_maps(cm, sw)
-            sh = np.arange(-sw['cx'], 78.0, 0.25)
-            fa, fb = flat_range(sw)
-            dl = deflection_path(sw, maps, sh, False, 'top', 0.0)
-            iflat = (sh >= fa) & (sh <= fb)
-            var = float(np.ptp(dl[iflat]))
-            ok = var <= FLAT_TOL
-            print(f'   {"ok  " if ok else "FAIL"} ridge front top: deflection on the straight face: '
-                  f'{dl[iflat].min():.2f}..{dl[iflat].max():.2f} mm (spread {var:.2f}); '
-                  f'the ridge sits at z {sw["ridge_z"][0]:.2f}..{sw["ridge_z"][1]:.2f}')
-            out[name] = dict(caught=not ok, spread=var)
+    for case, slug in builds:
+        cm = Case(case, slug)
+        for pose, (flip, turn) in POSES.items():
+            w = max(cm.overlap(frame, mat(s, sh, flip, turn)) for sh in shifts)
+            if w >= EPS_VOL:
+                out[(slug, pose)] = round(w, 2)
     return out
+
+
+def wrong_covers():
+    """Each deliberately wrong cover must FAIL its check. (1) a key slot at one end only: in the turned front pose the plate meets the
+    bottom-key caps; (2) a corner extension 16 mm long: it meets a pad in some layout and pose; (3) the ridge moved into J6's z band: its
+    deflection on the straight face is no longer flat. (4) is a comparison only: the fingertip clearance with and without the scallop. The
+    sharp-edge catch of 27bbdaf's cover is `python -B edges.py old`."""
+    out = {}
+    s = M.spec('keyed')
+    home = -s['cx'] + 0.01
+    keyed = V.builds('keyed')
+    for name, f, shifts, builds in (('one-ended key slot', 'keyed-wrong-oneslot', [home, 30.0, 55.0], [b for b in keyed if b[1] == 'standard']),
+                                    ('corner extension 16 mm', 'keyed-wrong-longext', [home], keyed)):
+        fr = to_man(trimesh.load(DESIGN / f'{f}.stl', force='mesh'))
+        bad = _home_overlaps(fr, s, builds, shifts)
+        shown = dict(list(bad.items())[:8])
+        print(f'wrong cover: {name}: frame overlap with the case at s in {[round(x, 2) for x in shifts]} over {len(builds)} build(s): '
+              f'{len(bad)} (build, pose) failures {shown if bad else "NOT CAUGHT"}', flush=True)
+        out[name] = dict(caught=bool(bad), failures=len(bad), examples={f'{k[0]}/{k[1]}': v for k, v in shown.items()})
+    # (3) the ridge in the J6 band
+    cm = Case('case-426', 'standard')
+    sw = M.spec('keyed', ridge_shift=4.2, ridge_half=1.4)
+    maps = end_maps(cm, sw)
+    sh = np.arange(-sw['cx'], 78.0, 0.25)
+    fa, fb = flat_range(sw)
+    cov_mesh = trimesh.load(DESIGN / 'keyed-wrong-ridge.stl', force='mesh')
+    dl = deflection_path(sw, maps, sh, False, False, 'top', 0.0, ridge_samples_mesh(cov_mesh, sw))
+    iflat = (sh >= fa) & (sh <= fb)
+    var = float(np.ptp(dl[iflat]))
+    print(f'wrong cover: ridge in the J6 band: deflection on the straight face {dl[iflat].min():.2f}..{dl[iflat].max():.2f} (spread {var:.2f} '
+          f'vs the {FLAT_TOL} limit): {"caught" if var > FLAT_TOL else "NOT CAUGHT"}', flush=True)
+    out['ridge in the J6 band'] = dict(caught=var > FLAT_TOL, spread=round(var, 3))
+    # (4) for comparison, not a failure: the cover without the scallop against the same fingertip approach
+    ns = to_man(trimesh.load(DESIGN / 'keyed-noscallop.stl', force='mesh'))
+    cov = to_man(trimesh.load(DESIGN / 'keyed-frame.stl', force='mesh'))
+    for case, slug in keyed:
+        if slug != 'standard':
+            continue
+        pads = case_info.info(case, slug)['pads']
+        a, b = finger_clearances(cov, pads, s, home), finger_clearances(ns, pads, s, home)
+        print(f'comparison (not a failure): fingertip clearance, least over pads and poses: with the scallop {min(a.values()):.2f} mm, without {min(b.values()):.2f} mm; '
+              f'back pose {min(v for (r, p), v in a.items() if p == "back"):.2f} / {min(v for (r, p), v in b.items() if p == "back"):.2f} mm', flush=True)
+        out['fingertip clearance with / without the scallop (standard build, informational)'] = dict(
+            caught=True, with_scallop=round(min(a.values()), 2), without=round(min(b.values()), 2))
+    return out
+
+
+# ---- snap before / after ------------------------------------------------------------------------------------------------
+
+def prong_thickness(mesh, s, z):
+    """The prong's thickness along u (outside the plate edge, y > yw_t) from a section at height z: [(u, t)] every 0.5 mm."""
+    g = section_polygon(mesh, z)
+    out = []
+    yw, yt = s['yw_t'], s['yt_t']
+    for u in np.arange(s['u_tip'] + 0.2, s['u_root'] + 1.0, 0.5):
+        i = g.intersection(shapely.LineString([(u, yw - 0.001), (u, yt + 1.0)]))
+        out.append((float(u), float(i.length)))
+    return out
+
+
+def snap_compare():
+    """27bbdaf's keyed cover against this one, on the real standard 4.26 end faces: the prong's thickness profile, the deflection along the
+    path, the force and strain estimates (beam model: E 2500..3500, soft and stiff width, mu 0.2..0.4), through the same ray casts."""
+    import edges
+    s = M.spec('keyed')
+    cm = Case('case-426', 'standard')
+    maps = end_maps(cm, s)
+    sh = np.arange(-s['cx'], 78.0, 0.25)
+    fa, fb = flat_range(s)
+    iflat = (sh >= fa) & (sh <= fb)
+    res = {}
+    for label, mesh in (('27bbdaf (coupon A geometry)', edges.old_cover_mesh()), ('round 2', trimesh.load(DESIGN / 'keyed.stl', force='mesh'))):
+        samples = ridge_samples_mesh(mesh, s)
+        d0 = deflection_path(s, maps, sh, False, False, 'top', 0.0, samples)
+        rows = []
+        for E in snap.E_PLA:
+            for b in (2 * s['ridge_half'], s['z_o'] - s['prong_z_lo']):
+                k, eps1, _ = snap.stiffness(s, E, b)
+                for mu in snap.MU:
+                    f = snap.wedge(sh, d0, k, mu, s)
+                    rows.append(dict(E=E, b=b, mu=mu, k=k, pull=f['pull_peak'], push=f['push_peak'], drag=f['drag'], preload=f['preload'],
+                                     strain=eps1 * k * float(d0.max())))
+        nom = next(r for r in rows if r['E'] == 3000.0 and abs(r['b'] - 2 * s['ridge_half']) < 1e-6 and r['mu'] == 0.3)
+        th = prong_thickness(mesh, s, s['z_o'] - 0.9)
+        res[label] = dict(d_flat=(float(d0[iflat].min()), float(d0[iflat].max())), d_peak=float(d0.max()), nominal=nom,
+                          pull_range=(min(r['pull'] for r in rows), max(r['pull'] for r in rows)),
+                          push_range=(min(r['push'] for r in rows), max(r['push'] for r in rows)),
+                          strain_max=max(r['strain'] for r in rows), thickness=th)
+    a, b = res['27bbdaf (coupon A geometry)'], res['round 2']
+    for k, v in res.items():
+        n = v['nominal']
+        print(f'{k}: deflection on the flat {v["d_flat"][0]:.2f}..{v["d_flat"][1]:.2f}, peak {v["d_peak"]:.2f} mm; nominal one prong: stiffness '
+              f'{n["k"]:.2f} N/mm, pull-off peak {n["pull"]:.2f} N (range {v["pull_range"][0]:.2f}-{v["pull_range"][1]:.2f}), push-on peak '
+              f'{n["push"]:.2f} N, drag {n["drag"]:.2f} N, preload {n["preload"]:.2f} N, strain {100 * n["strain"]:.2f} % (worst {100 * v["strain_max"]:.2f} %)')
+    ta, tb = np.array([t for _, t in a['thickness']]), np.array([t for _, t in b['thickness']])
+    print('prong thickness along u (section 0.9 under the bed face), old / new:')
+    print('  ' + ' '.join(f'{u:.1f}:{x:.2f}/{y:.2f}' for (u, _), x, y in zip(a['thickness'], ta, tb)))
+    rel = lambda x, y: 100.0 * (y - x) / x
+    print(f'differences, new vs old: deflection peak {rel(a["d_peak"], b["d_peak"]):+.1f} %, pull-off peak {rel(a["nominal"]["pull"], b["nominal"]["pull"]):+.1f} %, '
+          f'push-on peak {rel(a["nominal"]["push"], b["nominal"]["push"]):+.1f} %, drag {rel(a["nominal"]["drag"], b["nominal"]["drag"]):+.1f} %, '
+          f'strain {rel(a["nominal"]["strain"], b["nominal"]["strain"]):+.1f} %; thickness differs by at most {float(np.abs(ta - tb).max()):.2f} mm')
+    return res
 
 
 if __name__ == '__main__':
@@ -343,9 +540,14 @@ if __name__ == '__main__':
     ap.add_argument('--builds', default='all')
     ap.add_argument('--step', type=float, default=1.0)
     ap.add_argument('--wrong', action='store_true')
+    ap.add_argument('--snap', action='store_true')
     ap.add_argument('--quiet', action='store_true')
     a = ap.parse_args()
     groups = ['keyed', 'chinless', 'x3'] if a.group == 'all' else [a.group]
+    if a.snap:
+        r = snap_compare()
+        (OUTJ / 'check-snap.json').write_text(json.dumps(r, indent=1, default=float))
+        sys.exit(0)
     if a.wrong:
         r = wrong_covers()
         (OUTJ / 'check-wrong.json').write_text(json.dumps(r, indent=1))
