@@ -95,7 +95,7 @@ def place(c, s, logo_zone):
     zc = (z0 + z1) / 2
     xc, yc = (x0 + x1) / 2, (y0 + y1) / 2
     if logo_zone is not None and z1 > s['z_o'] - 0.6 and z0 > s['z_o'] - 0.6 and shapely.contains_xy(logo_zone, c[:, 0], c[:, 1]).mean() > 0.6:
-        return 'logo engraving rim'
+        return 'engraving rim (logo, border lines)'
     if z0 > s['z_o'] - s['bed_chamfer'] - 0.3 and z1 > s['z_o'] - 0.05:
         return 'bed-face perimeter'
     if abs(zc - s['z_i']) < 0.8 or (z0 > s['z_i'] - 0.8 and z1 < s['z_i'] + s['tp'] - 0.5):
@@ -117,7 +117,7 @@ def report(mesh, s, case_mesh=None, verbose=True, label=''):
     lg = None
     try:
         from model import logo_polys
-        lg = shapely.unary_union([p.buffer(0.3) for p, _ in logo_polys(s).values()])
+        lg = shapely.unary_union([*(p.buffer(0.3) for p, _ in logo_polys(s).values()), *(b.buffer(0.3) for b in M.border_polys(s).values())])
     except Exception:
         pass
     lab = clusters(f['mid'])
@@ -126,7 +126,7 @@ def report(mesh, s, case_mesh=None, verbose=True, label=''):
         idx = lab == k
         c = f['mid'][idx]
         name = place(c, s, lg)
-        if f['length'][idx].mean() < FAN_LEN and name != 'logo engraving rim':
+        if f['length'][idx].mean() < FAN_LEN and name != 'engraving rim (logo, border lines)':
             name = 'mesher fan at a fillet seam (facets under 0.06 mm)'
         rows.append(dict(place=name, n=int(idx.sum()), touchable=int(touch[idx].sum()), max_turn=float(f['turn'][idx].max()),
                          length=float(f['length'][idx].sum()), box=[round(float(v), 1) for v in (*c.min(axis=0), *c.max(axis=0))]))

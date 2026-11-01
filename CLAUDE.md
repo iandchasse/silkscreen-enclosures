@@ -135,7 +135,7 @@ The 4.26:
 The slide-on cover (`enclosures/cover/`, 2026-11-01, round 2; only round 1's coupon A was printed, no whole cover): after the case builds exist (`out/<build>/`), from
 `enclosures/cover` with the 4.26 Python (it also reads the 3.68's params and logos in subprocesses): `build_cover.py` (the covers, their STEP files and the
 two-colour inlay bodies into `print/cover/`: never `print/4.26` or `print/3.68`, which the case builds clean), `check.py` (33 builds, four poses;
-`--wrong` must fail, `--snap` compares with 27bbdaf), `edges.py` (the sharp-edge scan), `printcheck.py`, `make_cover_plates.py` and `--printer cc2`
+`--wrong` must fail, `--snap` compares with 27bbdaf, `--angle` the push-on contact angle, `--plate` the plate-flex estimate), `edges.py` (the sharp-edge scan), `printcheck.py`, `make_cover_plates.py` and `--printer cc2`
 (the temporary plate files, one cover per plate; make_plates.py itself is not edited), `slice_read.py` (OrcaSlicer CLI, then the G-code read-back),
 `inlay_check.py` (the logo switch on). Delete `cover/out/case_info.json` after a case change. Do not edit `case-*/src` for it.
 

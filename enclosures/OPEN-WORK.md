@@ -10,12 +10,12 @@ A reversible TI-84 style cover, one printed part per envelope (`enclosures/cover
 reading. Round 1's fit coupon A was printed and "feels fine" (Ian, 2026-11-01); round 2 added the Silkscreen logo engraved on the outer face
 (with the two-colour switch, OFF), rounded edges, all four poses, no long stop wall (corner pieces only) and a scalloped side. Everything else
 about it is **untested**: no whole cover is printed, and the snap forces are beam estimates. What Ian still decides or has to find out:
-- **Phase 2:** put the covers into the case plate files (not started; the temporary file goes away);
+- **Putting the covers into the case plate files** (make_plates.py, every per-configuration project; not started: the worktree's `out/` lacks the other builds' print parts and the 4.26 pipeline cache is cold at its path; the cover-only plate file stays the temporary one until then);
 - print one cover and check the fit, the click, the scallop's finger room, the rounded edges and (if wanted) the two-colour switch in the CC2's
   slicer (the CLI read-back is the only test so far);
-- sharp edges that remain (`enclosures/cover/README.md`, "Sharp-edge result"): the key slots' roof edges at the leading face (two 4.1 mm
-  edges on the keyed cover, 4.4 mm on the 3.68), the 0.3 mm step where each prong's foot meets the plate's chamfer, the logo's engraving rims (the
-  case's own treatment); a bevel cut on the slot roofs left mesher artefacts on the keyed cover and was not kept;
+- phase 2 (2026-11-01): the plate is solid over the screen (rest gap to the glass 1.37 mm; my estimate of the press that touches it: 155 N keyed, 98 N chinless, 225 N on the 3.68),
+  two engraved border lines, a rounded-tongue tab inside phase 1's footprint, a uniform slit with a round end; no sharp edge is left on the covers but the engraving rims (logo and border lines);
+  the cover gained about 4 to 6 g and 8 to 14 minutes for the solid plate and the lines;
 - the scallop is limited by the screen (2.4 mm inset on the 4.26, 3.0 on the 3.68; 2.0 mm of plate stays past the screen opening): more would
   uncover display;
 - the corner extensions are 4.7 mm (4.2 on the 3.68), set by the scallop's ease and the finger margin; a longer contact patch would shorten the ease;

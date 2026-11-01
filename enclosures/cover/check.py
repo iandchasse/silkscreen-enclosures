@@ -22,7 +22,7 @@ What it checks (nothing here was printed; the force and strain numbers are beam 
   screen      in the front pose the plate stays 2 mm or more past the screen opening on each side (opening measured from the tub STL);
   fingertip   an r 7 mm sphere touching each pad face's centre, approaching from the side, is clear of the cover in every pose;
   logo        with the cover on the back, its engraving lies over the case's own back logo (area overlap against the lid STL), and the
-              plate behind the engraving is solid for at least 0.6 everywhere (no break into the screen relief or the key slots).
+              plate behind the engraving is solid for at least 0.6 everywhere (no break into a key slot). The plate is SOLID over the screen (phase 2).
 --wrong runs deliberately wrong covers through the same checks: a one-ended key slot, an over-long corner extension, the ridge in J6's band,
 and a cover without the scallop (the fingertip test); each must FAIL.
 """
@@ -56,6 +56,8 @@ FLAT_TOL = 0.12         # mm: the ridge's deflection may vary this much along th
 D_MAX_ALLOW = 0.95      # mm: peak deflection along the whole path (the design deflection is d_eng = 0.7)
 FINGER_R = 7.0          # mm: the fingertip
 BEHIND_MIN = 0.6        # mm: plate left behind the engraving
+PHASE1_FOOTPRINT = {'keyed': (72.11, 128.8), 'chinless': (72.11, 121.2), 'x3': (72.11, 111.8)}     # the phase-1 STLs' x and y extents (mm)
+ANGLE_MAX = 25.0        # degrees: the push-on's contact angle at first touch
 POSES = {'front': (False, False), 'back': (True, False), 'front-turned': (False, True), 'back-turned': (True, True)}
 
 
@@ -200,7 +202,7 @@ def section_polygon(mesh, z):
 
 def screen_overlap(cov_mesh, s, opening):
     """In the front pose at home: how far the plate reaches past the screen opening at the face, on each side (mm), over the whole of the
-    opening's height. The section is taken above the cavity's ceiling (z_o - 0.7: the relief and slots are cut from the inner face)."""
+    opening's height. The section is taken just under the bed-face chamfer (z_o - 0.7)."""
     g = section_polygon(cov_mesh, s['z_o'] - 0.7)
     x0, x1, y0, y1 = opening
     left, right = [], []
@@ -324,8 +326,11 @@ def check_build(group, case, slug, cov, frame, cov_mesh, step=1.0, verbose=True,
         depth = s['Z_FRONT'] - float(dm.bounds[1][2])                  # the glass's top sits this far below the front face
         disp = to_man(dm) ^ box_man(wx0, wx1, wy0, wy1, -10, 20)
         g = min(apply(cov, mat(s, home, False, t, 0.0, -s['gp'])).min_gap(disp, 8.0) for t in (False, True))
-        row('front poses: cover to the display glass seen through the window, plate resting on the face (never nearer than the face)', g >= depth - 0.05,
-            f'{g:.2f} mm (the glass is {depth:.2f} below the face; the nearest point is plate over a rounded corner of the relief)')
+        row('front poses: cover to the display glass, plate resting on the face (the plate is solid over the window)', g >= depth - 0.05,
+            f'{g:.2f} mm (the glass is {depth:.2f} below the face)')
+        gr = min(apply(cov, mat(s, home, False, t)).min_gap(disp, 8.0) for t in (False, True))
+        row('front poses: REST gap to the display glass at the nominal pose (the play centred)', gr >= depth + s['gp'] - 0.05,
+            f'{gr:.2f} mm (glass depth {depth:.2f} + {s["gp"]:.3f} plate gap)')
     # 3. the slide path, every pose
     shifts = np.arange(home, 78.0 + 1e-9, step)
     for pose, (flip, turn) in POSES.items():
@@ -390,13 +395,35 @@ def check_build(group, case, slug, cov, frame, cov_mesh, step=1.0, verbose=True,
         row(f'fingertip (r {FINGER_R:g} sphere touching each pad face centre, swept in from the side), every pad, every pose: least clearance',
             worst[1] > 0.0, f'{worst[1]:.2f} mm ({worst[0][0]}, {worst[0][1]}); back pose by pad: '
             + ', '.join(f'{r} {v:.1f}' for r, v in sorted(backs.items())))
+    # 6a. the footprint: nothing stands further out than the phase-1 cover did
+    fx, fy = PHASE1_FOOTPRINT[group]
+    row('the cover stays inside the phase-1 footprint (x and y extents, mm)', cov_mesh.extents[0] <= fx + 1e-3 and cov_mesh.extents[1] <= fy + 1e-3,
+        f'{cov_mesh.extents[0]:.2f} x {cov_mesh.extents[1]:.2f} (phase 1: {fx} x {fy})')
+    # 6b. the tab's tongue and the border lines
+    row('the ridge z band lies inside the tab side outline (the tongue) from u_a to the root', M.tongue_contains_ridge(s), f'tab tip {s["u_a"] - s["u_tip"]:.1f} mm past the ridge')
+    if s['border']:
+        import shapely
+        from shapely.ops import unary_union
+        pl = M.plate_polygon(s)
+        bp = unary_union(list(M.border_polys(s).values()))
+        lg = unary_union([g for g, _ in M.logo_polys(s).values()])
+        row('border lines: on the plate, at least 2 mm in from its edge (so never across a slit or the tab), 2 mm from the logos',
+            pl.contains(bp) and bp.distance(pl.exterior) >= 2.0 and bp.distance(lg) >= s['border_clr'] - 1e-6,
+            f'nearest to the plate edge {bp.distance(pl.exterior):.2f} mm, to the logos {bp.distance(lg):.2f} mm')
+        zf = s['z_o'] - s['border_depth']
+        best = 0.0
+        for tt in np.arange(0.2, 3.01, 0.1):
+            if float((prism(bp, zf - tt, zf) - cov).volume()) > 0.002:
+                break
+            best = tt
+        row('border lines: plate solid behind them (the key-slot roofs included)', best >= BEHIND_MIN, f'{best:.1f} mm solid below their floor ({s["border_depth"]} deep, {s["border_w"]} wide)')
     # 7. the logo
     if s['logo']:
         lg = logo_checks(cov_mesh, cov, s, cm)
         row('back: the cover\'s engraving over the case\'s own logo (area overlap with the lid STL, icon / wordmark; centroid offset)',
             min(lg['iou'].values()) > 0.9,
             f'{lg["iou"]["icon"]:.3f} / {lg["iou"]["wordmark"]:.3f}; offset {lg["shift"]["icon"]:.2f} / {lg["shift"]["wordmark"]:.2f} mm')
-        row('plate behind the engraving is solid (no break into the relief or the slots), icon / wordmark',
+        row('plate behind the engraving is solid (no break into a key slot), icon / wordmark',
             min(lg['behind'].values()) >= BEHIND_MIN, f'{lg["behind"]["icon"]:.1f} / {lg["behind"]["wordmark"]:.1f} mm solid below the floor')
     return rows
 
@@ -416,6 +443,89 @@ def run(groups, builds=None, step=1.0, verbose=True):
             if verbose:
                 print(f'   ({time.time() - t:.0f} s)', flush=True)
     return res
+
+
+# ---- the push-on's contact angle at first touch -------------------------------------------------------------------------
+
+def first_touch_angle(s, maps, samples, flip, turn, case_end, dz, lo=40.0, hi=78.0):
+    """The angle (degrees) at which the ridge first meets the case on the way on, along the swept path: the cover comes in from far off (shift hi)
+    toward home; the required deflection d(shift) is zero until the first touch and then rises; the angle is atan of its steepest slope over the
+    first 0.4 mm of deflection after the touch, so a blunt face (a step in d) reads near 90 degrees and a ramp reads its own angle."""
+    coarse = np.arange(lo, hi, 0.25)
+    d = deflection_path(s, maps, coarse, flip, turn, case_end, dz, samples)
+    idx = np.where(d > 0.01)[0]
+    if not len(idx):
+        return None
+    s_c = coarse[idx.max()]                              # the highest shift (nearest the start of the path) that is touching
+    fine = np.arange(s_c - 0.4, s_c + 1.0, 0.01)
+    df = deflection_path(s, maps, fine, flip, turn, case_end, dz, samples)
+    touch = np.where(df > 1e-3)[0].max()                 # first touch coming from large shift
+    s0 = fine[touch]
+    k = 5                                                # slope over 0.05 mm
+    best = 0.0
+    for i in range(touch, max(touch - 40, k), -1):
+        best = max(best, (df[i - k] - df[i]) / (fine[i] - fine[i - k]))
+        if df[i] > 0.4:
+            break
+    return float(np.degrees(np.arctan(best))), float(s0)
+
+
+def contact_angles(group='keyed', slug='standard', mesh=None, label=''):
+    """The first-touch angle for every pose, both case ends and the Z play, the worst per pose: {pose: (angle, shift)}."""
+    s = M.spec(group)
+    case = {'keyed': 'case-426', 'chinless': 'case-426', 'x3': 'case-368'}[group]
+    cm = Case(case, slug)
+    maps = end_maps(cm, s)
+    cov_mesh = mesh if mesh is not None else trimesh.load(DESIGN / f'{group}.stl', force='mesh')
+    samples = ridge_samples_mesh(cov_mesh, s)
+    G2 = s['G'] / 2
+    out = {}
+    for pose, (flip, turn) in POSES.items():
+        worst = (0.0, None)
+        for end in ('top', 'bottom'):
+            for dz in (-G2, 0.0, G2):
+                r = first_touch_angle(s, maps, samples, flip, turn, end, dz)
+                if r and r[0] > worst[0]:
+                    worst = r
+        out[pose] = worst
+    return out
+
+
+# ---- the plate over the screen: how hard a press has to be to flex it onto the glass ---------------------------------
+
+def plate_stiffness(a, b, t, E=3000.0, nu=0.35, terms=301):
+    """N/mm at the centre of a rectangular plate a x b (mm), thickness t, E in MPa, simply supported on all four edges, central point load
+    (Navier's double series: w = 4 P / (pi^4 D a b) * sum over odd m, n of 1 / ((m/a)^2 + (n/b)^2)^2, D = E t^3 / (12 (1 - nu^2)))."""
+    D = E * t ** 3 / (12.0 * (1.0 - nu ** 2))
+    m = np.arange(1, terms, 2)
+    M_, N_ = np.meshgrid(m, m, indexing='ij')
+    S = float(np.sum(1.0 / ((M_ / a) ** 2 + (N_ / b) ** 2) ** 2))
+    w_per_N = 4.0 / (np.pi ** 4 * D * a * b) * S
+    return 1.0 / w_per_N
+
+
+def plate_flex(groups=('keyed', 'chinless', 'x3'), E=3000.0, nu=0.35):
+    """The plate's press force to touch the display glass, per group: the span is the screen opening at the front face (the plate rests on
+    the tub's skin round it), the plate is solid (thickness tp), the rest gap is the glass's depth under the face plus the plate gap. Also
+    the phase-1 plate for comparison (a relief that left 1.2 mm over the window: thinner and further from the glass)."""
+    out = {}
+    for g in groups:
+        s = M.spec(g)
+        x0, x1, y0, y1 = s['window_face']
+        a, b = x1 - x0, y1 - y0
+        glass = trimesh.load(ENC / s['group'].replace('x3', 'case-368').replace('keyed', 'case-426').replace('chinless', 'case-426') / 'out' / s['case_slug'] / 'ref_display.stl', force='mesh')
+        depth = s['Z_FRONT'] - float(glass.bounds[1][2])
+        rest = depth + s['gp']
+        k = plate_stiffness(a, b, s['tp'], E, nu)
+        old_t = 1.2 if g != 'x3' else 1.25
+        relief = (s['tp'] - old_t) if g != 'chinless' else 0.6
+        if g == 'chinless':
+            relief = 2.4 - 1.8 + 0.0                           # phase 1: tp 1.8 and a 1.2 web: relief 0.6 deep (the outer face was 0.6 nearer)
+        k_old = plate_stiffness(a, b, old_t, E, nu)
+        rest_old = rest + (s['tp'] - old_t if g != 'chinless' else 1.8 - old_t)
+        out[g] = dict(span=(round(a, 1), round(b, 1)), t=s['tp'], rest_gap=round(rest, 2), k=round(k, 1), press_to_touch=round(k * rest, 0),
+                      phase1=dict(t=old_t, rest_gap=round(rest_old, 2), k=round(k_old, 1), press_to_touch=round(k_old * rest_old, 1)))
+    return out
 
 
 # ---- the deliberately wrong covers ------------------------------------------------------------------------------------
@@ -484,7 +594,7 @@ def prong_thickness(mesh, s, z):
     g = section_polygon(mesh, z)
     out = []
     yw, yt = s['yw_t'], s['yt_t']
-    for u in np.arange(s['u_tip'] + 0.2, s['u_root'] + 1.0, 0.5):
+    for u in np.arange(s['u_a'] + 4.5, s['u_root'] + 1.0, 0.5):                  # (the tongue's bottom edge rises from the bed before this)
         i = g.intersection(shapely.LineString([(u, yw - 0.001), (u, yt + 1.0)]))
         out.append((float(u), float(i.length)))
     return out
@@ -541,9 +651,29 @@ if __name__ == '__main__':
     ap.add_argument('--step', type=float, default=1.0)
     ap.add_argument('--wrong', action='store_true')
     ap.add_argument('--snap', action='store_true')
+    ap.add_argument('--plate', action='store_true')
+    ap.add_argument('--angle', action='store_true')
     ap.add_argument('--quiet', action='store_true')
     a = ap.parse_args()
     groups = ['keyed', 'chinless', 'x3'] if a.group == 'all' else [a.group]
+    if a.angle:
+        import edges
+        res = {}
+        for lab, grp, mesh in (('27bbdaf', 'keyed', edges.old_cover_mesh()), ('round 2', 'keyed', None), ('round 2 chinless', 'chinless', None), ('round 2 3.68', 'x3', None)):
+            slug = 'chinless' if grp == 'chinless' else 'standard'
+            r = contact_angles(grp, slug, mesh, lab)
+            res[lab] = r
+            print(f'{lab}: first-touch angle, worst of both case ends and the Z play: ' + ', '.join(f'{k} {v[0]:.1f} deg (at shift {v[1]:.2f})' for k, v in r.items()), flush=True)
+        (OUTJ / 'check-angle.json').write_text(json.dumps(res, indent=1, default=float))
+        sys.exit(0)
+    if a.plate:
+        r = plate_flex()
+        for g, v in r.items():
+            print(f'{g}: span {v["span"][0]} x {v["span"][1]} mm, plate {v["t"]} mm solid: rest gap to the glass {v["rest_gap"]} mm, stiffness {v["k"]} N/mm, '
+                  f'press to touch {v["press_to_touch"]:.0f} N; phase 1 ({v["phase1"]["t"]} mm over the window, rest gap {v["phase1"]["rest_gap"]}): '
+                  f'{v["phase1"]["k"]} N/mm, {v["phase1"]["press_to_touch"]} N')
+        (OUTJ / 'check-plate.json').write_text(json.dumps(r, indent=1))
+        sys.exit(0)
     if a.snap:
         r = snap_compare()
         (OUTJ / 'check-snap.json').write_text(json.dumps(r, indent=1, default=float))

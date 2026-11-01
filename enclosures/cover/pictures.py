@@ -121,6 +121,42 @@ def snap_figure(s, cov, path):
     plt.close(fig)
 
 
+PHASE1 = 'f45db64'          # the commit with phase 1's covers (print/cover/4.26/cover-keyed.stl): the 'old' of the A4-A6 pictures
+
+
+def phase1_keyed():
+    import io
+    import subprocess
+    raw = subprocess.run(['git', 'show', f'{PHASE1}:print/cover/4.26/cover-keyed.stl'], capture_output=True, cwd=ENC.parent, check=True).stdout
+    return trimesh.load(io.BytesIO(raw), file_type='stl', force='mesh')
+
+
+def corner_compare(path):
+    """Phase 1's open-end corner (the top prong, y = 128, x = 66 to 72 in the print frame) next to the new one, three views each: the outer face
+    (from below the bed), the side (along y), the case side (from above)."""
+    old = phase1_keyed()
+    new = trimesh.load(ENC.parent / 'print' / 'cover' / '4.26' / 'cover-keyed.stl', force='mesh')
+    c = np.array([60.0, 122.0, 6.0])
+    views = {'the outer face': ((c[0], c[1] - 14, -110), (c[0], c[1], c[2]), (0, 1, 0)),
+             'the side': ((c[0] + 4, c[1] + 110, c[2] + 6), (c[0] + 4, c[1], c[2] + 4), (0, 0, 1)),
+             'the case side': ((c[0], c[1] - 14, 120), (c[0], c[1], c[2]), (0, 1, 0))}
+    cells = []
+    for k, (vn, (pos, foc, up)) in enumerate(views.items()):
+        for j, (nm, mesh, col) in enumerate((('phase 1', old, OLD), ('phase 2', new, COVER))):
+            f = TMP / f'corner-{k}-{j}.png'
+            render.render([(mesh, col, 1.0)], f, position=pos, focal=foc, up=up, size=(800, 760), view_angle=22)
+            label(f, f'{nm}: {vn}')
+            cells.append(f)
+    montage([cells[i] for i in (0, 1, 2, 3, 4, 5)], path, 2)
+
+
+def outer_face(path):
+    """The whole outer face as it prints (seen from below the bed), the two border lines, the logo and the wordmark."""
+    new = trimesh.load(ENC.parent / 'print' / 'cover' / '4.26' / 'cover-keyed.stl', force='mesh')
+    c = np.array(new.bounds).mean(axis=0)
+    render.render([(new, COVER, 1.0)], path, position=(c[0] + 6, c[1] - 40, -330), focal=c, up=(0, 1, 0), size=(1100, 1300), view_angle=26)
+
+
 def main():
     IMG.mkdir(parents=True, exist_ok=True)
     TMP.mkdir(parents=True, exist_ok=True)
@@ -163,16 +199,9 @@ def main():
     fc = np.array([64.0, 80.0, -3.0])
     render.render(parts + side + [(sc, COVER, 1.0), (tip, (0.35, 0.8, 0.45), 0.55)], IMG / 'cover-scallop.png',
                   position=(fc[0] + 95, fc[1] - 20, fc[2] - 75), focal=fc, up=(0, 0, 1), size=(1500, 1000), view_angle=34)
-    # the open end and the prong, old next to new: the screen side, oblique, at the top-left corner of the front pose, cover alone
-    ctr = np.array([8.0, 104.0, 2.0])
-    pos = (ctr[0] - 62, ctr[1] - 62, ctr[2] + 78)
-    ps = []
-    for nm, mesh, col in (('27bbdaf (coupon A geometry)', old, OLD), ('round 2', cov, COVER)):
-        p = TMP / f'open-{nm[:3]}.png'
-        render.render([(posed(mesh, s, home, False), col, 1.0)], p, position=pos, focal=ctr, up=(0, 0, 1), size=(900, 800), view_angle=34)
-        label(p, nm)
-        ps.append(p)
-    montage(ps, IMG / 'cover-open-end.png', 2)
+    # the open end corner, phase 1 next to phase 2, from the outer face, the side and the case side (the print frame: the outer face on the bed)
+    corner_compare(IMG / 'cover-open-end.png')
+    outer_face(IMG / 'cover-face.png')
     # the logo face, as printed: the outer face on the bed, seen from below the bed, with the two inlay bodies (the two-colour switch on)
     pf = trimesh.load(ENC.parent / 'print' / 'cover' / '4.26' / 'cover-keyed.stl', force='mesh')
     inl = [(trimesh.load(ENC.parent / 'print' / 'cover' / '4.26' / f'cover-keyed-inlay-{n}.stl', force='mesh'), INK, 1.0) for n in ('wordmark', 'icon')]

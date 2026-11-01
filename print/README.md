@@ -337,12 +337,12 @@ files: `4.26/lid-inlay-wordmark`, `lid-inlay-icon` (and `lid-chinless-inlay-*`),
 the screen to carry the reader and over the back while you read it. It slides on sideways (along the case's width), gripping the top and
 bottom end walls; a snap at its open end clicks it home in the case's rounded corners, and two corner pieces set the other end. It goes on any of
 four ways (front or back, either way round), its long sides curve inward over the side keys, its edges are rounded, and the Silkscreen icon and
-wordmark are engraved on its outer face (the logo reads upside down in the two turned poses). **The case does not change**, so it fits every case
+wordmark and two border lines are engraved on its outer face (the logo reads upside down in the two turned poses), the plate is solid over the screen, and the snap tab ends in a rounded tongue. **The case does not change**, so it fits every case
 already printed. Three covers, by envelope: `cover/4.26/cover-keyed` (the 16 4.26 builds with bottom keys, light strip included),
 `cover/4.26/cover-chinless` (the 16 chinless builds), `cover/3.68/cover-standard`. They have their own, **temporary**, plate file,
 `silkscreen-cover-plates.3mf` (one plate per cover; the coupons are gone), and are not in the case plate files or the configuration projects yet.
 Each carries its two logo bodies as modifier parts with no filament, named like the lid's: the two-colour logo is a switch, OFF (see "Two-colour logo").
-Each is 16 to 18 g and about 1 hour (the CC2 presets: about 30 minutes; see the cover README) with no supports. See [`../enclosures/cover/README.md`](../enclosures/cover/README.md) for how
+Each is 21 to 23 g and about 1 h 10 to 1 h 17 (the CC2 presets: about 40 minutes; see the cover README) with no supports. See [`../enclosures/cover/README.md`](../enclosures/cover/README.md) for how
 to put it on in the four poses, the fit numbers and what is estimated, not measured. The files are in `cover/`, not in `4.26/` or `3.68/`:
 both case builds delete any file in their size folder that they did not make.
 
