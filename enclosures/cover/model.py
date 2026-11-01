@@ -17,6 +17,11 @@ rounded (bed-face perimeter 45-degree chamfer, other edges filleted, the prong's
 the prong's thinning is on its INNER side (the outer face is one smooth surface); both ends of the plate have the key slot; no long stop
 wall (the corner pieces and their extensions only); both long sides curve inward over the side keys (the scallop).
 
+Phase 2 (2026-11-01): the plate is SOLID over the screen (no relief; chinless 2.4 thick), the key slots' cutters are flared 45 degrees at the mouth, two
+engraved border lines follow the plate's outline (2.5 and 4.5 in), the tab's side outline is a rounded tongue inside phase 1's footprint (the ridge's
+lead-in is trimmed to it: only the flat top keeps the full J6 band), and the slit between the tab and the plate is one uniform slit with a round end
+(the tab's bed foot grows into the plate's chamfer over its taper: no step).
+
 PRINT FRAME: the plate's outer face on the bed (rotate 180 degrees about Y); nothing needs a support (printcheck.py audits every layer).
 Every number that sets a fit is in SPEC below with the reason next to it. Nothing here edits the case: the envelope, the rounds, the key
 caps, the side keys, the window and the logos are read from the case projects (case_info.py).
@@ -64,11 +69,19 @@ SPEC = dict(
     lip_r=0.6,        # the lip's tip is a half round: the 47-degree face runs into it
     wall_r=0.9,       # the wall's outer-bottom corner (the lip's outer face meets the wall)
     inner_r=0.8,      # the wall / lip's concave corner
-    prong_top_r=0.38,  # the prong's free end: 0.8 thick, so a full round
+    prong_top_r=0.30,  # every edge of the tab's side outline (the 0.8 plate keeps a 0.2 flat: a 0.38 round left the bed foot 0.55 wide at the first layer's mid-plane, too thin for the CC2)
     ridge_r=0.45,     # the ridge's edges (ramp-to-flat bends are 18 and 45 degrees: this moves the surface < 0.02)
     tongue_r=3.0,     # plan radius of the open-end corners of the plate
     tongue_r_slot=1.5,  # ... where the key slot leaves through the leading edge (3.0 would put the slot's wall through the corner round)
-    kerf_r=1.0,       # plan radius at the end of the notch beside each prong
+    kink_r=8.0,       # the tab's inner face turns 11 degrees at the ends of its taper: rounded (the plate edge is one slit away, so R +- slit)
+    slit_flat=1.2,    # the plate edge runs flat this far before the slit's round end
+    slit=0.8,         # the slit between the plate and each tab: one uniform width, following the tab's inner face, ending in a round end at the root
+    tongue_hT=1.5,    # the tab's side outline (print height h above the bed, x = u - u_a): the bottom edge rises 45 degrees from x = tongue_xA ...
+    tongue_xA=2.0,    # ... to the tip vertex (x = xA - hT, h = hT), the top edge runs from the tip vertex up to the vertex at x = tongue_xC, h = the full height
+    tongue_xC=-1.0,
+    tongue_RA=1.2,    # radii: where the bottom edge leaves the bed (small: a bigger blend is a near-flat overhang in the first layers), at the tip, and where the top edge leaves the full height
+    tongue_RT=4.0,
+    tongue_RC=5.0,
     tongue_out=0.5,   # the plate's leading edge stands this far past the case's side face (outside the scallop)
     # ---- round 2: sides
     scallop_M=3.0,    # finger margin past the pad zone, along Y (a target: the corner arc starts 4.7 past the last pad)
@@ -81,11 +94,17 @@ SPEC = dict(
     key_clr=0.25,     # slot ceiling over a key cap, with the plate at its nearest (touching the face)
     pocket_xy=0.6,    # slot past the cap in x (the far end)
     pocket_y=0.35,    # slot past the cap in y: the slot then leaves through the leading edge's straight part, clear of the corner round
-    relief_xy=1.2,    # screen relief past the window's box (and its mirror: the cover turns end for end)
-    web=1.2,          # plate thickness over the relief: >= this (six layers)
+    roof_flare=0.5,   # the key slot's cutter flares 45 degrees up toward the leading face over this length: the roof leaves the face in a bevel, not a 90-degree edge
     pocket_roof=1.2,  # thinnest plate over a key slot (six layers): the bed chamfer (0.6) and the slot-mouth fillet (0.5) both end there
     slot_ends='both',  # 'both' (round 2) or 'bottom' (the deliberately wrong one-ended cover)
     logo=True,        # engrave the case's back logos in the outer face
+    border=True,      # two engraved lines round the plate's outline, like a book cover's tooled border (grip; not part of the two-colour switch)
+    border_insets=(2.5, 4.5),   # their centre lines, from the plate's edge
+    border_w=0.8,     # the case's grip groove width (params.GRIP_GROOVE)
+    border_depth=0.4,  # two whole layers (the case's groove is 0.35 / 0.2: a whole layer for the printer)
+    border_r=2.0,     # the centre lines' smallest radius (corners and the scallop's curves are rounded to this)
+    border_clr=2.0,   # the lines stay this far from the logos (they move, the logos do not)
+    tp_plain=2.4,     # the plate's thickness with no bottom keys (chinless): SOLID over the screen, no relief (phase 2, 2026-11-01)
 )
 
 
@@ -132,7 +151,7 @@ def spec(group, **over):
         s['tp'] = s.get('tp') or round(math.ceil((s['pocket_depth'] + s['pocket_roof']) / LAYER - 1e-9) * LAYER, 3)
     else:
         s['pocket_depth'] = 0.0
-        s['tp'] = s.get('tp') or 1.8
+        s['tp'] = s.get('tp') or s['tp_plain']
     if 'G' not in over:
         s['G'] = whole_layers(s['tp'], s['T'], SPEC['G'] - 0.01)
     derive(s)
@@ -197,8 +216,8 @@ def derive(s):
     run = math.sqrt(R * R - (R - s['d_eng'] + s['d_pre']) ** 2)
     s['u_t'] = xa - run + s['cx'] + s['ridge_trim']
     s['u_a'] = s['u_t'] - s['r_i'] - s['f_top']
-    s['u_tip'] = s['u_a'] - 0.5
     s['u_root'] = s['u_t'] - s['f_top'] / 2 + s['L_pr']
+    s['u_tip'] = min(u for u, _ in outline_points(*tongue_outline(s)))     # the tab's free end (its tongue reaches past the ridge)
     s['u_cs'] = s['cxc']
     # ---- the sides: scallop zones (every pad's y range and its mirror about the mid-length, plus the finger margin)
     iv = []
@@ -262,11 +281,78 @@ def round_path(pts, radii):
     return ext_[0], segs
 
 
+def outline_points(pts, radii, n=24):
+    """The round_path outline sampled to points (for extents and containment checks; the CAD uses the exact arcs)."""
+    st, segs = round_path(pts, radii)
+    out, cur = [st], st
+    for sg in segs:
+        if sg[0] == 'line':
+            out.append(sg[1])
+            cur = sg[1]
+            continue
+        mid, end = sg[1], sg[2]
+        ax, ay = cur
+        bx, by = mid
+        cx, cy = end
+        d = 2 * (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by))
+        ux = ((ax * ax + ay * ay) * (by - cy) + (bx * bx + by * by) * (cy - ay) + (cx * cx + cy * cy) * (ay - by)) / d
+        uy = ((ax * ax + ay * ay) * (cx - bx) + (bx * bx + by * by) * (ax - cx) + (cx * cx + cy * cy) * (bx - ax)) / d
+        r = math.hypot(ax - ux, ay - uy)
+        a0, a1, a2 = math.atan2(ay - uy, ax - ux), math.atan2(by - uy, bx - ux), math.atan2(cy - uy, cx - ux)
+        d1, d2 = (a1 - a0) % (2 * math.pi), (a2 - a0) % (2 * math.pi)
+        tot = d2 if d1 < d2 else -((a0 - a2) % (2 * math.pi))
+        out += [(ux + r * math.cos(a0 + tot * k / n), uy + r * math.sin(a0 + tot * k / n)) for k in range(1, n + 1)]
+        cur = end
+    return out
+
+
+def tongue_outline(s):
+    """The tab's SIDE outline in (u, z) as round_path input: root (inside the wall) bottom -> the point where the bottom edge leaves the bed ->
+    the tip vertex -> the top vertex -> root top. Print height h = z_o - z; the bottom edge (toward the bed) rises 45 degrees toward the tip,
+    so it prints without support; the top edge drops from the full height toward the tip in a large arc; the tip is a round. The ridge's whole
+    z band stays inside for u >= u_a (tongue_contains_ridge)."""
+    H = s['z_o'] - s['prong_z_lo']
+    ua, ue = s['u_a'], s['u_root'] + 2.0
+    hT, xA, xC = s['tongue_hT'], s['tongue_xA'], s['tongue_xC']
+    pts_h = [(ue, 0.0), (ua + xA, 0.0), (ua + xA - hT, hT), (ua + xC, H), (ue, H)]
+    return [(u, s['z_o'] - h) for u, h in pts_h], [0.0, s['tongue_RA'], s['tongue_RT'], s['tongue_RC'], 0.0]
+
+
+def tongue_contains_ridge(s):
+    """The ridge's z band at the tab's inner face (45-degree ends) lies inside the side outline from the flat top's start (u_a + r_i) to the root: only the flat top needs the full band; the lead-in shrinks toward the tip."""
+    import shapely
+    poly = shapely.Polygon(outline_points(*tongue_outline(s)))
+    q = s['yt_t'] - s['t_pr'] + 0.3 - s['yw_t']
+    zlo, zhi = s['ridge_z']
+    return poly.contains(shapely.box(s['u_a'] + s['r_i'], zlo - q - 0.2, s['u_root'], zhi + q + 0.2))
+
+
+def tongue_prism(s, y_hi, y_lo):
+    """The tab's side outline extruded across y (from y_hi down to y_lo): cuts the tab, and the ridge's lead-in, to the tongue."""
+    st, segs = round_path(*tongue_outline(s))
+    return trace(cq.Workplane('XZ', origin=(0, y_hi, 0)), st, segs).extrude(y_hi - y_lo)
+
+
 def trace(wp, start, segs):
     wp = wp.moveTo(*start)
     for sg in segs:
         wp = wp.lineTo(*sg[1]) if sg[0] == 'line' else wp.threePointArc(sg[1], sg[2])
     return wp.close()
+
+
+def corner(prev, p, nxt, r):
+    """The exact arc rounding the polygon corner p (between prev and nxt) with radius r -> (tangent point on the prev side, arc midpoint, tangent
+    point on the next side)."""
+    d1, d2 = _unit(prev, p), _unit(p, nxt)
+    cr = d1[0] * d2[1] - d1[1] * d2[0]
+    phi = math.acos(max(-1.0, min(1.0, d1[0] * d2[0] + d1[1] * d2[1])))
+    tl = r * math.tan(phi / 2)
+    A = (p[0] - d1[0] * tl, p[1] - d1[1] * tl)
+    B = (p[0] + d2[0] * tl, p[1] + d2[1] * tl)
+    sg = 1.0 if cr > 0 else -1.0
+    C = (A[0] - d1[1] * sg * r, A[1] + d1[0] * sg * r)
+    pc = math.hypot(p[0] - C[0], p[1] - C[1])
+    return A, (C[0] + (p[0] - C[0]) / pc * r, C[1] + (p[1] - C[1]) / pc * r), B
 
 
 def smooth(t):
@@ -384,19 +470,34 @@ def corner_piece(s):
 # ---- the prong and its ridge -------------------------------------------------------------------------------------
 
 def prong(s, with_ridge=True):
-    """The top prong. Outer face flush with the wall's outer face (y = yt_t); the thinning is on the INNER side: the inner face is t_pr in
-    from the outer face and ramps back to the full wall over `taper` at the root. A plan semicircle for the tip; the top face is rounded
-    and the bed foot chamfered; the ridge stands on the inner face (its base block carries the working geometry out to the tip level)."""
+    """The top tab. Outer face flush with the wall's outer face (y = yt_t); the thinning is on the INNER side: the inner face is t_pr in from the
+    outer face and ramps back to the full wall over `taper` at the root. Its SIDE outline is a tongue (tongue_outline: the bottom edge rises 45
+    degrees from the bed, the top edge drops in a large arc, a round tip), cut from the plan prism; every edge of that outline is rounded (the
+    fillet's tangent chain takes the bed foot along with it), and over the taper the foot's round grows into the plate's 0.6 chamfer (chamfer_ramp:
+    one smooth transition, no step); the ridge stands on the inner face."""
     yt, yw, tp = s['yt_t'], s['yw_t'], s['t_pr']
-    r = tp / 2
-    u0, u1 = s['u_tip'], s['u_root']
+    u0, u1 = s['u_tip'] - 1.0, s['u_root']
     z_hi, z_lo = s['z_o'], s['prong_z_lo']
-    w = (cq.Workplane('XY', origin=(0, 0, z_lo)).moveTo(u0 + r, yt).threePointArc((u0, yt - r), (u0 + r, yt - tp))
-         .lineTo(u1 - s['taper'], yt - tp).lineTo(u1, yw).lineTo(u1 + 1.0, yw).lineTo(u1 + 1.0, yt).close().extrude(z_hi - z_lo))
-    w = try_edges(w, lambda q: q.faces('<Z').edges(), 'fillet', s['prong_top_r'], 'prong top')
-    foot = lambda q: q.faces('>Z').edges(cq.selectors.BoxSelector((u0 - 1, yw - 1, z_hi - 0.05), (u1 - 0.2, yt + 1, z_hi + 0.05)))
-    w = try_edges(w, foot, 'chamfer', s['prong_chamfer'], 'prong foot')
+    pts = [(u0, yt), (u1 + 2.0, yt), (u1 + 2.0, yw), (u1, yw), (u1 - s['taper'], yw + tp), (u0, yw + tp)]
+    pst, psegs = round_path(pts, [0, 0, 0, s['kink_r'], s['kink_r'], 0])
+    plan = trace(cq.Workplane('XY', origin=(0, 0, z_lo)), pst, psegs).extrude(z_hi - z_lo)
+    w = plan.intersect(tongue_prism(s, yt + 0.5, yw - 0.5))
+    prof = lambda q: q.newObject([e for e in q.edges().vals() if e.Center().z < z_hi - 0.2 and e.Center().x < u1 + 0.6])
+    w = guarded(w, try_edges(w, prof, 'fillet', s['prong_top_r'], 'tab outline'), 'tab outline')
+    w = w.cut(chamfer_ramp(s))
     return w.union(ridge(s)) if with_ridge else w
+
+
+def chamfer_ramp(s):
+    """The bed chamfer of the tab's outer edge grows from the foot's prong_chamfer to the plate's bed_chamfer over the taper (a plane: a 45-degree
+    chamfer of linearly growing size is one), and stays there over the overlap with the plate: no step where the tab meets the plate."""
+    yt, zo, e = s['yt_t'], s['z_o'], 0.3
+    u0, u1 = s['u_root'] - s['taper'], s['u_root']
+    c0, c1 = s['prong_chamfer'], s['bed_chamfer']
+    tri = lambda c: [(yt - c - e, zo + e), (yt + e, zo - c - e), (yt + e, zo + e)]
+    ramp = (cq.Workplane('YZ', origin=(u0, 0, 0)).polyline(tri(c0)).close().workplane(offset=u1 - u0).polyline(tri(c1)).close().loft(ruled=True))
+    flat = cq.Workplane('YZ', origin=(u1, 0, 0)).polyline(tri(c1)).close().extrude(2.3)
+    return ramp.union(flat)
 
 
 def ridge(s):
@@ -412,7 +513,7 @@ def ridge(s):
     q = ypi + 0.3 - yw                                                # the (y, z) trapezoid: 45 degrees from the tip level out to the prong
     ends = [(ypi + 0.3, zlo - q), (ypi + 0.3, zhi + q), (yw - b, zhi - b), (yw - b, zlo + b)]
     trap = cq.Workplane('YZ', origin=(ua - 1, 0, 0)).polyline(ends).close().extrude(ri + f + rr + 2)
-    rd = prism.intersect(trap)
+    rd = prism.intersect(trap).intersect(tongue_prism(s, ypi + 0.4, yw - b - 0.5))      # the lead-in shrinks in height with the tab's outline
     sel = lambda w: w.edges(cq.selectors.BoxSelector((ua - 1, yw - b - 0.5, zlo - 3), (ua + ri + f + rr + 1, ypi + 0.1, zhi + 3)))
     return try_edges(rd, sel, 'fillet', s['ridge_r'], 'ridge')
 
@@ -430,8 +531,9 @@ def plate_outline_wp(s, z0):
     Ro = s['R_ci'] + s['tw']
     cxc, cyt, cyb = s['cxc'], s['cyc_t'], s['cyc_b']
     ur, ul, uL, uR = s['u_root'], s['u_l'], s['u_L'], s['u_R']
-    ype_t, ype_b = s['yw_t'], s['yw_b']                  # the plate's edge beside each prong: the wall's inner plane
-    Rt, Rk = s['tongue_r_slot'] if s['caps'] else s['tongue_r'], s['kerf_r']
+    ype_t, ype_b = s['yw_t'], s['yw_b']                  # the plate's edge beside each tab: the wall's inner plane
+    Rt, sw, tap, kr = s['tongue_r_slot'] if s['caps'] else s['tongue_r'], s['slit'], s['taper'], s['kink_r']
+    uc = ur + s['slit_flat']                              # the slit's round end: its centre line
     lo, hi, Lt, ext = s['zone_lo'], s['zone_hi'], s['scallop_Lt'], s['ext']
     ya_b, ya_t = s['cyc_b'] + ext, s['cyc_t'] - ext     # where the plate's edge leaves the stop pieces' wall face
     fits = lo - Lt >= ya_b - 0.01 and ya_t >= hi + Lt - 0.01
@@ -441,7 +543,7 @@ def plate_outline_wp(s, z0):
         """The quintic smoothstep between two parallel edges as an exact degree-5 Bezier: x = x0 + dx S(t), y linear in t."""
         return [(x0 + (x1 - x0) * k, y0 + (y1 - y0) * i / 5) for i, k in enumerate((0, 0, 0, 1, 1, 1))]
 
-    w = cq.Workplane('XY', origin=(0, 0, z0)).moveTo(ur, yb).lineTo(cxc, yb)
+    w = cq.Workplane('XY', origin=(0, 0, z0)).moveTo(uc, yb).lineTo(cxc, yb)
     w = w.threePointArc(_arc_mid((cxc, cyb), Ro, -math.pi / 2, 0.0), (xr, cyb))
     if fits:
         w = w.lineTo(xr, lo - Lt)                                               # the stop piece's wall face, then ease in
@@ -450,10 +552,14 @@ def plate_outline_wp(s, z0):
         w = w.bezier(ease(hi, uR, hi + Lt, xr))
     w = w.lineTo(xr, cyt)
     w = w.threePointArc(_arc_mid((cxc, cyt), Ro, 0.0, math.pi / 2), (cxc, yt))
-    w = w.lineTo(ur, yt)
+    w = w.lineTo(uc, yt)
     # the notch beside the top prong: down the notch end, round into the plate's edge, along it to the tongue's corner
-    w = w.lineTo(ur, ype_t + Rk)
-    w = w.threePointArc(_arc_mid((ur - Rk, ype_t + Rk), Rk, 0.0, -math.pi / 2), (ur - Rk, ype_t))
+    w = w.lineTo(uc, ype_t)                                                    # down the end face (hidden: it lies inside the tab's block)
+    w = w.threePointArc((uc + sw / 2, ype_t - sw / 2), (uc, ype_t - sw))      # the slit's round end (tangent to the tab's face and to the plate edge)
+    a1, m1, b1 = corner((uc, ype_t - sw), (ur, ype_t - sw), (ur - tap, ype_t), kr + sw)       # the plate edge follows the tab's inner face, one slit away
+    w = w.lineTo(*a1).threePointArc(m1, b1)
+    a2, m2, b2 = corner((ur, ype_t - sw), (ur - tap, ype_t), (ul + Rt, ype_t), kr - sw)
+    w = w.lineTo(*a2).threePointArc(m2, b2)
     w = w.lineTo(ul + Rt, ype_t)
     w = w.threePointArc(_arc_mid((ul + Rt, ype_t - Rt), Rt, math.pi / 2, math.pi), (ul, ype_t - Rt))
     if fits:
@@ -463,39 +569,40 @@ def plate_outline_wp(s, z0):
         w = w.bezier(ease(lo, uL, lo - Lt, ul))
     w = w.lineTo(ul, ype_b + Rt)
     w = w.threePointArc(_arc_mid((ul + Rt, ype_b + Rt), Rt, math.pi, 3 * math.pi / 2), (ul + Rt, ype_b))
-    w = w.lineTo(ur - Rk, ype_b)
-    w = w.threePointArc(_arc_mid((ur - Rk, ype_b - Rk), Rk, math.pi / 2, 0.0), (ur, ype_b - Rk))
+    a2, m2, b2 = corner((ul + Rt, ype_b), (ur - tap, ype_b), (ur, ype_b + sw), kr - sw)
+    w = w.lineTo(*a2).threePointArc(m2, b2)
+    a1, m1, b1 = corner((ur - tap, ype_b), (ur, ype_b + sw), (uc, ype_b + sw), kr + sw)
+    w = w.lineTo(*a1).threePointArc(m1, b1)
+    w = w.lineTo(uc, ype_b + sw)
+    w = w.threePointArc((uc + sw / 2, ype_b + sw / 2), (uc, ype_b))
     return w.close()
 
 
 def plate(s, relief=True):
-    """The plate: outline extruded, bed-face chamfer, the screen relief and the key slots cut, then every edge of the inner face (its
-    perimeter and the slots' and the relief's openings) filleted."""
+    """The plate: outline extruded, bed-face chamfer, the key slots cut (relief=False: nothing cut), then every edge of the inner face (its
+    perimeter and the slots' openings) filleted. SOLID over the screen: there is no relief (phase 2, 2026-11-01)."""
     p = plate_outline_wp(s, s['z_i']).extrude(s['tp'])
     p = try_edges(p, lambda q: q.faces('>Z').edges(), 'chamfer', s['bed_chamfer'], 'plate bed chamfer')
     if relief:
         for c in cutters(s):
             p = p.cut(c)
-    # the inner face's edges: the plate's perimeter (0.5), then the relief's and the slots' mouths (what the neighbouring cuts allow)
+    # the inner face's edges: the plate's perimeter (0.5), then the slots' mouths (what the neighbouring cuts allow)
     ym2 = 2 * s['ym']
-    wx0, wx1, wy0, wy1 = s['window']
-    rr = s['relief_xy'] + 0.5
-    cav = [(wx0 - rr, wx1 + rr, min(wy0, ym2 - wy1) - rr, max(wy1, ym2 - wy0) + rr)] if relief else []
-
-    def in_cav(c):
-        return any(a <= c.x <= b and c0 <= c.y <= d for a, b, c0, d in cav)
+    cav = []
     if relief and s['caps']:
         y0 = min(k[2] for k in s['caps']) - s['pocket_y']
         y1 = max(k[3] for k in s['caps']) + s['pocket_y']
         xs1 = max(k[1] for k in s['caps']) + s['pocket_xy'] + s['cx']
-        cav += [(s['u_tip'] - 2, xs1 + 0.5, y0 - 0.5, y1 + 0.5), (s['u_tip'] - 2, xs1 + 0.5, ym2 - y1 - 0.5, ym2 - y0 + 0.5)]
+        cav = [(s['u_l'] - 2, xs1 + 0.5, y0 - 0.5, y1 + 0.5), (s['u_l'] - 2, xs1 + 0.5, ym2 - y1 - 0.5, ym2 - y0 + 0.5)]
+
+    def in_cav(c):
+        return any(a <= c.x <= b and c0 <= c.y <= d for a, b, c0, d in cav)
     perim = lambda q: q.newObject([e for e in q.faces('<Z').edges().vals() if not in_cav(e.Center())])
     mouth = lambda q: q.newObject([e for e in q.faces('<Z').edges().vals() if in_cav(e.Center())])
     p = guarded(p, try_edges(p, perim, 'fillet', s['fillet'], 'plate perimeter, inner face'), 'plate perimeter, inner face')
     if cav:
-        p = guarded(p, try_edges(p, mouth, 'fillet', s['fillet'], 'relief and slot mouths'), 'relief and slot mouths')
-    if relief and s['caps']:                                 # last, where each slot leaves through the leading edge: the vertical and the roof edges
-        ym2 = 2 * s['ym']
+        p = guarded(p, try_edges(p, mouth, 'fillet', s['fillet'], 'slot mouths'), 'slot mouths')
+    if relief and s['caps']:                                 # last, where each slot leaves through the leading edge: its vertical edges
         y0 = min(k[2] for k in s['caps']) - s['pocket_y']
         y1 = max(k[3] for k in s['caps']) + s['pocket_y']
         for a, b in ([(y0, y1), (ym2 - y1, ym2 - y0)] if s['slot_ends'] == 'both' else [(y0, y1)]):
@@ -504,52 +611,40 @@ def plate(s, relief=True):
             if q is p:                                       # a 45-degree chamfer meshes where the fillet's patches do not
                 q = guarded(p, fillet_good(p, box, 0.4, 'slot exit chamfer', 'chamfer'), 'slot exit chamfer')
             p = q
-            if SECOND_PASS:
-                p = fillet_good(p, box, SECOND_PASS, 'slot exit, the rest')
     return p
 
 
-def _rbox(x0, x1, y0, y1, z0, z1, r):
-    """A box with its vertical edges rounded to r (a plan-rounded cutter)."""
-    b = _box(x0, x1, y0, y1, z0, z1)
-    try:
-        return b.edges('|Z').fillet(min(r, (x1 - x0) / 2 - 0.01, (y1 - y0) / 2 - 0.01))
-    except Exception:
-        return b
+def slot_cutter(s, ya, yb, xa, x1, z0, zc):
+    """One key slot's cutter: the plan rectangle ya..yb from the leading face to x1 (rounded 1.0 at x1), z0..zc, with its roof FLARED 45
+    degrees up over the last roof_flare mm before the leading face (a wedge on the same y span, unioned into one solid): the roof leaves the
+    face in a bevel, not a 90-degree edge (a fillet after the cut would not take)."""
+    ul, c, e = s['u_l'], s['roof_flare'], 0.3
+    st, segs = round_path([(ul + c, ya), (x1, ya), (x1, yb), (ul + c, yb)], [0, 1.0, 1.0, 0])
+    body = trace(cq.Workplane('XY', origin=(0, 0, z0)), st, segs).extrude(zc - z0)
+    if c <= 0:
+        return body
+    wedge = [(ul + c, z0), (ul + c, zc), (ul - e, zc + c + e), (xa, zc + c + e), (xa, z0)]
+    return body.union(cq.Workplane('XZ', origin=(0, yb, 0)).polyline(wedge).close().extrude(yb - ya))
 
 
 def cutters(s):
-    """The cut into the plate's inner face: ONE cavity, as deep as the slot needs. With the bottom keys it is the screen relief (the window
-    and its mirror about the mid-length: the cover turns end for end) joined to a key slot at EACH end of the plate that runs out through
-    the leading edge (the plate passes over the caps on its way, and the cover turns end for end); without them just the relief. The
-    outline is one rounded polygon (exact arcs), so there are no cusps where the slot meets the relief."""
+    """The cut into the plate's inner face: with the bottom keys, a key slot at EACH end of the plate that runs out through the leading edge
+    (the plate passes over the caps on its way, and the cover turns end for end); without them nothing. The plate is SOLID over the screen
+    (phase 2: the relief is gone)."""
+    if not s['caps']:
+        return []
     z0 = s['z_i'] - 0.1
     ym2 = 2 * s['ym']
-    wx0, wx1, wy0, wy1 = s['window']
-    r = s['relief_xy']
-    if not s['caps']:
-        depth = s['tp'] - s['web']
-        if depth <= 0.05:
-            return []
-        return [_rbox(wx0 - r, wx1 + r, min(wy0, ym2 - wy1) - r, max(wy1, ym2 - wy0) + r, z0, s['z_i'] + depth, 3.0)]
     top = max(k[4] for k in s['caps'])
     zc = top + s['key_clr'] + s['gp']
     x1 = max(k[1] for k in s['caps']) + s['pocket_xy'] + s['cx']
     y0 = min(k[2] for k in s['caps']) - s['pocket_y']
     y1 = max(k[3] for k in s['caps']) + s['pocket_y']
-    xa = s['u_tip'] - 1.0
-    rx0, rx1 = wx0 - r, wx1 + r
-    ya, yb = ym2 - y0, ym2 - y1                          # the top slot's outer and inner walls
-    if s['slot_ends'] == 'both':
-        pts = [(xa, y0), (x1, y0), (x1, y1), (rx1, y1), (rx1, yb), (x1, yb), (x1, ya), (xa, ya), (xa, yb), (rx0, yb), (rx0, y1), (xa, y1)]
-        rc = max(0.3, min(3.0, rx1 - x1 - 1.4))        # the relief's corners: R3 where the slot's concave round leaves room
-        rad = [0, 1.0, 1.0, rc, rc, 1.0, 1.0, 0, 0, 1.0, 1.0, 0]
-    else:                                                # the deliberately wrong one-ended cover: the relief up to its own top edge
-        ytop = max(wy1, ym2 - wy0) + r
-        pts = [(xa, y0), (x1, y0), (x1, y1), (rx1, y1), (rx1, ytop), (rx0, ytop), (rx0, y1), (xa, y1)]
-        rad = [0, 1.0, 1.0, 3.0, 3.0, 3.0, 1.0, 0]
-    st, segs = round_path(pts, rad)
-    return [trace(cq.Workplane('XY', origin=(0, 0, z0)), st, segs).extrude(zc - z0)]
+    xa = s['u_l'] - 1.0
+    out = [slot_cutter(s, y0, y1, xa, x1, z0, zc)]
+    if s['slot_ends'] == 'both':                         # (the deliberately wrong one-ended cover has the bottom slot only)
+        out.append(slot_cutter(s, ym2 - y1, ym2 - y0, xa, x1, z0, zc))
+    return out
 
 
 def logo_polys(s):
@@ -562,6 +657,38 @@ def logo_polys(s):
         g = sa.scale(wkt.loads(d['wkt']), xfact=-1.0, yfact=1.0, origin=(s['xc'], 0))
         out[name] = (sa.translate(g, xoff=s['cx'], yoff=0.0), d['depth'])
     return out
+
+
+def plate_polygon(s):
+    """The plate's plan outline as a shapely polygon (design frame): the exact outline wire sampled every 0.1 mm."""
+    import shapely
+    wire = plate_outline_wp(s, 0.0).val()
+    n = int(wire.Length() / 0.1)
+    return shapely.Polygon([wire.positionAt(k / n).toTuple()[:2] for k in range(n)]).buffer(0)
+
+
+def border_polys(s):
+    """The two border grooves as shapely geometry (design frame): each is the plate's outline moved in by border_insets, its corners rounded to
+    border_r (opening and closing), made border_w wide; whatever lies within border_clr of a logo is cut away (the lines give way, the logos
+    do not). {inset: geometry}"""
+    import shapely
+    from shapely.ops import unary_union
+    plate = plate_polygon(s)
+    logos = unary_union([g for g, _ in logo_polys(s).values()]).buffer(s['border_clr'])
+    out = {}
+    r = s['border_r']
+    for d in s['border_insets']:
+        line = plate.buffer(-d).buffer(-r).buffer(r).buffer(r).buffer(-r)          # in by d, then convex and concave corners rounded to r
+        ring = line.buffer(s['border_w'] / 2).difference(line.buffer(-s['border_w'] / 2))
+        ring = ring.difference(logos).buffer(-0.12).buffer(0.12).simplify(0.008)    # clear of the logos; the cut ends rounded; 8 microns of chord
+        out[d] = ring
+    return out
+
+
+def border_cutter(s):
+    zo, depth = s['z_o'], s['border_depth']
+    from shapely.ops import unary_union
+    return _prisms(unary_union(list(border_polys(s).values())), zo - depth, zo + 0.2)
 
 
 def _prisms(g, z0, z1):
@@ -594,7 +721,7 @@ def mirror_y(wp, s):
 
 def build(s, ridge_on=True, relief=True):
     """The whole cover in the design frame. ridge_on=False: the rigid frame (check.py moves it and tests the ridge by its own deflection);
-    relief=False: no slots, screen relief or logos (the plain plate)."""
+    relief=False: no slots or logos (the plain plate)."""
     NOTES.clear()
     body = plate(s, relief)
     top = straight_wall(s, s['u_root'], s['u_cs']).union(corner_piece(s))
@@ -604,6 +731,8 @@ def build(s, ridge_on=True, relief=True):
     if relief and s['logo']:
         for name in ('icon', 'wordmark'):
             body = body.cut(logo_cutter(s, name))
+    if relief and s['border']:
+        body = body.cut(border_cutter(s))
     return body
 
 
