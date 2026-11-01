@@ -70,6 +70,52 @@ def side_keys(case, slug):
     return out
 
 
+def pads(case, slug, p):
+    """{ref: (side, y0, y1, z0, z1, x_face)}: each side key's PAD, the part that stands past the case's side face by more than 0.3
+    (skey_*.stl). side is +1 (right, +X) or -1 (left)."""
+    out = {}
+    for f in sorted((ENC / case / 'out' / slug).glob('skey_*.stl')):
+        v = np.asarray(trimesh.load(f, force='mesh').vertices)
+        r = v[v[:, 0] > p['X1'] + 0.3]
+        side = 1
+        if not len(r):
+            r = v[v[:, 0] < p['X0'] - 0.3]
+            side = -1
+        out[f.stem[5:]] = [side, float(r[:, 1].min()), float(r[:, 1].max()), float(r[:, 2].min()), float(r[:, 2].max()),
+                           float(r[:, 0].max() if side > 0 else r[:, 0].min())]
+    return out
+
+
+def window_face(case, slug, zf):
+    """The screen opening where it meets the front face: [x0, x1, y0, y1] of the cells whose face is sunk more than 0.05 (the tub
+    STL, a vtk ray from above on a 0.25 grid), left of the key openings (y >= 5)."""
+    sys.path.insert(0, str(HERE))
+    import raycast
+    m = mesh(case, slug, 'tub')
+    c = raycast.Caster(m)
+    b = m.bounds
+    xs = np.arange(b[0][0] + 2.4, b[1][0] - 2.4, 0.1)
+    ys = np.arange(5.0, b[1][1] - 2.4, 0.5)
+    hit = []
+    for y in ys:
+        for x in xs:
+            h = c.first_hit([x, y, zf + 5], [x, y, zf - 8])
+            if h is not None and h[2] < zf - 0.05:
+                hit.append((x, y))
+    h = np.array(hit)
+    return [float(h[:, 0].min()), float(h[:, 0].max()), float(h[:, 1].min()), float(h[:, 1].max())]
+
+
+def logos(case, slug):
+    """The case's own back logos (its logo.py and params.py, imported in a subprocess): {'icon': {...}, 'wordmark': {...}} with
+    'wkt' (the placed polygon in the case's CAD frame), 'depth', 'bounds'."""
+    r = subprocess.run([sys.executable, '-X', 'utf8', '-B', str(HERE / 'logo_dump.py'), case, slug, str(ENC)],
+                       capture_output=True, text=True, timeout=300)
+    if r.returncode:
+        raise SystemExit(f'{case} {slug}: logo_dump failed: ' + r.stderr[-1500:])
+    return json.loads(r.stdout.strip().splitlines()[-1])
+
+
 def window(case, slug, zf):
     """The screen window's box on the face, [x0, x1, y0, y1]: where the tub's front face is sunk more than 0.3 below the face
     (a vtk ray from above on a 0.25 grid; the bottom-key openings, at y < 5, are left out)."""
@@ -111,7 +157,7 @@ def info(case, slug, refresh=False):
     OUT.mkdir(exist_ok=True)
     cache = json.loads(CACHE.read_text()) if CACHE.exists() else {}
     key = f'{case}/{slug}'
-    if key in cache and not refresh and all(k in cache[key] for k in ('caps', 'side_keys', 'window', 'usb')):
+    if key in cache and not refresh and all(k in cache[key] for k in ('caps', 'side_keys', 'window', 'usb', 'pads', 'window_face', 'logos')):
         return cache[key]
     p = read_params(case, slug)
     d = dict(case=case, slug=slug, **p)
@@ -119,6 +165,9 @@ def info(case, slug, refresh=False):
     d['side_keys'] = side_keys(case, slug)
     d['window'] = window(case, slug, p['Z_FRONT'])
     d['usb'] = usb(case, slug, p)
+    d['pads'] = pads(case, slug, p)
+    d['window_face'] = window_face(case, slug, p['Z_FRONT'])
+    d['logos'] = logos(case, slug)
     cache[key] = d
     CACHE.write_text(json.dumps(cache, indent=1, sort_keys=True))
     return d
