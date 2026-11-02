@@ -333,11 +333,11 @@ prime tower on (process settings, **Multimaterial** tab -> **Prime tower** -> **
 On the chinless plate, which has no rafts, you can switch the tower on without moving the lid. The bodies are also single
 files: `4.26/lid-inlay-wordmark`, `lid-inlay-icon` (and `lid-chinless-inlay-*`), `3.68/lid-inlay-*`, in the lid's own print frame.
 
-**Slide-on cover, 2026-11-01 (round 2; only round 1's fit coupon A was printed, no whole cover yet):** a TI-84 style reversible cover, one printed part, that goes over
+**Slide-on cover, 2026-11-01 (round 2 and 3; coupon A and Ian's phase-2 cover were printed, the phase-3 cover described here was not):** a TI-84 style reversible cover, one printed part, that goes over
 the screen to carry the reader and over the back while you read it. It slides on sideways (along the case's width), gripping the top and
 bottom end walls; a snap at its open end clicks it home in the case's rounded corners, and two corner pieces set the other end. It goes on any of
 four ways (front or back, either way round), its long sides curve inward over the side keys, its edges are rounded, and the Silkscreen icon and
-wordmark and two border lines are engraved on its outer face (the logo reads upside down in the two turned poses), the plate is solid over the screen, and the snap tab ends in a rounded tongue. **The case does not change**, so it fits every case
+wordmark and a rounded-rectangle border (two lines) are engraved on its outer face (the logo reads upside down in the two turned poses), the plate is solid over the screen, and the snap tab ends in a rounded tongue. **The case does not change**, so it fits every case
 already printed. Three covers, by envelope: `cover/4.26/cover-keyed` (the 16 4.26 builds with bottom keys, light strip included),
 `cover/4.26/cover-chinless` (the 16 chinless builds), `cover/3.68/cover-standard`. They have their own, **temporary**, plate file,
 `silkscreen-cover-plates.3mf` (one plate per cover; the coupons are gone), and are not in the case plate files or the configuration projects yet.

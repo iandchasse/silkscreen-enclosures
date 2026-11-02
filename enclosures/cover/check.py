@@ -53,7 +53,7 @@ OUTJ = HERE / 'out'
 EPS_VOL = 0.02          # mm3: overlap volumes below this are float32 noise
 MIN_CLEAR = 0.10        # mm: the least frame-to-case distance at the nominal pose
 FLAT_TOL = 0.12         # mm: the ridge's deflection may vary this much along the straight end face
-D_MAX_ALLOW = 0.95      # mm: peak deflection along the whole path (the design deflection is d_eng = 0.7)
+D_MAX_ALLOW = 0.25      # mm: peak deflection along the whole path may exceed the design deflection d_eng by this much (the Z play moves the contact)
 FINGER_R = 7.0          # mm: the fingertip
 BEHIND_MIN = 0.6        # mm: plate left behind the engraving
 PHASE1_FOOTPRINT = {'keyed': (72.11, 128.8), 'chinless': (72.11, 121.2), 'x3': (72.11, 111.8)}     # the phase-1 STLs' x and y extents (mm)
@@ -281,6 +281,25 @@ def logo_checks(cov_mesh, cov, s, cm):
 
 # ---- the checks -----------------------------------------------------------------------------------------------------
 
+Y_FLOOR = 0.12          # mm per side: the least nominal clearance in Y (channel wall to the end face, corner piece to the corner arc)
+Y_TRAVEL_MIN = 0.05     # mm per side: the rigid cover's first touch at home along Y may not be closer than this
+
+
+def y_first_touch(cm, frame, s, flip, turn, sign, hi=0.6, steps=11):
+    """How far (mm) the rigid frame at home can move along +Y (sign 1) or -Y (sign -1) before it first touches the case (bisection on the overlap volume)."""
+    home = -s['cx'] + 0.01
+    if cm.overlap(frame, mat(s, home, flip, turn, sign * hi, 0.0)) < EPS_VOL:
+        return hi
+    lo, top = 0.0, hi
+    for _ in range(steps):
+        mid = (lo + top) / 2
+        if cm.overlap(frame, mat(s, home, flip, turn, sign * mid, 0.0)) < EPS_VOL:
+            lo = mid
+        else:
+            top = mid
+    return lo
+
+
 def check_build(group, case, slug, cov, frame, cov_mesh, step=1.0, verbose=True, s=None):
     s = s or M.spec(group)
     cm = Case(case, slug)
@@ -310,6 +329,11 @@ def check_build(group, case, slug, cov, frame, cov_mesh, step=1.0, verbose=True,
             worst = max(worst, cm.overlap(frame, mat(s, home + 0.5, flip, turn, dy, 0.0)))
         row(f'home {pose}: frame overlap with the cover moved a play-width in z (+-{s["gp"] - 0.05:.2f}) or y (+-{s["cy"] - 0.05:.2f})',
             worst < EPS_VOL, f'{worst:.4f} mm3 worst')
+        up, dn = y_first_touch(cm, frame, s, flip, turn, 1.0), y_first_touch(cm, frame, s, flip, turn, -1.0)
+        row(f'home {pose}: rigid Y travel (the frame moved along +Y / -Y from home until it first touches the case; the stop end limits it)',
+            min(up, dn) >= Y_TRAVEL_MIN, f'{up:.3f} / {dn:.3f} mm per side, {up + dn:.3f} mm in all (walls {s["cy"]:.2f} per side, corner pieces {s["corner_clr"]:.2f} radial)')
+    row('Y clearances at or above the floor (nominal, per side): channel wall to the end face, corner piece to the corner arc',
+        min(s['cy'], s['corner_clr']) >= Y_FLOOR - 1e-9, f'{s["cy"]:.2f} / {s["corner_clr"]:.2f} mm (floor {Y_FLOOR})')
     # 2. the key slots (bottom keys): plate at its nearest, both front poses, at home and along the path
     if cm.caps:
         for pose in ('front', 'front-turned'):
@@ -358,7 +382,7 @@ def check_build(group, case, slug, cov, frame, cov_mesh, step=1.0, verbose=True,
             dmax = max(float(dl.max()) for dl in dls.values())
             row(f'ridge {pose}, case {end} end: deflection on the straight face (all Z play)', var <= FLAT_TOL,
                 f'{d0[iflat].min():.2f}..{d0[iflat].max():.2f} mm (spread {var:.2f} at worst Z play; design {s["d_eng"]})')
-            row(f'ridge {pose}, case {end} end: peak deflection on the whole path (all Z play)', dmax <= D_MAX_ALLOW,
+            row(f'ridge {pose}, case {end} end: peak deflection on the whole path (all Z play)', dmax <= s['d_eng'] + D_MAX_ALLOW,
                 f'{dmax:.2f} mm (design {s["d_eng"]})')
             pre = float(d0[home_i])
             row(f'ridge {pose}, case {end} end: preload at home', 0.0 <= pre <= s['d_pre'] + 0.15, f'{pre:.2f} mm (design {s["d_pre"]})')
@@ -400,16 +424,28 @@ def check_build(group, case, slug, cov, frame, cov_mesh, step=1.0, verbose=True,
     row('the cover stays inside the phase-1 footprint (x and y extents, mm)', cov_mesh.extents[0] <= fx + 1e-3 and cov_mesh.extents[1] <= fy + 1e-3,
         f'{cov_mesh.extents[0]:.2f} x {cov_mesh.extents[1]:.2f} (phase 1: {fx} x {fy})')
     # 6b. the tab's tongue and the border lines
-    row('the ridge z band lies inside the tab side outline (the tongue) from u_a to the root', M.tongue_contains_ridge(s), f'tab tip {s["u_a"] - s["u_tip"]:.1f} mm past the ridge')
+    row('the ridge z band lies inside the tab side outline (the tongue) from u_a to the root', M.tongue_contains_ridge(s), f'tab tip {s["u_a"] - s["u_tip"]:+.1f} mm past the ridge start (negative: the first {-(s["u_a"] - s["u_tip"]):.1f} mm of the lead-in is trimmed to the tab outline)')
     if s['border']:
         import shapely
         from shapely.ops import unary_union
         pl = M.plate_polygon(s)
         bp = unary_union(list(M.border_polys(s).values()))
         lg = unary_union([g for g, _ in M.logo_polys(s).values()])
-        row('border lines: on the plate, at least 2 mm in from its edge (so never across a slit or the tab), 2 mm from the logos',
-            pl.contains(bp) and bp.distance(pl.exterior) >= 2.0 and bp.distance(lg) >= s['border_clr'] - 1e-6,
+        row('border lines: on the plate, at least 1 mm in from its edge (the slit round ends included), 2 mm from the logos',
+            pl.contains(bp) and bp.distance(pl.exterior) >= 1.0 - 1e-6 and bp.distance(lg) >= s['border_clr'] - 1e-6,
             f'nearest to the plate edge {bp.distance(pl.exterior):.2f} mm, to the logos {bp.distance(lg):.2f} mm')
+        outer = M.border_polys(s)[min(s['border_insets'])]
+        ob = outer.bounds
+        ys = np.linspace(ob[1] + s['border_r'] + 1.0, ob[3] - s['border_r'] - 1.0, 11)
+        edges_x = [shapely.LineString([(ob[0] - 5, y), (ob[2] + 5, y)]).intersection(outer).bounds for y in ys]
+        lx = [e[0] for e in edges_x]
+        rx = [e[2] for e in edges_x]
+        straight = max(np.ptp(lx), np.ptp(rx))
+        axis = (lg.bounds[0] + lg.bounds[2]) / 2
+        off = (bp.bounds[0] + bp.bounds[2]) / 2 - axis
+        row('border lines: a rounded rectangle: long sides straight along the whole length, symmetric about the logo axis',
+            straight < 0.05 and abs(off) < 0.3 and abs(ob[0] - (s['u_L'] + min(s['border_insets']) - s['border_w'] / 2)) < 0.05,
+            f'side x spread {straight:.3f} mm, centre {off:+.2f} mm off the logo axis, outer line {ob[0] - s["u_L"]:.2f} mm in from the scallop narrow middle (insets {s["border_insets"]})')
         zf = s['z_o'] - s['border_depth']
         best = 0.0
         for tt in np.arange(0.2, 3.01, 0.1):
@@ -470,12 +506,16 @@ def first_touch_angle(s, maps, samples, flip, turn, case_end, dz, lo=40.0, hi=78
     return float(np.degrees(np.arctan(best))), float(s0)
 
 
-def contact_angles(group='keyed', slug='standard', mesh=None, label=''):
-    """The first-touch angle for every pose, both case ends and the Z play, the worst per pose: {pose: (angle, shift)}."""
-    s = M.spec(group)
+OLD_SNAP = dict(d_eng=0.7, d_pre=0.15, r_i=3.0, f_top=1.6, r_r=1.0, lead_h=0.0, lead_deg=8.0, ridge_half=3.7, L_pr=11.0, tongue_shift=0.0)   # coupon A, 27bbdaf and phase 2 (210915c)
+
+
+def contact_angles(group='keyed', slug='standard', mesh=None, label='', over=None):
+    """The first-touch angle for every pose, both case ends and the Z play, the worst per pose: {pose: (angle, shift)}. `over`: the snap numbers an
+    older cover (`mesh`) was built with (OLD_SNAP)."""
+    s = M.spec(group, **(over or {}))
     case = {'keyed': 'case-426', 'chinless': 'case-426', 'x3': 'case-368'}[group]
     cm = Case(case, slug)
-    maps = end_maps(cm, s)
+    maps = end_maps(cm, M.spec(group))
     cov_mesh = mesh if mesh is not None else trimesh.load(DESIGN / f'{group}.stl', force='mesh')
     samples = ridge_samples_mesh(cov_mesh, s)
     G2 = s['G'] / 2
@@ -601,17 +641,22 @@ def prong_thickness(mesh, s, z):
 
 
 def snap_compare():
-    """27bbdaf's keyed cover against this one, on the real standard 4.26 end faces: the prong's thickness profile, the deflection along the
-    path, the force and strain estimates (beam model: E 2500..3500, soft and stiff width, mu 0.2..0.4), through the same ray casts."""
+    """The keyed cover's snap against coupon A's geometry (27bbdaf), against phase 2 (210915c: the cover Ian printed) and as it is now (the C3 change),
+    on the real standard 4.26 end faces: the prong's thickness profile, the deflection along the path, the force and strain estimates (beam model:
+    E 2500..3500, soft and stiff width, mu 0.2..0.4), through the same ray casts. Each cover is measured with the snap numbers it was built with."""
     import edges
-    s = M.spec('keyed')
     cm = Case('case-426', 'standard')
-    maps = end_maps(cm, s)
-    sh = np.arange(-s['cx'], 78.0, 0.25)
-    fa, fb = flat_range(s)
-    iflat = (sh >= fa) & (sh <= fb)
+    s_now = M.spec('keyed')
+    maps = end_maps(cm, s_now)
+    sh = np.arange(-s_now['cx'], 78.0, 0.25)
     res = {}
-    for label, mesh in (('27bbdaf (coupon A geometry)', edges.old_cover_mesh()), ('round 2', trimesh.load(DESIGN / 'keyed.stl', force='mesh'))):
+    covers = [('coupon A (27bbdaf)', edges.old_cover_mesh(), OLD_SNAP),
+              ('phase 2 (printed)', trimesh.load(HERE / 'ref' / 'phase2-210915c-keyed-prong.stl', force='mesh'), OLD_SNAP),
+              ('now (C3)', trimesh.load(DESIGN / 'keyed.stl', force='mesh'), {})]
+    for label, mesh, over in covers:
+        s = M.spec('keyed', **over)
+        fa, fb = flat_range(s)
+        iflat = (sh >= fa) & (sh <= fb)
         samples = ridge_samples_mesh(mesh, s)
         d0 = deflection_path(s, maps, sh, False, False, 'top', 0.0, samples)
         rows = []
@@ -627,20 +672,31 @@ def snap_compare():
         res[label] = dict(d_flat=(float(d0[iflat].min()), float(d0[iflat].max())), d_peak=float(d0.max()), nominal=nom,
                           pull_range=(min(r['pull'] for r in rows), max(r['pull'] for r in rows)),
                           push_range=(min(r['push'] for r in rows), max(r['push'] for r in rows)),
-                          strain_max=max(r['strain'] for r in rows), thickness=th)
-    a, b = res['27bbdaf (coupon A geometry)'], res['round 2']
-    for k, v in res.items():
-        n = v['nominal']
-        print(f'{k}: deflection on the flat {v["d_flat"][0]:.2f}..{v["d_flat"][1]:.2f}, peak {v["d_peak"]:.2f} mm; nominal one prong: stiffness '
-              f'{n["k"]:.2f} N/mm, pull-off peak {n["pull"]:.2f} N (range {v["pull_range"][0]:.2f}-{v["pull_range"][1]:.2f}), push-on peak '
-              f'{n["push"]:.2f} N, drag {n["drag"]:.2f} N, preload {n["preload"]:.2f} N, strain {100 * n["strain"]:.2f} % (worst {100 * v["strain_max"]:.2f} %)')
-    ta, tb = np.array([t for _, t in a['thickness']]), np.array([t for _, t in b['thickness']])
-    print('prong thickness along u (section 0.9 under the bed face), old / new:')
-    print('  ' + ' '.join(f'{u:.1f}:{x:.2f}/{y:.2f}' for (u, _), x, y in zip(a['thickness'], ta, tb)))
+                          drag_range=(min(r['drag'] for r in rows), max(r['drag'] for r in rows)),
+                          strain_max=max(r['strain'] for r in rows), thickness=th, u_a=s['u_a'])
+    names = list(res)
+    print('one prong, beam model (E 3000, ridge width, mu 0.3), the real end faces:')
+    print(f'{"":30s}' + ''.join(f'{n:>22s}' for n in names))
+    line = lambda lab, f: print(f'{lab:30s}' + ''.join(f'{f(res[n]):>22s}' for n in names))
+    line('deflection on the flat, mm', lambda v: f'{v["d_flat"][0]:.2f}..{v["d_flat"][1]:.2f}')
+    line('peak deflection, mm', lambda v: f'{v["d_peak"]:.2f}')
+    line('stiffness k, N/mm', lambda v: f'{v["nominal"]["k"]:.2f}')
+    line('pull-off peak, N', lambda v: f'{v["nominal"]["pull"]:.2f}')
+    line('  range over E, width, mu', lambda v: f'{v["pull_range"][0]:.2f}-{v["pull_range"][1]:.2f}')
+    line('push-on peak, N', lambda v: f'{v["nominal"]["push"]:.2f}')
+    line('sliding drag, N', lambda v: f'{v["nominal"]["drag"]:.2f}')
+    line('preload at home, N', lambda v: f'{v["nominal"]["preload"]:.2f}')
+    line('strain, % (worst case)', lambda v: f'{100 * v["nominal"]["strain"]:.2f} ({100 * v["strain_max"]:.2f})')
     rel = lambda x, y: 100.0 * (y - x) / x
-    print(f'differences, new vs old: deflection peak {rel(a["d_peak"], b["d_peak"]):+.1f} %, pull-off peak {rel(a["nominal"]["pull"], b["nominal"]["pull"]):+.1f} %, '
-          f'push-on peak {rel(a["nominal"]["push"], b["nominal"]["push"]):+.1f} %, drag {rel(a["nominal"]["drag"], b["nominal"]["drag"]):+.1f} %, '
-          f'strain {rel(a["nominal"]["strain"], b["nominal"]["strain"]):+.1f} %; thickness differs by at most {float(np.abs(ta - tb).max()):.2f} mm')
+    for ref in names[:-1]:
+        a, b = res[ref]['nominal'], res['now (C3)']['nominal']
+        print(f'now vs {ref}: pull-off {rel(a["pull"], b["pull"]):+.1f} %, push-on {rel(a["push"], b["push"]):+.1f} %, drag {rel(a["drag"], b["drag"]):+.1f} %, '
+              f'strain {rel(a["strain"], b["strain"]):+.1f} %, peak deflection {rel(res[ref]["d_peak"], res["now (C3)"]["d_peak"]):+.1f} %')
+    # the prong's thickness, aligned at the ridge's start (u - u_a): the tab is longer now, so compare along its own length
+    print('prong thickness (section 0.9 under the bed face) by distance from the ridge start u_a:')
+    for n in names:
+        th = res[n]['thickness']
+        print(f'  {n:22s} ' + ' '.join(f'{u - res[n]["u_a"]:.1f}:{x:.2f}' for u, x in th[::2]))
     return res
 
 
@@ -659,9 +715,11 @@ if __name__ == '__main__':
     if a.angle:
         import edges
         res = {}
-        for lab, grp, mesh in (('27bbdaf', 'keyed', edges.old_cover_mesh()), ('round 2', 'keyed', None), ('round 2 chinless', 'chinless', None), ('round 2 3.68', 'x3', None)):
+        p2 = trimesh.load(HERE / 'ref' / 'phase2-210915c-keyed-prong.stl', force='mesh')
+        for lab, grp, mesh, over in (('27bbdaf', 'keyed', edges.old_cover_mesh(), OLD_SNAP), ('phase 2', 'keyed', p2, OLD_SNAP), ('now', 'keyed', None, None),
+                                     ('now chinless', 'chinless', None, None), ('now 3.68', 'x3', None, None)):
             slug = 'chinless' if grp == 'chinless' else 'standard'
-            r = contact_angles(grp, slug, mesh, lab)
+            r = contact_angles(grp, slug, mesh, lab, over)
             res[lab] = r
             print(f'{lab}: first-touch angle, worst of both case ends and the Z play: ' + ', '.join(f'{k} {v[0]:.1f} deg (at shift {v[1]:.2f})' for k, v in r.items()), flush=True)
         (OUTJ / 'check-angle.json').write_text(json.dumps(res, indent=1, default=float))

@@ -40,10 +40,10 @@ LAYER = 0.2
 # ---- the numbers ------------------------------------------------------------------------------------------------
 SPEC = dict(
     # ---- fit: unchanged from coupon A, which Ian printed and found fine (2026-11-01)
-    cy=0.30,          # channel wall to the end face, per side (FDM: as printed 0.20 / 0.10 / 0.00 best / typical / worst)
+    cy=0.20,          # channel wall to the end face, per side (phase 2: 0.30; Ian: the top-to-bottom room a tiny bit tighter; the 3.68 overrides to 0.15). Printing takes some of it: see the README
     cx=0.30,          # stop piece to the long side in the drawn pose; closed at home (the snap preloads the cover into it)
     G=0.70,           # total Z play: plate gap + lip gap (whole layers: whole_layers)
-    gn=0.45,          # normal clearance of the lip's 47-degree face to the back round (0.37 to the front's)
+    gn=0.375,         # normal clearance of the lip's 47-degree face to the back round (phase 2: 0.45). Smaller ONLY to hold the Z travel at phase 2's 0.712 (0.711 on the 3.68): the tighter Y fit (cy, corner_clr) made the corner arcs more concentric, which had loosened the lip's Z by 0.11 / 0.16
     tw=1.6,           # channel wall: four 0.4 lines
     ts=1.6,           # stop piece wall
     tl=1.2,           # lip thickness at its tip (the tip is a half round of lip_r)
@@ -51,17 +51,19 @@ SPEC = dict(
     # ---- the snap prong (the working geometry is A's: thickness profile, root, length, ridge height and ramps)
     t_pr=0.8,         # prong thickness: two lines, in plane along the layers
     taper=4.0,        # the prong's INNER face thickens to the full wall at its root over this length (the outer face is flush)
-    d_eng=0.7,        # the ridge's tip stands this far inside the end face plane at home
-    d_pre=0.15,       # preload at home
-    r_i=3.0,          # insertion ramp (18 degrees)
-    f_top=1.6,        # flat top of the ridge
-    r_r=1.0,          # removal ramp (45 degrees)
-    ridge_half=3.7,   # the ridge's z span at the wall plane: +-3.7 about the case's mid-plane (5.4 at its tip: 45-degree ends)
+    d_eng=0.9,        # the ridge's tip stands this far inside the end face plane at home (phase 2: 0.7 -> 0.9, with a softer tab and a gentle last stretch of the lead-in)
+    d_pre=0.22,       # preload at home (phase 2: 0.15)
+    r_i=4.2,          # the lead-in (insertion ramp), total length: a ramp of about 25 degrees, then a gentle last stretch (lead_h, lead_deg)
+    lead_h=0.4,       # the lead-in's last lead_h of height is a gentler ramp (lead_deg): 0 = one ramp. It decouples the push-on from the pull-off
+    lead_deg=9.0,     # ... at this angle
+    f_top=0.4,        # flat top of the ridge (the lead-in took the rest of phase 1's 4.6 mm: the tab does not stand further out)
+    r_r=0.92,         # removal ramp (50 degrees with b = cy + d_eng = 1.1: phase 2, was 45)
+    ridge_half=3.9,   # the ridge's z span at the wall plane: +-3.9 about the case's mid-plane (the apex band is 5.4 wide as phase 1's 3.7 made it at the lower ridge)
     ridge_shift=0.0,  # moves the ridge's band along the wall (only the check's deliberately wrong cover uses it)
     ridge_trim=0.05,  # the ridge sits this much further along u: its 0.3 and 0.5 roundings cut the corner of the 45-degree ramp, which took 0.03 mm off the home preload
     h_pr_top=0.55,    # the prong stands this far past the ridge base's top
-    L_pr=11.0,        # prong root to the ridge's flat-top centre
-    corner_clr=0.20,  # the corner pieces' inner radius = CORNER_R + this
+    L_pr=11.55,       # prong root to the ridge's flat-top centre (phase 2: 11.0; longer = softer, so the taller ridge keeps the sliding drag within +15%)
+    corner_clr=0.14,  # the corner pieces' inner radius = CORNER_R + this (phase 2: 0.20; with cy 0.30 it put the pieces' centres 0.1 off the case's arcs in y, and THAT, not the walls, set the rigid Y travel: 0.169 per side)
     # ---- round 2: edges
     bed_chamfer=0.6,  # 45 degrees round the whole bed-face (outer face) perimeter of the plate
     prong_chamfer=0.1,  # the same round the prong's foot, much smaller: it is only 0.8 thick, and the CC2 (EFC 0.1, classic walls) lays no first-layer line narrower than about 0.45 (0.3 left 0.4)
@@ -76,6 +78,7 @@ SPEC = dict(
     kink_r=8.0,       # the tab's inner face turns 11 degrees at the ends of its taper: rounded (the plate edge is one slit away, so R +- slit)
     slit_flat=1.2,    # the plate edge runs flat this far before the slit's round end
     slit=0.8,         # the slit between the plate and each tab: one uniform width, following the tab's inner face, ending in a round end at the root
+    tongue_shift=0.6,  # the tongue outline's x offset from u_a: the taller ridge's longer lead-in moved u_a left, the tab's tip stays where it was
     tongue_hT=1.5,    # the tab's side outline (print height h above the bed, x = u - u_a): the bottom edge rises 45 degrees from x = tongue_xA ...
     tongue_xA=2.0,    # ... to the tip vertex (x = xA - hT, h = hT), the top edge runs from the tip vertex up to the vertex at x = tongue_xC, h = the full height
     tongue_xC=-1.0,
@@ -99,10 +102,11 @@ SPEC = dict(
     slot_ends='both',  # 'both' (round 2) or 'bottom' (the deliberately wrong one-ended cover)
     logo=True,        # engrave the case's back logos in the outer face
     border=True,      # two engraved lines round the plate's outline, like a book cover's tooled border (grip; not part of the two-colour switch)
-    border_insets=(2.5, 4.5),   # their centre lines, from the plate's edge
+    border_insets=(2.5, 4.5),   # their centre lines, in from the scalloped long sides (the narrow middle's edge)
     border_w=0.8,     # the case's grip groove width (params.GRIP_GROOVE)
     border_depth=0.4,  # two whole layers (the case's groove is 0.35 / 0.2: a whole layer for the printer)
-    border_r=2.0,     # the centre lines' smallest radius (corners and the scallop's curves are rounded to this)
+    border_r=4.0,     # the outer line's corner radius (the inner line's is 2 mm less: concentric)
+    border_slit_clr=1.0,  # the end lines stay this far from each slit's round end
     border_clr=2.0,   # the lines stay this far from the logos (they move, the logos do not)
     tp_plain=2.4,     # the plate's thickness with no bottom keys (chinless): SOLID over the screen, no relief (phase 2, 2026-11-01)
 )
@@ -119,7 +123,7 @@ GROUPS = {
                   label='4.26 with bottom keys (standard and light strip, every side-key layout, J6 or not)'),
     'chinless': dict(case='case-426', slug='chinless', key_builds=['chinless'],
                      label='4.26 chinless (chinless and light-strip chinless, every layout)'),
-    'x3': dict(case='case-368', slug='standard', key_builds=['standard'], label='3.68 standard'),
+    'x3': dict(case='case-368', slug='standard', key_builds=['standard'], label='3.68 standard', over=dict(cy=0.15, corner_clr=0.12, gn=0.34)),
 }
 
 
@@ -312,7 +316,7 @@ def tongue_outline(s):
     so it prints without support; the top edge drops from the full height toward the tip in a large arc; the tip is a round. The ridge's whole
     z band stays inside for u >= u_a (tongue_contains_ridge)."""
     H = s['z_o'] - s['prong_z_lo']
-    ua, ue = s['u_a'], s['u_root'] + 2.0
+    ua, ue = s['u_a'] + s['tongue_shift'], s['u_root'] + 2.0
     hT, xA, xC = s['tongue_hT'], s['tongue_xA'], s['tongue_xC']
     pts_h = [(ue, 0.0), (ua + xA, 0.0), (ua + xA - hT, hT), (ua + xC, H), (ue, H)]
     return [(u, s['z_o'] - h) for u, h in pts_h], [0.0, s['tongue_RA'], s['tongue_RT'], s['tongue_RC'], 0.0]
@@ -506,8 +510,16 @@ def ridge(s):
     yw, b = s['yw_t'], s['b']
     ypi = s['yt_t'] - s['t_pr']                                       # the prong's inner face
     ua, ri, f, rr = s['u_a'], s['r_i'], s['f_top'], s['r_r']
-    pts = [(ua, ypi + 0.3), (ua, yw), (ua + ri, yw - b), (ua + ri + f, yw - b), (ua + ri + f + rr, yw), (ua + ri + f + rr, ypi + 0.3)]
-    st, segs = round_path(pts, [0.0, s['fillet'], 0.3, 0.3, s['fillet'], 0.0])
+    lh = s['lead_h']
+    em = 0.5                                                           # the ridge's root stands this far into the 0.8 prong; the trapezoid below ends it at 0.3 (where the tab's 0.3 round ends). 0.3 exactly left a hairline crack in the meshed union, 0.2 a 0.1 step at the tip
+    if lh > 0:                                                         # a compound lead-in: the ramp, then a gentle last stretch to the flat top
+        l2 = lh / math.tan(math.radians(s['lead_deg']))
+        pts = [(ua, ypi + em), (ua, yw), (ua + ri - l2, yw - (b - lh)), (ua + ri, yw - b), (ua + ri + f, yw - b), (ua + ri + f + rr, yw), (ua + ri + f + rr, ypi + em)]
+        radii = [0.0, s['fillet'], 0.3, 0.3, 0.3, s['fillet'], 0.0]
+    else:
+        pts = [(ua, ypi + em), (ua, yw), (ua + ri, yw - b), (ua + ri + f, yw - b), (ua + ri + f + rr, yw), (ua + ri + f + rr, ypi + em)]
+        radii = [0.0, s['fillet'], 0.3, 0.3, s['fillet'], 0.0]
+    st, segs = round_path(pts, radii)
     zlo, zhi = s['ridge_z']
     prism = trace(cq.Workplane('XY', origin=(0, 0, zlo - 2.0)), st, segs).extrude(zhi - zlo + 4.0)
     q = ypi + 0.3 - yw                                                # the (y, z) trapezoid: 45 degrees from the tip level out to the prong
@@ -515,7 +527,34 @@ def ridge(s):
     trap = cq.Workplane('YZ', origin=(ua - 1, 0, 0)).polyline(ends).close().extrude(ri + f + rr + 2)
     rd = prism.intersect(trap).intersect(tongue_prism(s, ypi + 0.4, yw - b - 0.5))      # the lead-in shrinks in height with the tab's outline
     sel = lambda w: w.edges(cq.selectors.BoxSelector((ua - 1, yw - b - 0.5, zlo - 3), (ua + ri + f + rr + 1, ypi + 0.1, zhi + 3)))
-    return try_edges(rd, sel, 'fillet', s['ridge_r'], 'ridge')
+    es = sel(rd).vals()
+    best = None
+    for r in (s['ridge_r'], 0.4, 0.34, 0.32, 0.28, 0.26, 0.24, 0.22, 0.2, 0.18, 0.16, 0.14, 0.12, 0.1):   # the largest round on at least half the edges that meshes closed, else the largest that does
+        good = []
+        for e in es:                                                   # the edges that take this round one at a time (tangent seams and the ones beside a 0.3 arc do not)
+            try:
+                if rd.newObject([e]).fillet(r).val().isValid():
+                    good.append(e)
+            except Exception:
+                pass
+        if not good:
+            continue
+        try:
+            out = rd.newObject(good).fillet(r)
+            if not (out.val().isValid() and watertight(out)):
+                continue
+        except Exception:
+            continue
+        if best is None:
+            best = (r, len(good), out)
+        if 2 * len(good) >= len(es):
+            best = (r, len(good), out)
+            break
+    if best is not None:
+        NOTES.append(f'ridge: {best[1]} of {len(es)} edges rounded {best[0]:.2f}' + ('' if best[0] == s['ridge_r'] else f' (not {s["ridge_r"]:.2f})'))
+        return best[2]
+    NOTES.append('ridge: left sharp (no fillet meshed closed)')
+    return rd
 
 
 # ---- the plate ---------------------------------------------------------------------------------------------------
@@ -601,7 +640,12 @@ def plate(s, relief=True):
     mouth = lambda q: q.newObject([e for e in q.faces('<Z').edges().vals() if in_cav(e.Center())])
     p = guarded(p, try_edges(p, perim, 'fillet', s['fillet'], 'plate perimeter, inner face'), 'plate perimeter, inner face')
     if cav:
-        p = guarded(p, try_edges(p, mouth, 'fillet', s['fillet'], 'slot mouths'), 'slot mouths')
+        q2 = try_edges(p, mouth, 'fillet', s['fillet'], 'slot mouths')
+        for rr in (0.2, 0.15, 0.1):                          # none of the all-at-once rounds took (the strip between the slot and the plate's 0.5 round is narrow): smaller, edge by edge
+            if q2 is not p:
+                break
+            q2 = fillet_good(p, mouth, rr, 'slot mouths')
+        p = guarded(p, q2, 'slot mouths')
     if relief and s['caps']:                                 # last, where each slot leaves through the leading edge: its vertical edges
         y0 = min(k[2] for k in s['caps']) - s['pocket_y']
         y1 = max(k[3] for k in s['caps']) + s['pocket_y']
@@ -668,20 +712,24 @@ def plate_polygon(s):
 
 
 def border_polys(s):
-    """The two border grooves as shapely geometry (design frame): each is the plate's outline moved in by border_insets, its corners rounded to
-    border_r (opening and closing), made border_w wide; whatever lies within border_clr of a logo is cut away (the lines give way, the logos
-    do not). {inset: geometry}"""
-    import shapely
+    """The two border grooves as shapely geometry (design frame): a rounded rectangle, two concentric lines border_w wide. The long sides are straight at
+    border_insets in from the scalloped edge (the narrow middle's u_L and u_R), parallel to the long axis, all the way to the ends; the end lines run
+    straight across, border_slit_clr clear of the slits' round ends (their outer line sits border_w / 2 + clr above the slit's lower edge, the inner one
+    2 mm further in); the corners are concentric (R border_r outside, 2 mm less inside). Symmetric about the logos' axis (x = xc + cx); whatever lies
+    within border_clr of a logo is cut away (the lines give way, the logos do not). {inset: geometry}"""
+    from shapely.geometry import box as sbox
     from shapely.ops import unary_union
-    plate = plate_polygon(s)
+    w, d0 = s['border_w'], min(s['border_insets'])
     logos = unary_union([g for g, _ in logo_polys(s).values()]).buffer(s['border_clr'])
+    y_top = s['yw_t'] - s['slit'] - s['border_slit_clr'] - w / 2
+    y_bot = s['yw_b'] + s['slit'] + s['border_slit_clr'] + w / 2
     out = {}
-    r = s['border_r']
     for d in s['border_insets']:
-        line = plate.buffer(-d).buffer(-r).buffer(r).buffer(r).buffer(-r)          # in by d, then convex and concave corners rounded to r
-        ring = line.buffer(s['border_w'] / 2).difference(line.buffer(-s['border_w'] / 2))
-        ring = ring.difference(logos).buffer(-0.12).buffer(0.12).simplify(0.008)    # clear of the logos; the cut ends rounded; 8 microns of chord
-        out[d] = ring
+        k = d - d0
+        r = max(s['border_r'] - k, 0.5)
+        line = sbox(s['u_L'] + d, y_bot + k, s['u_R'] - d, y_top - k).buffer(-r, quad_segs=32).buffer(r, quad_segs=32)
+        ring = line.buffer(w / 2, quad_segs=16).difference(line.buffer(-w / 2, quad_segs=16))
+        out[d] = ring.difference(logos).buffer(-0.12).buffer(0.12).simplify(0.008)
     return out
 
 

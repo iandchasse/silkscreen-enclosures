@@ -132,12 +132,12 @@ The 4.26:
    (and `make_plates.py --printer cc2` for his CC2 plate files).
 3. From `enclosures/case-426`, run `src/configs_slice.py`, and again with `--printer cc2`.
 
-The slide-on cover (`enclosures/cover/`, 2026-11-01, round 2; only round 1's coupon A was printed, no whole cover): after the case builds exist (`out/<build>/`), from
+The slide-on cover (`enclosures/cover/`, 2026-11-01, round 2 and 3; coupon A and Ian's phase-2 cover were printed, the phase-3 cover was not): after the case builds exist (`out/<build>/`), from
 `enclosures/cover` with the 4.26 Python (it also reads the 3.68's params and logos in subprocesses): `build_cover.py` (the covers, their STEP files and the
 two-colour inlay bodies into `print/cover/`: never `print/4.26` or `print/3.68`, which the case builds clean), `check.py` (33 builds, four poses;
-`--wrong` must fail, `--snap` compares with 27bbdaf, `--angle` the push-on contact angle, `--plate` the plate-flex estimate), `edges.py` (the sharp-edge scan), `printcheck.py`, `make_cover_plates.py` and `--printer cc2`
+`--wrong` must fail, `--snap` compares with 27bbdaf and the printed phase 2, `--angle` the push-on contact angle, `--plate` the plate-flex estimate), `edges.py` (the sharp-edge scan), `printcheck.py`, `make_cover_plates.py` and `--printer cc2`
 (the temporary plate files, one cover per plate; make_plates.py itself is not edited), `slice_read.py` (OrcaSlicer CLI, then the G-code read-back),
-`inlay_check.py` (the logo switch on). Delete `cover/out/case_info.json` after a case change. Do not edit `case-*/src` for it.
+`inlay_check.py` (the logo switch on), `play.py` (how far the rigid cover can move at home along Y or Z). Delete `cover/out/case_info.json` after a case change. Do not edit `case-*/src` for it.
 
 After a merge:
 - `out/` is not in git. Sync the worktree's `enclosures/*/out` into the main checkout; `out/configs*` must mirror the

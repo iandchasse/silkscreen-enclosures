@@ -3,13 +3,13 @@
 What is built but not printed, what is unproven, and the options that are studied but parked. The case READMEs have
 the full records; the study notes named here are local (not in git).
 
-## The slide-on cover (2026-11-01, round 2): checked in CAD, no whole cover printed
+## The slide-on cover (2026-11-01, round 3): checked in CAD, the phase-3 cover not printed
 
 A reversible TI-84 style cover, one printed part per envelope (`enclosures/cover/`; `print/cover/`, `print/silkscreen-cover-plates.3mf`, a
 **temporary** plate file with one cover per plate): on the front it carries the reader over the screen, on the back it stays on while
 reading. Round 1's fit coupon A was printed and "feels fine" (Ian, 2026-11-01); round 2 added the Silkscreen logo engraved on the outer face
 (with the two-colour switch, OFF), rounded edges, all four poses, no long stop wall (corner pieces only) and a scalloped side. Everything else
-about it is **untested**: no whole cover is printed, and the snap forces are beam estimates. What Ian still decides or has to find out:
+about it is **untested**: Ian printed the phase-2 cover ("the fit isn't quite there") and phase 3 answers that, but nothing of phase 3 is printed, and the snap forces are beam estimates. What Ian still decides or has to find out:
 - **Putting the covers into the case plate files** (make_plates.py, every per-configuration project; not started: the worktree's `out/` lacks the other builds' print parts and the 4.26 pipeline cache is cold at its path; the cover-only plate file stays the temporary one until then);
 - print one cover and check the fit, the click, the scallop's finger room, the rounded edges and (if wanted) the two-colour switch in the CC2's
   slicer (the CLI read-back is the only test so far);
@@ -20,7 +20,9 @@ about it is **untested**: no whole cover is printed, and the snap forces are bea
   uncover display;
 - the corner extensions are 4.7 mm (4.2 on the 3.68), set by the scallop's ease and the finger margin; a longer contact patch would shorten the ease;
 - J6 is covered by the end wall in every pose (a window would have to be in the prong's zone one way up); the cover comes off to use it;
-- no Z clamp (0.70 mm of Z play);
+- phase 3 (2026-11-01, answering Ian's print of phase 2): the border is a rounded rectangle centring the logos; the room top to bottom (Y) at home is 0.234 mm (was 0.338) on the 4.26 and 0.165 mm on the 3.68 (channel walls 0.20 / 0.15 per side, corner pieces 0.14 / 0.12 off the arcs); the snap is firmer (pull-off peak +22 % by the beam model, push-on +6 %, drag +13 %).
+  **Risk:** printing takes clearance off a gap (round 1's note: 0.1 to 0.3 per side, not measured), so the tighter fit may bind and need a pass with a file: the one number to move is `cy` in `enclosures/cover/model.py`;
+- no Z clamp (0.70 mm of Z play, 0.709 measured);
 - whether the site offers it (`print/SITE-BUILDER-NOTE.md` says not until a whole cover has been printed).
 
 ## Emily B's edit (2026-10-23): what Ian still decides

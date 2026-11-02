@@ -243,7 +243,7 @@ def cover_probes(part, layers, group):
     y_hi = yw + tw + 0.5
     ux = s['u_a'] + s['r_i'] + s['f_top'] / 2
     specs = {'lip (u=30)': (30.0, s['Y1'] - 1.0, y_hi, (s['z_lb'], s['z_cf0'] + 0.2), 'the 47-degree face and its flat, tip 1.1 past the end face'),
-             'prong (u=2)': (2.0, yw - 0.3, y_hi, (s['prong_z_lo'], s['z_o']), '0.8 mm wall from the bed up'),
+             'prong (u=2)': (2.0, yw + 0.2, y_hi, (s['prong_z_lo'], s['z_o']), '0.8 mm wall from the bed up'),
              'tab tongue (u = u_a - 3.5)': (s['u_a'] - 3.5, yw - 0.3, y_hi, (s['prong_z_lo'], s['z_o']), 'the tab rounding down toward its tip: rises from the bed at 45 degrees, top edge curving down'),
              'tab taper (u = u_root - 2)': (s['u_root'] - 2.0, yw - 0.3, y_hi, (s['prong_z_lo'], s['z_o']), 'the thickening toward the root: the foot grows into the plate chamfer, the first layer must be laid'),
              'ridge (flat top)': (ux, yw - s['b'] - 0.3, y_hi, (s['ridge_z'][0] - 0.2, s['ridge_z'][1] + 0.2),

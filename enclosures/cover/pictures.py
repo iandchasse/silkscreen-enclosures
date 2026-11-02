@@ -109,32 +109,32 @@ def snap_figure(s, cov, path):
     ax.set_xlabel('cover shift s along x (mm); home at the left, off the case at the right')
     ax.set_ylabel('prong deflection needed (mm)')
     ax.set_title('Deflection of the top prong along the slide\n(ray casts on the real 4.26 end face, J6 opening included)', fontsize=10)
-    ax.set_ylim(-0.05, 0.95)
+    ax.set_ylim(-0.05, s['d_eng'] + 0.35)
     ax.grid(True, alpha=0.3)
     ax.annotate('home: preload %.2f' % d0[0], xy=(0, d0[0]), xytext=(8, 0.15), fontsize=9, arrowprops=dict(arrowstyle='->'))
-    ax.annotate('flat end face, J6 opening\n(no dip: the ridge stays on the wall above it)', xy=(36, 0.7), xytext=(24, 0.45), fontsize=9,
+    ax.annotate('flat end face, J6 opening\n(no dip: the ridge stays on the wall above it)', xy=(36, float(d0[int(np.argmin(np.abs(sh - 36)))])), xytext=(24, s['d_eng'] * 0.55), fontsize=9,
                 arrowprops=dict(arrowstyle='->'))
-    ax.annotate('over the right corner arc\n(the ramp the cover goes on by)', xy=(66, 0.35), xytext=(44, 0.1), fontsize=9,
+    ax.annotate('over the right corner arc\n(the ramp the cover goes on by)', xy=(66, float(d0[int(np.argmin(np.abs(sh - 66)))])), xytext=(44, 0.1), fontsize=9,
                 arrowprops=dict(arrowstyle='->'))
     plt.tight_layout()
     plt.savefig(path, dpi=100)
     plt.close(fig)
 
 
-PHASE1 = 'f45db64'          # the commit with phase 1's covers (print/cover/4.26/cover-keyed.stl): the 'old' of the A4-A6 pictures
+PHASE2 = '210915c'          # the commit with phase 2's covers (print/cover/4.26/cover-keyed.stl): the cover Ian printed, the 'old' of the C1-C3 pictures
 
 
-def phase1_keyed():
+def committed_keyed(rev=PHASE2):
     import io
     import subprocess
-    raw = subprocess.run(['git', 'show', f'{PHASE1}:print/cover/4.26/cover-keyed.stl'], capture_output=True, cwd=ENC.parent, check=True).stdout
+    raw = subprocess.run(['git', 'show', f'{rev}:print/cover/4.26/cover-keyed.stl'], capture_output=True, cwd=ENC.parent, check=True).stdout
     return trimesh.load(io.BytesIO(raw), file_type='stl', force='mesh')
 
 
 def corner_compare(path):
-    """Phase 1's open-end corner (the top prong, y = 128, x = 66 to 72 in the print frame) next to the new one, three views each: the outer face
-    (from below the bed), the side (along y), the case side (from above)."""
-    old = phase1_keyed()
+    """Phase 2's open-end corner (the cover Ian printed; the top prong, y = 128, x = 66 to 72 in the print frame) next to the new one, three views
+    each: the outer face (from below the bed), the side (along y), the case side (from above)."""
+    old = committed_keyed()
     new = trimesh.load(ENC.parent / 'print' / 'cover' / '4.26' / 'cover-keyed.stl', force='mesh')
     c = np.array([60.0, 122.0, 6.0])
     views = {'the outer face': ((c[0], c[1] - 14, -110), (c[0], c[1], c[2]), (0, 1, 0)),
@@ -142,7 +142,7 @@ def corner_compare(path):
              'the case side': ((c[0], c[1] - 14, 120), (c[0], c[1], c[2]), (0, 1, 0))}
     cells = []
     for k, (vn, (pos, foc, up)) in enumerate(views.items()):
-        for j, (nm, mesh, col) in enumerate((('phase 1', old, OLD), ('phase 2', new, COVER))):
+        for j, (nm, mesh, col) in enumerate((('phase 2 (printed)', old, OLD), ('now', new, COVER))):
             f = TMP / f'corner-{k}-{j}.png'
             render.render([(mesh, col, 1.0)], f, position=pos, focal=foc, up=up, size=(800, 760), view_angle=22)
             label(f, f'{nm}: {vn}')
@@ -151,10 +151,18 @@ def corner_compare(path):
 
 
 def outer_face(path):
-    """The whole outer face as it prints (seen from below the bed), the two border lines, the logo and the wordmark."""
+    """The whole outer face as it prints (seen from below the bed): phase 2 (the cover Ian printed) next to the new one, the border now a
+    rounded rectangle centring the logo and the wordmark."""
     new = trimesh.load(ENC.parent / 'print' / 'cover' / '4.26' / 'cover-keyed.stl', force='mesh')
-    c = np.array(new.bounds).mean(axis=0)
-    render.render([(new, COVER, 1.0)], path, position=(c[0] + 6, c[1] - 40, -330), focal=c, up=(0, 1, 0), size=(1100, 1300), view_angle=26)
+    old = committed_keyed()
+    cells = []
+    for nm, mesh, col in (('phase 2 (printed): the border lines', old, OLD), ('now: the border as a rounded rectangle', new, COVER)):
+        c = np.array(mesh.bounds).mean(axis=0)
+        f = TMP / f'face-{len(cells)}.png'
+        render.render([(mesh, col, 1.0)], f, position=(c[0] + 6, c[1] - 40, -330), focal=c, up=(0, 1, 0), size=(1100, 1300), view_angle=26)
+        label(f, nm)
+        cells.append(f)
+    montage(cells, path, 2)
 
 
 def main():
