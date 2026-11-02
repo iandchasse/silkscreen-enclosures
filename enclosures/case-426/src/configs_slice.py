@@ -615,11 +615,25 @@ def inlay_layers(stl):
 
 
 def lid_object(entry):
-    """(plate number, the lid object's info) of an index.json entry: the plate with the logo parts ('inlays'), or None."""
+    """(plate number, the lid object's info) of an index.json entry: the plate with the lid's logo parts ('inlays'), or None."""
     for n, pl in enumerate(entry['plates'], start=1):
         for o in pl['objects']:
-            if o.get('inlays'):
+            if o.get('inlays') and o['role'] == 'lid':
                 return n, o
+    return None
+
+
+def logo_objects(entry):
+    """[(plate number, object info)] of every object with logo parts, in plate order: the lid and (2026-11-01) the slide cover, which is on the
+    lid's plate where it fits, else on another plate or a plate of its own."""
+    return [(n, o) for n, pl in enumerate(entry['plates'], start=1) for o in pl['objects'] if o.get('inlays')]
+
+
+def cover_object(entry):
+    """(plate number, the slide cover's object info) of an index.json entry, or None."""
+    for n, o in logo_objects(entry):
+        if o['role'].startswith('cover-'):
+            return n, o
     return None
 
 
@@ -633,6 +647,15 @@ def logo_at(slug, entry):
     return {q['name']: [round(q['box'][0] - lid['box'][0] + lo[0], 3), round(q['box'][1] - lid['box'][1] + lo[1], 3),
                         round(q['box'][3] - lid['box'][0] + lo[0], 3), round(q['box'][4] - lid['box'][1] + lo[1], 3)]
             for q in lid['inlays']}
+
+
+def cover_at(entry):
+    """Where the slide cover's logo parts sit on the cover, {name: [x0, y0, x1, y1]}: their boxes on the bed less the cover object's corner (its print
+    frame). The same for every project that carries the same cover."""
+    _, cov = cover_object(entry)
+    return {q['name']: [round(q['box'][0] - cov['box'][0], 3), round(q['box'][1] - cov['box'][1], 3),
+                        round(q['box'][3] - cov['box'][0], 3), round(q['box'][4] - cov['box'][1], 3)]
+            for q in cov['inlays']}
 
 
 def project_variant(src, dest, how):
@@ -685,7 +708,9 @@ def slice_plate(f, n, dest):
 
 
 def logo_switch(size, slugs=None):
-    """The logo switch, both states from the ONE project (module docstring). -> (rows, info): rows [{check, ok, value}]."""
+    """The logo switch, both states from the ONE project (module docstring). Every plate that carries logo parts (the lid's, and the slide cover's: on the
+    lid's plate where it fits, else on another plate) is sliced OFF, as a no-logo control and ON, and each part's ink read back.
+    -> (rows, info): rows [{check, ok, value}]."""
     import shapely
     import zipfile
     from shapely.geometry import box, LineString
@@ -695,7 +720,7 @@ def logo_switch(size, slugs=None):
 
     def verdict(what, ok, value=None):
         rows.append({'check': f'logo switch: {what}', 'ok': bool(ok), **({'value': value} if value is not None else {})})
-    # 1. every project carries the two logo parts at one place in the lid's CAD frame (per chin kind: the keyed and the chinless lid)
+    # 1. every project carries the two logo parts at one place in the lid's CAD frame (per chin kind: the keyed and the chinless lid), and on its cover
     lacking = [s for s, e in listing.items() if lid_object(e) is None]
     verdict(f'every project ({len(listing)}) has a lid with its two logo parts', not lacking and bool(listing), lacking[:5])
     at = {s: logo_at(s, e) for s, e in listing.items() if s not in lacking}
@@ -708,7 +733,20 @@ def logo_switch(size, slugs=None):
         verdict(f'the {len(ss)} {kind} projects carry the same two logo parts at the same place in the lid\'s CAD frame (+-{TWO_AT_TOL})',
                 not bad and len(ref) == 2, {'at': ref, 'differ': list(bad)[:3]})
     info['logo_at'] = {s: at[s] for s in (kinds.get('keyed', [])[:1] + kinds.get('chinless', [])[:1])}
-    # 2. the representatives, sliced (the lid's plate only): OFF as shipped, a control without the parts, ON as the GUI makes it
+    nocover = [s for s, e in listing.items() if cover_object(e) is None]
+    verdict(f'every project ({len(listing)}) has a slide cover with its two logo parts (the 3.68 light strip is not released and has no project)',
+            not nocover and bool(listing), nocover[:5])
+    by_role = {}
+    for s, e in listing.items():
+        if s not in nocover:
+            by_role.setdefault(cover_object(e)[1]['role'], []).append((s, cover_at(e)))
+    for role, lst in by_role.items():
+        ref = lst[0][1]
+        bad = [s for s, a in lst if any(abs(x - y) > TWO_AT_TOL for k in ref for x, y in zip(a.get(k, [99] * 4), ref[k]))]
+        verdict(f'the {len(lst)} projects with the {role} carry its two logo parts at the same place on the cover (+-{TWO_AT_TOL})',
+                not bad and len(ref) == 2, {'at': ref, 'differ': bad[:3]})
+    info['cover_at'] = {role: lst[0][1] for role, lst in by_role.items()}
+    # 2. the representatives, sliced (every plate with logo parts): OFF as shipped, a control without the parts, ON as the GUI makes it
     for slug in LOGO_REPS[size]:
         if slugs is not None and slug not in slugs:
             continue
@@ -722,151 +760,166 @@ def logo_switch(size, slugs=None):
         f = CONFIGS / entry['file']
         if hashlib.sha256(f.read_bytes()).hexdigest() != entry['sha256']:
             raise SystemExit(f'{f}: not the file index.json lists (rerun make_plates.py configs)')
-        n, lid = lid_object(entry)
-        what = f'{slug} (plate {n}, the lid)'
-        # 2a. what the project file says
+        objs_all = logo_objects(entry)
+        n_lid = lid_object(entry)[0]
+        # 2a. what the project file says (the whole project)
         with zipfile.ZipFile(f) as z:
             ms = z.read('Metadata/model_settings.config').decode('ascii')
             ps = json.loads(z.read('Metadata/project_settings.config'))
         parts = LOGO_PART.findall(ms)
         plain = all(p[1] == 'modifier_part' and re.findall(r'key="([^"]*)"', p[3]) == ['matrix'] for p in parts)
-        verdict(f'{what}: the two logo parts are modifier parts with a name and a place and no setting (not even a filament)',
-                len(parts) == 2 and plain, [(p[1], re.findall(r'key="([^"]*)"', p[3])) for p in parts])
-        verdict(f'{what}: two filaments, prime tower off, supports on filament 1',
+        verdict(f'{slug}: the {len(parts)} logo parts ({len(objs_all)} objects: '
+                f'{", ".join(o["role"] for _, o in objs_all)}) are modifier parts with a name and a place and no setting (not even a filament)',
+                len(parts) == 2 * len(objs_all) and plain, [(p[1], re.findall(r'key="([^"]*)"', p[3])) for p in parts])
+        verdict(f'{slug}: two filaments, prime tower off, supports on filament 1',
                 len(ps['filament_colour']) == 2 and ps['enable_prime_tower'] == '0' and ps['support_filament'] == '1'
                 and ps['support_interface_filament'] == '1',
                 {k: ps[k] for k in ('filament_colour', 'enable_prime_tower', 'support_filament', 'support_interface_filament')})
-        tx, ty = float(ps['wipe_tower_x'][n - 1]), float(ps['wipe_tower_y'][n - 1])
-        tb = box(tx + TOWER_BOX[0], ty + TOWER_BOX[1], tx + TOWER_BOX[2], ty + TOWER_BOX[3])
-        near = min(tb.distance(box(*[o['box'][i] - (2.5 if o['raft'] else 0.0) * (1 if i < 2 else -1) for i in range(4)]))
-                   for o in entry['plates'][n - 1]['objects'])
-        verdict(f'{what}: wipe_tower_x / _y ({tx:g}, {ty:g}) is {TOWER_CLEAR:g} mm or more clear of every object',
-                near >= TOWER_CLEAR, round(near, 1))
-        # 2b. OFF, as shipped
-        t0 = time.time()
-        r, g_off = slice_plate(f, n, SLICE / f'{slug}-logo-off')
-        verdict(f'{what}: OFF slices (OrcaSlicer exits 0)', r.returncode == 0 and g_off.exists(), r.returncode)
-        if r.returncode or not g_off.exists():
-            err = r.stderr.decode(errors='replace') if isinstance(r.stderr, bytes) else str(r.stderr)
-            info[slug] = {'off_stderr': err[-400:]}
-            continue
-        _, layers_off, _ = tool_lines(g_off, zmax=1e9)
-        txt = g_off.read_text(errors='ignore')
-        verdict(f'{what}: OFF prints in filament 1 only, with no prime tower and no filament-2 line',
-                set(layers_off) == {0} and 'Prime tower' not in txt and 'Wipe tower' not in txt,
-                {'tools': sorted(layers_off), 'prime_tower_lines': txt.count(';TYPE:Prime tower') + txt.count(';TYPE:Wipe tower')})
-        # 2c. the control: the same project without the two parts
-        ctl = SLICE / f'{slug}-logo-control.3mf'
+        ctl, on = SLICE / f'{slug}-logo-control.3mf', SLICE / f'{slug}-logo-on.3mf'
         project_variant(f, ctl, 'control')
-        r, g_ctl = slice_plate(ctl, n, SLICE / f'{slug}-logo-control')
-        verdict(f'{what}: the no-logo control slices', r.returncode == 0 and g_ctl.exists(), r.returncode)
-        if r.returncode or not g_ctl.exists():
-            continue
-        b_off, h_off = buckets(g_off)
-        b_ctl, h_ctl = buckets(g_ctl)
-        diff = {k: round(b_off.get(k, 0.0) - b_ctl.get(k, 0.0), 3) for k in set(b_off) | set(b_ctl)
-                if abs(b_off.get(k, 0.0) - b_ctl.get(k, 0.0)) > OFF_E_TOL}
-        dt = abs(h_off['time'] - h_ctl['time']) if h_off['time'] is not None and h_ctl['time'] is not None else 9e9
-        dfil = abs(h_off['filament_mm'] - h_ctl['filament_mm']) if None not in (h_off['filament_mm'], h_ctl['filament_mm']) else 9e9
-        same_layers = sorted({k[2] for k in b_off if k[2] != 'z>1'}) == sorted({k[2] for k in b_ctl if k[2] != 'z>1'})
-        verdict(f'{what}: OFF is the no-logo control (time within {OFF_TIME_TOL} s, filament within {OFF_FIL_TOL} mm, the same layers, no '
-                f'object/role/layer bucket of extrusion {OFF_E_TOL} mm apart)',
-                dt <= OFF_TIME_TOL and dfil <= OFF_FIL_TOL and same_layers and not diff,
-                {'time_s': [h_off['time'], h_ctl['time']], 'filament_mm': [h_off['filament_mm'], h_ctl['filament_mm']],
-                 'same_layers': same_layers, 'buckets_apart': [[list(map(str, k)), v] for k, v in sorted(diff.items(), key=lambda kv: -abs(kv[1]))[:5]]})
-        info[slug] = {'off_gcode': g_off.relative_to(CONFIGS).as_posix(), 'control_gcode': g_ctl.relative_to(CONFIGS).as_posix(),
-                      'off': h_off, 'control': h_ctl}
-        # 2d. ON: the GUI's two clicks, on a copy
-        on = SLICE / f'{slug}-logo-on.3mf'
         project_variant(f, on, 'on')
-        r, g = slice_plate(on, n, SLICE / f'{slug}-logo-on')
-        verdict(f'{what}: ON (Change type -> Part, Change filament -> 2) slices', r.returncode == 0 and g.exists(), r.returncode)
-        if r.returncode or not g.exists():
-            continue
-        lines, layers, changes = tool_lines(g)
-        _, layers_all, _ = tool_lines(g, zmax=1e9)
-        h_on = buckets(g)[1]
-        info[slug].update({'on_gcode': g.relative_to(CONFIGS).as_posix(), 'seconds': round(time.time() - t0, 1), 'tool_changes': changes,
-                           'layers_by_tool': {k: [v[0], v[-1], len(v)] for k, v in layers_all.items()}, 'on': h_on,
-                           'on_cost': {'seconds': (h_on['time'] - h_off['time']) if None not in (h_on['time'], h_off['time']) else None,
-                                       'filament_mm': round(h_on['filament_mm'] - h_off['filament_mm'], 1)
-                                       if None not in (h_on['filament_mm'], h_off['filament_mm']) else None}})
-        verdict(f'{what}: ON prints in both filaments (T0 and T1)', set(layers_all) == {0, 1} and changes >= 2,
-                {'tools': sorted(layers_all), 'tool_changes': changes})
-        onx = g.read_text(errors='ignore')
-        verdict(f'{what}: ON has no prime tower (the tower is off; the printer purges)', ';TYPE:Prime tower' not in onx and ';TYPE:Wipe tower' not in onx)
-        sup_tools = sorted({t for z, t, ro, a, b, w in tool_lines(g, zmax=1e9)[0] if ro in SUPPORT})
-        verdict(f'{what}: ON keeps every support and raft line in filament 1', sup_tools == [0], sup_tools)
-        t1z = layers_all.get(1, [])
-        # the glyphs in the bed frame, and how many layers deep each inlay is (the 3.68's icon is one layer: its second layer is
-        # the lid's own, filament 1)
-        polys, per, depth = [], {}, {}
-        for q in lid['inlays']:
-            stem = 'inlay_wordmark' if 'wordmark' in q['name'] else 'inlay_icon'
-            dx, dy = lid['box'][0], lid['box'][1]
-            stl = CONFIGS.parent / slug / 'print' / f'{stem}.stl'
-            gl = [shapely.affinity.translate(p, dx, dy) for p in glyph_polygons(stl)]
-            per[q['name']] = gl
-            depth[q['name']] = inlay_layers(stl)
-            polys += gl
-        deepest = max(depth.values())
-        verdict(f'{what}: ON, filament 2 prints in the logo layers only ({deepest} layer{"s" * (deepest > 1)})',
-                bool(t1z) and max(t1z) <= round(0.2 * deepest + 0.05, 3), t1z)
-        allg = unary_union(polys)
-        seg1 = [(a, b, w) for z, t, ro, a, b, w in lines if t == 1 and ro not in NOT_PART]
-        cl = unary_union([LineString([a, b]) for a, b, _ in seg1]) if seg1 else shapely.Polygon()
-        outside = cl.difference(allg.buffer(TWO_GROW)).length if seg1 else 0.0
-        verdict(f'{what}: ON, filament 2 lays only inside the logo (line centres within {TWO_GROW} of it; <= {TWO_OUTSIDE_MM} mm outside)',
-                bool(seg1) and outside <= TWO_OUTSIDE_MM, round(outside, 3))
-        cover = {}
-        for name, gl in per.items():
-            for i, p in enumerate(sorted(gl, key=lambda q: (round(q.centroid.x, 1), round(q.centroid.y, 1)))):
-                row = []
-                for k, z in enumerate((0.2, 0.4)):
-                    if k >= depth[name]:             # past this inlay: the lid's own layer
-                        row.append(None)
-                        continue
-                    ss = [(a, b, w) for zz, t, ro, a, b, w in lines if t == 1 and zz == z and ro not in NOT_PART]
-                    cov = unary_union([LineString([a, b]).buffer(w / 2, cap_style=2, join_style=2) for a, b, w in ss]) if ss else shapely.Polygon()
-                    row.append(round(cov.intersection(p).area / p.area, 3))
-                cover[f"{name.split(':')[0]} #{i + 1}"] = {'mm2': round(p.area, 2), 'layer1': row[0], 'layer2': row[1]}
-        info[slug]['coverage'] = cover
-        weak = {k: v for k, v in cover.items()
-                if any(v[f'layer{i}'] is not None and v[f'layer{i}'] < TWO_COVER_PIECE[i - 1] for i in (1, 2))}
-        whole = []
-        for i in (1, 2):                             # area weighted, over the pieces that are that deep
-            deep = [v for v in cover.values() if v[f'layer{i}'] is not None]
-            tot = sum(v['mm2'] for v in deep)
-            whole.append(round(sum(v['mm2'] * v[f'layer{i}'] for v in deep) / tot, 3) if tot else 0.0)
-        info[slug]['coverage_all'] = whole
-        verdict(f'{what}: ON, the ink covered by filament-2 lines (all of it >= {TWO_COVER[0]:.0%} layer 1, >= {TWO_COVER[1]:.0%} layer 2; '
-                f'each of the {len(cover)} pieces >= {TWO_COVER_PIECE[0]:.0%} / {TWO_COVER_PIECE[1]:.0%})',
-                bool(cover) and not weak and whole[0] >= TWO_COVER[0] and whole[1] >= TWO_COVER[1],
-                {'all': whole, 'least_layer1': min(v['layer1'] for v in cover.values()),
-                 'least_layer2': min(v['layer2'] for v in cover.values() if v['layer2'] is not None), 'weak': weak})
-        # filament 1 inside the ink, layer by layer (a layer past an inlay's depth is the lid's own and may be filament 1)
-        inside = area = 0.0
-        for k, z in enumerate((0.2, 0.4)):
-            shr = unary_union([q.buffer(-TWO_SHRINK) for nm, gl in per.items() if k < depth[nm] for q in gl])
-            if shr.is_empty:
+        for n in sorted({m for m, _ in objs_all}):
+            objs = [o for m, o in objs_all if m == n]
+            key = slug if n == n_lid else f'{slug}:plate{n}'
+            suffix = '' if n == n_lid else f'-plate{n}'
+            what = f'{slug} (plate {n}, {" and ".join(o["role"] for o in objs)})'
+            tx, ty = float(ps['wipe_tower_x'][n - 1]), float(ps['wipe_tower_y'][n - 1])
+            tb = box(tx + TOWER_BOX[0], ty + TOWER_BOX[1], tx + TOWER_BOX[2], ty + TOWER_BOX[3])
+            near = min(tb.distance(box(*[o['box'][i] - (2.5 if o['raft'] else 0.0) * (1 if i < 2 else -1) for i in range(4)]))
+                       for o in entry['plates'][n - 1]['objects'])
+            verdict(f'{what}: wipe_tower_x / _y ({tx:g}, {ty:g}) is {TOWER_CLEAR:g} mm or more clear of every object',
+                    near >= TOWER_CLEAR, round(near, 1))
+            # 2b. OFF, as shipped
+            t0 = time.time()
+            r, g_off = slice_plate(f, n, SLICE / f'{slug}-logo-off{suffix}')
+            verdict(f'{what}: OFF slices (OrcaSlicer exits 0)', r.returncode == 0 and g_off.exists(), r.returncode)
+            if r.returncode or not g_off.exists():
+                err = r.stderr.decode(errors='replace') if isinstance(r.stderr, bytes) else str(r.stderr)
+                info[key] = {'off_stderr': err[-400:]}
                 continue
-            t0lines = [(a, b, w) for zz, t, ro, a, b, w in lines if t == 0 and ro not in NOT_PART and zz == z]
-            t0cov = unary_union([LineString([a, b]).buffer(w / 2, cap_style=2, join_style=2) for a, b, w in t0lines]) if t0lines else shapely.Polygon()
-            inside += t0cov.intersection(shr).area
-            area += shr.area
-        share = inside / area if area else 0.0
-        verdict(f'{what}: ON, no filament-1 line inside a glyph shrunk {TWO_SHRINK} (<= {TWO_T0_MAX:.0%} of its area)',
-                share <= TWO_T0_MAX, round(share, 4))
-        # the job and the side keys, as on the single-colour plate
-        zones = lid['key_zones']
-        js = job_start(g, zones)
-        verdict(f'{what}: ON, the job starts on the skirt, not in a side key\'s zone', js['ok'], js)
-        reads = side_key_reads(g, zones)
-        verdict(f'{what}: ON, its side keys ({len(reads)}) print on what is under them', len(reads) == len(zones) and all(v['ok'] for v in reads.values()),
-                {k: {'over_air_mm2_max': v['over_air_mm2_max'], 'reach_max': v['reach_max']} for k, v in reads.items()})
-        bases = side_key_bases(g, zones)
-        verdict(f'{what}: ON, ' + side_key_base_row(bases)[0], len(bases) == len(zones) and all(v['ok'] for v in bases.values()),
-                side_key_base_row(bases)[1])
+            _, layers_off, _ = tool_lines(g_off, zmax=1e9)
+            txt = g_off.read_text(errors='ignore')
+            verdict(f'{what}: OFF prints in filament 1 only, with no prime tower and no filament-2 line',
+                    set(layers_off) == {0} and 'Prime tower' not in txt and 'Wipe tower' not in txt,
+                    {'tools': sorted(layers_off), 'prime_tower_lines': txt.count(';TYPE:Prime tower') + txt.count(';TYPE:Wipe tower')})
+            # 2c. the control: the same project without the logo parts
+            r, g_ctl = slice_plate(ctl, n, SLICE / f'{slug}-logo-control{suffix}')
+            verdict(f'{what}: the no-logo control slices', r.returncode == 0 and g_ctl.exists(), r.returncode)
+            if r.returncode or not g_ctl.exists():
+                continue
+            b_off, h_off = buckets(g_off)
+            b_ctl, h_ctl = buckets(g_ctl)
+            diff = {k: round(b_off.get(k, 0.0) - b_ctl.get(k, 0.0), 3) for k in set(b_off) | set(b_ctl)
+                    if abs(b_off.get(k, 0.0) - b_ctl.get(k, 0.0)) > OFF_E_TOL}
+            dt = abs(h_off['time'] - h_ctl['time']) if h_off['time'] is not None and h_ctl['time'] is not None else 9e9
+            dfil = abs(h_off['filament_mm'] - h_ctl['filament_mm']) if None not in (h_off['filament_mm'], h_ctl['filament_mm']) else 9e9
+            same_layers = sorted({k[2] for k in b_off if k[2] != 'z>1'}) == sorted({k[2] for k in b_ctl if k[2] != 'z>1'})
+            verdict(f'{what}: OFF is the no-logo control (time within {OFF_TIME_TOL} s, filament within {OFF_FIL_TOL} mm, the same layers, no '
+                    f'object/role/layer bucket of extrusion {OFF_E_TOL} mm apart)',
+                    dt <= OFF_TIME_TOL and dfil <= OFF_FIL_TOL + 5e-5 * h_ctl['filament_mm'] and same_layers and not diff,
+                    {'time_s': [h_off['time'], h_ctl['time']], 'filament_mm': [h_off['filament_mm'], h_ctl['filament_mm']],
+                     'same_layers': same_layers, 'buckets_apart': [[list(map(str, k)), v] for k, v in sorted(diff.items(), key=lambda kv: -abs(kv[1]))[:5]]})
+            info[key] = {'off_gcode': g_off.relative_to(CONFIGS).as_posix(), 'control_gcode': g_ctl.relative_to(CONFIGS).as_posix(),
+                         'off': h_off, 'control': h_ctl}
+            # 2d. ON: the GUI's two clicks per object, on a copy
+            r, g = slice_plate(on, n, SLICE / f'{slug}-logo-on{suffix}')
+            verdict(f'{what}: ON (Change type -> Part, Change filament -> 2) slices', r.returncode == 0 and g.exists(), r.returncode)
+            if r.returncode or not g.exists():
+                continue
+            lines, layers, changes = tool_lines(g)
+            _, layers_all, _ = tool_lines(g, zmax=1e9)
+            h_on = buckets(g)[1]
+            info[key].update({'on_gcode': g.relative_to(CONFIGS).as_posix(), 'seconds': round(time.time() - t0, 1), 'tool_changes': changes,
+                              'layers_by_tool': {k: [v[0], v[-1], len(v)] for k, v in layers_all.items()}, 'on': h_on,
+                              'on_cost': {'seconds': (h_on['time'] - h_off['time']) if None not in (h_on['time'], h_off['time']) else None,
+                                          'filament_mm': round(h_on['filament_mm'] - h_off['filament_mm'], 1)
+                                          if None not in (h_on['filament_mm'], h_off['filament_mm']) else None}})
+            verdict(f'{what}: ON prints in both filaments (T0 and T1)', set(layers_all) == {0, 1} and changes >= 2,
+                    {'tools': sorted(layers_all), 'tool_changes': changes})
+            onx = g.read_text(errors='ignore')
+            verdict(f'{what}: ON has no prime tower (the tower is off; the printer purges)', ';TYPE:Prime tower' not in onx and ';TYPE:Wipe tower' not in onx)
+            sup_tools = sorted({t for z, t, ro, a, b, w in tool_lines(g, zmax=1e9)[0] if ro in SUPPORT})
+            verdict(f'{what}: ON keeps every support and raft line in filament 1', sup_tools == [0], sup_tools)
+            t1z = layers_all.get(1, [])
+            # the glyphs in the bed frame (every object's inlays: the lid's and the cover's), and how many layers deep each inlay is (the 3.68's icon is
+            # one layer: its second layer is the object's own, filament 1)
+            polys, per, depth = [], {}, {}
+            for o in objs:
+                for q in o['inlays']:
+                    stem = 'inlay_wordmark' if 'wordmark' in q['name'] else 'inlay_icon'
+                    dx, dy = o['box'][0], o['box'][1]
+                    stl = cache.REPO / q['stl'] if q.get('stl') else CONFIGS.parent / slug / 'print' / f'{stem}.stl'
+                    gl = [shapely.affinity.translate(p, dx, dy) for p in glyph_polygons(stl)]
+                    nm = f"{o['role']}: {q['name']}"
+                    per[nm] = gl
+                    depth[nm] = inlay_layers(stl)
+                    polys += gl
+            deepest = max(depth.values())
+            verdict(f'{what}: ON, filament 2 prints in the logo layers only ({deepest} layer{"s" * (deepest > 1)})',
+                    bool(t1z) and max(t1z) <= round(0.2 * deepest + 0.05, 3), t1z)
+            allg = unary_union(polys)
+            seg1 = [(a, b, w) for z, t, ro, a, b, w in lines if t == 1 and ro not in NOT_PART]
+            cl = unary_union([LineString([a, b]) for a, b, _ in seg1]) if seg1 else shapely.Polygon()
+            outside = cl.difference(allg.buffer(TWO_GROW)).length if seg1 else 0.0
+            verdict(f'{what}: ON, filament 2 lays only inside the logo parts ({len(objs)} object{"s" * (len(objs) > 1)}: line centres within '
+                    f'{TWO_GROW} of them; <= {TWO_OUTSIDE_MM} mm outside)', bool(seg1) and outside <= TWO_OUTSIDE_MM, round(outside, 3))
+            # filament 2's lines inside each object's own logo boxes (both the lid's and the cover's get ink)
+            for o in objs:
+                boxes = unary_union([box(q['box'][0], q['box'][1], q['box'][3], q['box'][4]).buffer(TWO_GROW + 0.4) for q in o['inlays']])
+                got = unary_union([LineString([a, b]) for a, b, _ in seg1]).intersection(boxes).length if seg1 else 0.0
+                verdict(f'{what}: ON, filament 2 lands in the {o["role"]}\'s logo boxes', got > 50.0, round(got, 1))
+            cover = {}
+            for name, gl in per.items():
+                for i, p in enumerate(sorted(gl, key=lambda q: (round(q.centroid.x, 1), round(q.centroid.y, 1)))):
+                    row = []
+                    for k, z in enumerate((0.2, 0.4)):
+                        if k >= depth[name]:             # past this inlay: the object's own layer
+                            row.append(None)
+                            continue
+                        ss = [(a, b, w) for zz, t, ro, a, b, w in lines if t == 1 and zz == z and ro not in NOT_PART]
+                        cov = unary_union([LineString([a, b]).buffer(w / 2, cap_style=2, join_style=2) for a, b, w in ss]) if ss else shapely.Polygon()
+                        row.append(round(cov.intersection(p).area / p.area, 3))
+                    cover[f"{name.split(':')[0]}: {name.split(': ')[1].split(':')[0]} #{i + 1}"] = {'mm2': round(p.area, 2), 'layer1': row[0], 'layer2': row[1]}
+            info[key]['coverage'] = cover
+            weak = {k: v for k, v in cover.items()
+                    if any(v[f'layer{i}'] is not None and v[f'layer{i}'] < TWO_COVER_PIECE[i - 1] for i in (1, 2))}
+            whole = []
+            for i in (1, 2):                             # area weighted, over the pieces that are that deep
+                deep = [v for v in cover.values() if v[f'layer{i}'] is not None]
+                tot = sum(v['mm2'] for v in deep)
+                whole.append(round(sum(v['mm2'] * v[f'layer{i}'] for v in deep) / tot, 3) if tot else 0.0)
+            info[key]['coverage_all'] = whole
+            verdict(f'{what}: ON, the ink covered by filament-2 lines (all of it >= {TWO_COVER[0]:.0%} layer 1, >= {TWO_COVER[1]:.0%} layer 2; '
+                    f'each of the {len(cover)} pieces >= {TWO_COVER_PIECE[0]:.0%} / {TWO_COVER_PIECE[1]:.0%})',
+                    bool(cover) and not weak and whole[0] >= TWO_COVER[0] and whole[1] >= TWO_COVER[1],
+                    {'all': whole, 'least_layer1': min(v['layer1'] for v in cover.values()),
+                     'least_layer2': min((v['layer2'] for v in cover.values() if v['layer2'] is not None), default=None), 'weak': weak})
+            # filament 1 inside the ink, layer by layer (a layer past an inlay's depth is the object's own and may be filament 1)
+            inside = area = 0.0
+            for k, z in enumerate((0.2, 0.4)):
+                shr = unary_union([q.buffer(-TWO_SHRINK) for nm, gl in per.items() if k < depth[nm] for q in gl])
+                if shr.is_empty:
+                    continue
+                t0lines = [(a, b, w) for zz, t, ro, a, b, w in lines if t == 0 and ro not in NOT_PART and zz == z]
+                t0cov = unary_union([LineString([a, b]).buffer(w / 2, cap_style=2, join_style=2) for a, b, w in t0lines]) if t0lines else shapely.Polygon()
+                inside += t0cov.intersection(shr).area
+                area += shr.area
+            share = inside / area if area else 0.0
+            verdict(f'{what}: ON, no filament-1 line inside a glyph shrunk {TWO_SHRINK} (<= {TWO_T0_MAX:.0%} of its area)',
+                    share <= TWO_T0_MAX, round(share, 4))
+            # the job and the side keys, as on the single-colour plate (the lid only)
+            for o in objs:
+                if not o.get('key_zones'):
+                    continue
+                zones = o['key_zones']
+                js = job_start(g, zones)
+                verdict(f'{what}: ON, the job starts on the skirt, not in a side key\'s zone', js['ok'], js)
+                reads = side_key_reads(g, zones)
+                verdict(f'{what}: ON, its side keys ({len(reads)}) print on what is under them', len(reads) == len(zones) and all(v['ok'] for v in reads.values()),
+                        {k: {'over_air_mm2_max': v['over_air_mm2_max'], 'reach_max': v['reach_max']} for k, v in reads.items()})
+                bases = side_key_bases(g, zones)
+                verdict(f'{what}: ON, ' + side_key_base_row(bases)[0], len(bases) == len(zones) and all(v['ok'] for v in bases.values()),
+                        side_key_base_row(bases)[1])
     return rows, info
 
 
@@ -880,6 +933,7 @@ def main(argv):
                     help='generic: out/configs/ (the default, the website\'s files); cc2: out/configs-cc2/')
     ap.add_argument('--size', choices=('426', '368'), default='426',
                     help='426: this case (the default); 368: enclosures/case-368/out/ (make_plates.py configs --size 368)')
+    ap.add_argument('--no-logo-switch', action='store_true', help='skip the logo switch OFF/control/ON read-back (the slowest part)')
     o = ap.parse_args(argv)
     CONFIGS = cache.ROOT.parent / f'case-{o.size}' / 'out' / DIRS[o.printer]
     SLICE = CONFIGS / 'slice'
@@ -912,7 +966,7 @@ def main(argv):
     d['ok'] = all(x['ok'] for x in d['checks'])
     rep = {s: done.get(s, old.get(s)) for s in listing
            if s in done or (s in old and old[s].get('sha256') == listing[s]['sha256'])}
-    tc_rows, tc_info = logo_switch(o.size, slugs)
+    tc_rows, tc_info = ([], {}) if o.no_logo_switch else logo_switch(o.size, slugs)
     rep['_logo_switch'] = {'ok': all(x['ok'] for x in tc_rows), 'checks': tc_rows, **tc_info}
     cache.atomic_write(rf, json.dumps(rep, indent=1).encode())
     bad = [s for s in slugs if not done[s]['ok']]

@@ -278,6 +278,24 @@ def raft_part(stem):
     return stem.startswith(('crank-', 'key-'))
 
 
+# The slide-on cover (enclosures/cover/, 2026-11-01): one part per envelope, in print/cover/ (never in a case's out/: its build is not a case
+# build). Every project carries the one that fits its build: 'cover-keyed' on every 4.26 build with bottom keys (light strip included),
+# 'cover-chinless' on every chinless 4.26 build, 'cover-standard' on the 3.68 standard; the 3.68 light strip is not released and has none.
+# It comes with its two logo bodies as modifier parts with no filament, named like the lid's (INLAY_NAMES): the same switch, off by default.
+COVER_DIR = PRINT / 'cover'
+COVERS = {'cover-keyed': ('4.26', 'slide cover (bottom keys)'),
+          'cover-chinless': ('4.26', 'slide cover (chinless)'),
+          'cover-standard': ('3.68', 'slide cover (3.68)')}
+COVER_OBJ = {'wall_loops': '4'}          # the channel wall is 1.6: four 0.4 lines (the stock process has 2)
+
+
+def cover_part(role):
+    """The Part of a cover role, with its two logo inlays (the files make cover/build_cover.py writes beside it)."""
+    folder, name = COVERS[role]
+    src = COVER_DIR / folder
+    return Part(name, src / f'{role}.stl', inlay_files=[(label, src / f'{role}-inlay-{stem.split("_")[1]}.stl') for stem, label in INLAY_NAMES])
+
+
 # ---------------------------------------------------------------- settings
 
 def _index(root):
@@ -820,7 +838,10 @@ def case_426():
                     [Part('tub (light-strip chinless)', lsc / 'tub.stl'),
                      lid_part(lsc, lsc.parent, 'lid (chinless)')]],
                    [])
-    return dict(title='Silkscreen 4.26 case - all printed parts (Elegoo CC2)',
+    covers = [('cover-keyed', 'Standard case', 'the standard case'), ('cover-keyed', 'Light-strip case', 'the light-strip case'),
+              ('cover-chinless', 'Chinless case (touch, no bottom keys)', 'the chinless case'),
+              ('cover-chinless', 'Light-strip chinless case (no touch, no bottom keys)', 'the light-strip chinless case')]
+    return dict(title='Silkscreen 4.26 case - all printed parts (Elegoo CC2)', covers=covers,
                 out=CC2_LOCAL / 'silkscreen-426-plates.3mf', printer='cc2',
                 sources=[std, ls, chin, lsc], shared=[(std / f'{s}.stl', ls / f'{s}.stl') for s in shared]
                 + [(std / 'midplate.stl', chin / 'midplate.stl'), (std / 'midplate.stl', lsc / 'midplate.stl'),
@@ -856,7 +877,8 @@ def case_368():
                 Part('gate (for the gate coupons)', std / 'gate.stl')],
                [Part(CRANK_M.format(i), std / 'crank-M.stl') for i in range(1, 5)]])
     shared = ['pcba-dummy', 'crank-M', 'gate']
-    return dict(title='Silkscreen 3.68 case - all printed parts (Elegoo CC2)',
+    # the light-strip 3.68 is not released: no cover for it
+    return dict(title='Silkscreen 3.68 case - all printed parts (Elegoo CC2)', covers=[('cover-standard', 'Standard case')],
                 out=CC2_LOCAL / 'silkscreen-368-plates.3mf', printer='cc2',
                 sources=[std, ls], shared=[(std / f'{s}.stl', ls / f'{s}.stl') for s in shared],
                 plates=[('Standard case', *case_plate(std, 'tub (standard)', 'key-x3std')),
@@ -908,6 +930,8 @@ def object_settings(p, printer='cc2'):
     cranks), the raft under the keys and cranks, the lid's manual supports; in a generic project also no brim on every
     object, the lid's support grid and the rafts' support type (GENERIC_OBJ, GENERIC_LID, GENERIC_RAFT)."""
     obj = {}
+    if p.stl.stem in COVERS:
+        obj.update(COVER_OBJ)
     if p.efc0:
         obj.update(CRANK_OBJ if p.stl.stem.startswith('crank-') else EFC0)
     if p.raft:
@@ -1095,6 +1119,8 @@ def lay_out(case):
               + ''.join(sup))
     if errs:
         sys.exit('layout errors:\n  ' + '\n  '.join(errs))
+    if case.get('covers'):
+        plates = place_covers(plates, case['covers'], pr)
     return plates
 
 
@@ -1102,6 +1128,97 @@ def tower_points(plates, printer):
     """[(x, y)], one per plate: tower_point for the printer's bed."""
     pr = PRINTERS[printer]
     return [tower_point(parts, pr['bed'], pr['exclude'], pr['area'])[:2] for _, parts in plates]
+
+
+def find_spot(parts, cover, pr):
+    """Where `cover` (laid out: its mesh anywhere) fits on a plate whose `parts` are fixed, or None: the XY box of the cover on a 1 mm grid inside
+    the bed (the generic area), clear of the excluded corner and >= 5 mm (RAFT_GAP_MIN past a raft) from every part's box; the candidates are
+    tried from the one with the largest least gap down, each with check_plate (the skirt included) and with the plate's prime-tower spot
+    unchanged. -> (x0, y0) of the cover's min corner."""
+    bed, exclude, area = pr['bed'], pr['exclude'], pr['area']
+    w, h = (float(v) for v in cover.mesh.extents[:2])
+    x_lo, y_lo, x_hi, y_hi = 0.0, 0.5, bed - w, bed - h
+    if area:
+        x_lo, y_lo = max(x_lo, AREA_MARGIN), max(y_lo, AREA_MARGIN)
+        x_hi, y_hi = min(x_hi, area[0] - AREA_MARGIN - w), min(y_hi, area[1] - AREA_MARGIN - h)
+    if x_hi < x_lo or y_hi < y_lo:
+        return None
+    xs, ys = np.arange(math.ceil(x_lo), math.floor(x_hi) + 1.0), np.arange(math.ceil(y_lo), math.floor(y_hi) + 1.0)
+    X, Y = np.meshgrid(xs, ys, indexing='ij')
+    ok = np.ones(X.shape, dtype=bool)
+    least = np.full(X.shape, np.inf)
+    for p in parts:
+        (x0, y0, _), (x1, y1, _) = p.mesh.bounds
+        gap = np.maximum.reduce([X - x1, x0 - (X + w), Y - y1, y0 - (Y + h)])
+        ok &= gap >= max(5.0, (RAFT_REACH if p.raft else 0.0) + RAFT_GAP_MIN) - 1e-9
+        least = np.minimum(least, gap)
+    if exclude:
+        ok &= ~((X + w > exclude[0]) & (X < exclude[2]) & (Y + h > exclude[1]) & (Y < exclude[3]))
+    # the prime tower's spot stays the best one: tower_point's key is its distance to the nearest part, and a part can only lower the other
+    # points' keys, so the old point keeps its place when the cover is strictly farther from it than its nearest part was
+    tx, ty, euc0 = tower_point(parts, bed, exclude, area)
+    gx = np.maximum(X - (tx + TOWER_BOX[2]), (tx + TOWER_BOX[0]) - (X + w))
+    gy = np.maximum(Y - (ty + TOWER_BOX[3]), (ty + TOWER_BOX[1]) - (Y + h))
+    ok &= np.hypot(np.maximum(gx, 0.0), np.maximum(gy, 0.0)) > euc0 + 1e-6
+    cand = np.argwhere(ok)
+    if not len(cand):
+        return None
+    order = sorted(range(len(cand)), key=lambda k: (-round(float(least[tuple(cand[k])]), 3), float(ys[cand[k][1]]), float(xs[cand[k][0]])))
+    here = cover.mesh.bounds[0][:2].copy()
+    for k in order[:400]:
+        x0, y0 = float(xs[cand[k][0]]), float(ys[cand[k][1]])
+        cover.mesh.apply_translation([x0 - here[0], y0 - here[1], 0.0])
+        here = cover.mesh.bounds[0][:2].copy()
+        if check_plate([*parts, cover], bed, exclude, area)[0]:
+            continue
+        if tower_point([*parts, cover], bed, exclude, area)[:2] != (tx, ty):         # (belt and braces: the plate's tower spot is exactly as before)
+            continue
+        return x0, y0
+    return None
+
+
+def place_covers(plates, entries, pr):
+    """The slide covers on a laid-out project. plates: [(name, [Part])], every plate already checked; entries: [(cover role, the name of the plate
+    with that build's lid)]. No part is ever moved: each cover goes on its lid's plate if it fits there (find_spot: check_plate's margins and
+    the plate's prime-tower spot both kept), so that one logo-switch setup covers the lid and the cover; else on another existing plate where
+    it fits; else on a new last plate of its own (centred). -> the plates, covers included; prints where each went."""
+    plates = [(n, list(ps)) for n, ps in plates]
+    made = []                                         # the plates this call adds
+    for role, home, *what in entries:
+        c = cover_part(role)
+        if what:                                      # a file with several builds' covers names each for its build
+            c.name = f'{c.name} for {what[0]}'
+        missing = [str(f) for f in (c.stl, *(f for _, f in c.inlay_files)) if not f.exists()]
+        if missing:
+            sys.exit('missing (run enclosures/cover/build_cover.py): ' + ', '.join(missing))
+        load(c, turn=False)
+        c.inlays = load_inlays(c)
+        order = [i for i, (n, _) in enumerate(plates) if n == home] + [i for i, (n, _) in enumerate(plates) if n != home]
+        if not any(n == home for n, _ in plates):
+            sys.exit(f'place_covers: no plate named {home!r} for the {role}')
+        for i in order:
+            spot = find_spot(plates[i][1], c, pr)
+            if spot is not None:
+                plates[i][1].append(c)
+                (x0, y0, _), (x1, y1, _) = c.mesh.bounds
+                gap = check_plate(plates[i][1], pr['bed'], pr['exclude'], pr['area'])[1]
+                where = "the lid's plate" if plates[i][0] == home else 'another plate'
+                print(f'  {c.name}: on plate {i + 1} "{plates[i][0]}" ({where}), x {x0:.1f}-{x1:.1f}, y {y0:.1f}-{y1:.1f}, closest {gap:.1f} mm')
+                break
+        else:
+            w, h = (float(v) for v in c.mesh.extents[:2])
+            cx, cy = ((pr['area'][0], pr['area'][1]) if pr['area'] else (pr['bed'], pr['bed']))
+            c.mesh.apply_translation([cx / 2 - w / 2 - c.mesh.bounds[0][0], cy / 2 - h / 2 - c.mesh.bounds[0][1], 0.0])
+            e, _ = check_plate([c], pr['bed'], pr['exclude'], pr['area'])
+            if e:
+                sys.exit(f'place_covers: the {role} does not fit a plate of its own: ' + '; '.join(e))
+            plates.append((c.name[0].upper() + c.name[1:], [c]))
+            made.append(len(plates) - 1)
+            print(f'  {c.name}: no room on any existing plate: a new plate {len(plates)}')
+    for i in made:                                    # a plate of covers: named for what is on it
+        kinds = list(dict.fromkeys(COVERS[p.stl.stem][1].replace('slide cover ', '').strip('()') for p in plates[i][1]))
+        plates[i] = ('Slide cover (' + kinds[0] + ')' if len(kinds) == 1 else 'Slide covers (' + ', '.join(kinds) + ')', plates[i][1])
+    return plates
 
 
 def build(case):
@@ -1126,7 +1243,8 @@ CONFIGS = HERE / 'case-426' / 'out' / 'configs'      # the generic projects (the
 # the ids after its own). A configuration holds at most one distinct part per role, so the ids are unique in every
 # package (Orca's CLI crashes on a repeated one), and a part's file is the same whatever is written with it or before.
 ROLE_IDS = {'midplate': 1001, 'tub': 1017, 'lid': 1033, 'key-426': 1049, 'crank-T': 1065, 'gate': 1081,
-            'rod-jig': 1097, 'crank-M': 1113, 'key-x3std': 1129}    # key-x3std: the 3.68's bottom key (--size 368)
+            'rod-jig': 1097, 'crank-M': 1113, 'key-x3std': 1129,    # key-x3std: the 3.68's bottom key (--size 368)
+            'cover-keyed': 1145, 'cover-chinless': 1161, 'cover-standard': 1177}    # the slide covers
 CONFIG_WORDS = {'panel': {'standard': 'touch panel', 'light-strip': 'light strip'},
                 'chin': {True: 'bottom keys', False: 'chinless'},
                 'sides': {'all': 'all four side keys', 'leftkeys': 'left pair of side keys',
@@ -1167,7 +1285,9 @@ def config_case(V, slug, printer='generic'):
         rows[0][0].spin = True
         side = [cols[2].pop()] if cols else []          # the rod jig, beside the lid
         plates = [(plates[0][0], rows[0], rows[1], cols, side)] + [(n, [], [], cl, []) for n, _, cl in plates[1:]]
+    home = plates[0][0]
     return dict(title=f'Silkscreen 4.26 case {slug} ({words})', plates=plates,
+                covers=[('cover-keyed' if c.bottom_keys else 'cover-chinless', home)],
                 side_keys=V.SIDE_SETS[c.sides],
                 cad=[build_dir / 'lid.stl', build_dir / 'lid_body.stl'], printer=printer)
 
@@ -1198,6 +1318,7 @@ def config_case_368(slug, printer='generic'):
         side = [cols[2].pop()]                          # the rod jig, beside the lid
         plates = [(plates[0][0], rows[0], rows[1], cols, side), (plates[1][0], [], [], plates[1][2], [])]
     return dict(title=f'Silkscreen 3.68 case {slug} ({words})', plates=plates,
+                covers=[('cover-standard', plates[0][0])],
                 side_keys=SIDE_KEYS_368,
                 cad=[build_dir / 'lid.stl', build_dir / 'lid_body.stl'], printer=printer)
 
@@ -1215,6 +1336,7 @@ def public_426():
              [Part('coupon-gate', src / 'coupon-gate.stl'), Part('gate (for the gate coupon)', src / 'gate.stl')]], [])
     return dict(title='Silkscreen 4.26 case - standard and chinless builds',
                 out=PRINT / 'silkscreen-426-plates.3mf',
+                covers=[('cover-keyed', std['plates'][0][0]), ('cover-chinless', chin['plates'][0][0])],
                 printer='generic', plates=[*std['plates'], *chin['plates'], test],
                 shared=[(src / 'midplate.stl', HERE / 'case-426' / 'out' / 'chinless' / 'print' / 'midplate.stl')])
 
@@ -1227,7 +1349,7 @@ def public_368():
             [[Part('coupon-strip', src / 'coupon-strip.stl'), Part('key-x3std (for the coupon strip)', src / 'key-x3std.stl')],
              [Part('coupon-gate', src / 'coupon-gate.stl'), Part('gate (for the gate coupon)', src / 'gate.stl')]], [])
     return dict(title='Silkscreen 3.68 case - standard build',
-                out=PRINT / 'silkscreen-368-plates.3mf',
+                out=PRINT / 'silkscreen-368-plates.3mf', covers=[('cover-standard', std['plates'][0][0])],
                 printer='generic', plates=[*std['plates'], test], shared=[])
 
 
@@ -1429,10 +1551,12 @@ def code_hash(size='426'):
 
 LOGO_README = (
     "\n## Two-colour logo (optional, off by default)\n\n"
-    "The lid's two back engravings (the wordmark and the book icon) print as empty recesses, in one colour. Each project also\n"
-    "carries the two logo bodies that fill them, as parts of the lid that do nothing until you switch them on, and it defines\n"
-    "two filaments (filament 1 the case, filament 2 the logo). To get a two-colour logo, in OrcaSlicer:\n\n"
-    "1. In the object list (left of the Prepare tab) click the arrow beside the lid to expand it.\n"
+    "The lid's two back engravings (the wordmark and the book icon) print as empty recesses, in one colour, and so do the same two\n"
+    "engravings on the slide cover's outer face. Each project also carries the two logo bodies that fill them, for the lid and for\n"
+    "the cover, as parts that do nothing until you switch them on, and it defines two filaments (filament 1 the case, filament 2\n"
+    "the logo). The cover is on the lid's plate where it fits, else on another plate (a plate of its own if none has room): do the\n"
+    "same two clicks on its logo parts. To get a two-colour logo, in OrcaSlicer:\n\n"
+    "1. In the object list (left of the Prepare tab) click the arrow beside the lid (and the cover) to expand it.\n"
     "2. Click the first \"logo\" part under it, Ctrl+click the second.\n"
     "3. Right-click -> Change type -> Part.\n"
     "4. With both still selected, right-click -> Change filament -> 2.\n"
@@ -1564,8 +1688,9 @@ def configs(V, slugs, printer='generic', size='426'):
                 # (the lid) its side keys' zones
                 info.append({'name': p.name, 'role': p.stl.stem, 'raft': p.raft,
                              'box': [round(float(v), 3) for v in (lo[0], lo[1], hi[0], hi[1])],
-                             **({'inlays': [{'name': n, 'box': [round(float(v), 3) for v in (*(m.bounds[0] + lo), *(m.bounds[1] + lo))]}
-                                            for n, m in p.inlays]} if p.inlays else {}),
+                             **({'inlays': [{'name': n, 'box': [round(float(v), 3) for v in (*(m.bounds[0] + lo), *(m.bounds[1] + lo))],
+                                             'stl': f.relative_to(HERE.parent).as_posix()}
+                                            for (n, m), (_, f) in zip(p.inlays, p.inlay_files)]} if p.inlays else {}),
                              'enforcers': [{'name': n, 'box': [round(float(v), 3)
                                                                for v in (*(m.bounds[0] + lo), *(m.bounds[1] + lo))]}
                                            for n, m in p.enforcers],

@@ -10,7 +10,7 @@ project the website serves for the 3.68 is described in the [top-level README](.
 light-strip build below is in development and not released. It has no `.venv`:
 run it with a Python 3.11 virtual environment made from `requirements.txt`, from this folder (`python` below).
 
-**Slide-on cover (2026-11-01, new, not printed yet):** a TI-84 style reversible cover for the standard build, gripping the end walls and clicking home in the corners; the case does not change. See [`../cover/README.md`](../cover/README.md); print its fit coupon first.
+**Slide-on cover (2026-11-01; Ian printed the phase-2 cover, the phase-3 one is not printed yet):** a TI-84 style reversible cover for the standard build, gripping the end walls and clicking home in the corners; the case does not change. The standard project (generic and CC2) and the public `silkscreen-368-plates.3mf` now carry it: on the APEM crank-M plate (plate 2), and on the lid's plate in the CC2 project. See [`../cover/README.md`](../cover/README.md) and the plate paragraph in [`../../print/README.md`](../../print/README.md).
 
 **Board parts named in this file.** The board prints its reference designators on its back (H5's on the front). On the trimmed x3 board
 SW7, the left upper page key, is the power key; SW4 and SW1 are the right upper and lower page keys; SW5, the left lower
