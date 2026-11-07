@@ -5,9 +5,9 @@
 Takes the project make_plates.py wrote (case-<size>/out/configs[-cc2]/<slug>.3mf), keeps only its tub printable on plate 1 (every other item
 printable="0"), and slices three copies with the OrcaSlicer CLI, switching the lines ON the way a user does in the GUI (by editing
 Metadata/model_settings.config):
-  off     the project as shipped
-  neg     the three front lines: Change type -> Negative Volume
-  lines   the three front lines: filament 2, still modifiers
+  neg     the project as shipped (2026-11-07: the front lines part is a Negative Volume, engraved)
+  off     the front lines part: Change type -> Modifier (no setting: no lines)
+  lines   the front lines part: Change type -> Modifier, then filament 2
 and reads the G-code back by tool (filament): what the engraving removed, and where filament 2 lies and how much.
 """
 import argparse
@@ -54,9 +54,10 @@ def variant(src, dst, how):
                     s = q.group(0)
                     f2 = '      <metadata key="extruder" value="2"/>\n      <mesh_stat'
                     if name == 'tub' and pn.startswith('front lines'):
-                        if how == 'neg':
-                            s = s.replace('subtype="modifier_part"', 'subtype="negative_part"')
-                        elif how == 'lines':
+                        assert 'subtype="negative_part"' in s, 'the front lines should ship as a Negative Volume'
+                        if how in ('off', 'lines'):
+                            s = s.replace('subtype="negative_part"', 'subtype="modifier_part"')
+                        if how == 'lines':
                             s = s.replace('      <mesh_stat', f2)
                     return s
                 return re.sub(r'    <part id="\d+" subtype="\w+">.*?</part>\n', part, body, flags=re.S)

@@ -65,9 +65,9 @@ filaments, have the prime tower OFF and give each plate its clearest free tower 
 the user switches the logo on with Change type -> Part and Change filament -> 2 on the two parts (the comment at INLAY_NAMES says
 why the parts carry no filament and why there is no tower). There are no separate two-colour files.
 
-One more optional colour switch (2026-11-06, color_options.py), off in the same way (modifier parts with no setting): three lines on the
-front chin of every tub (one modifier part holding the three lines), whose body is Negative Volume (engraved) or filament 2
-(a second colour) once switched. They come after the lid's logo parts and enforcers, so every existing volume keeps its id.
+Three front lines on every tub (2026-11-06, color_options.py): one part holding the three lines, shipped as a Negative Volume
+(engraved; 2026-11-07, Ian: engraved by default), which the user changes to a Modifier for no lines, or a Modifier with
+filament 2 for lines in a second colour. They come after the lid's logo parts and enforcers, so every existing volume keeps its id.
 
 Reads the print-oriented STLs that each project's src/plates.py writes to out/standard/print/ and
 out/light-strip/print/ (and on the 4.26 out/chinless/print/ and out/light-strip-chinless/print/; run it for every
@@ -507,8 +507,8 @@ class Part:
         self.inlay_files = tuple(inlay_files)   # the lid's two-colour logo (2026-10-24): [(volume name, print STL)]; each is
                                          # written as a modifier volume of the lid object (INLAY_SUBTYPE), no settings
         self.inlays = []                 # [(name, mesh)] in the same frame (load_inlays)
-        self.colour = []                 # the optional colour switches (2026-11-06, color_options.py): the tub's three front lines,
-                                         # [(volume name, mesh)] in the same frame, written as modifier parts with no settings
+        self.colour = []                 # the tub's three front lines (2026-11-06, color_options.py), [(volume name, mesh)] in the
+                                         # same frame, written as one Negative Volume (CO.LINES_SUBTYPE: engraved as shipped)
         self.key_zones = []              # [(ref, [x0, y0, x1, y1, top])], the same frame (side_key_zones)
         self.key_bases = {}              # {ref: [x0, y0, x1, y1]}, the same frame (side_key_bases)
 
@@ -975,7 +975,7 @@ def write_3mf(path, title, plates, settings_text, printer='cc2'):
             assert not (p.enforcers and p.turned)
             for j, (ename, em, kind) in enumerate([*((n, m, INLAY_SUBTYPE) for n, m in p.inlays),
                                                    *((n, m, 'support_enforcer') for n, m in p.enforcers),
-                                                   *((n, m, INLAY_SUBTYPE) for n, m in p.colour)], start=1):
+                                                   *((n, m, CO.LINES_SUBTYPE) for n, m in p.colour)], start=1):
                 eid += 1
                 emid = (em.bounds[0] + em.bounds[1]) / 2
                 ec = emid + p.mesh.bounds[0]               # the oriented part's frame (min corner 0) -> the plate
@@ -1380,7 +1380,7 @@ def part_model(p):
     vols = [(oid, 'normal_part', role, trimesh.Trimesh(p.base - c0, p.mesh.faces, process=False), (0.0, 0.0, c0[2]))]
     for j, (ename, em, kind) in enumerate([*((n, m, INLAY_SUBTYPE) for n, m in p.inlays),
                                            *((n, m, 'support_enforcer') for n, m in p.enforcers),
-                                           *((n, m, INLAY_SUBTYPE) for n, m in p.colour)], start=1):
+                                           *((n, m, CO.LINES_SUBTYPE) for n, m in p.colour)], start=1):
         emid = (em.bounds[0] + em.bounds[1]) / 2
         vols.append((oid + j, kind, ename, trimesh.Trimesh(em.vertices - emid, em.faces, process=False),
                      (emid[0] - c0[0], emid[1] - c0[1], emid[2])))
@@ -1581,13 +1581,13 @@ LOGO_README = (
     "purge into a prime tower should first drag the lid onto an empty plate and switch the prime tower on there.\n")
 
 COLOUR_README = (
-    "\n## Three front lines on the tub (optional, off by default)\n\n"
-    "Like the logo, a body that prints nothing until you switch it on, and it needs a printer that changes filament itself (the colour is on the\n"
-    "tub's first three layers). Three lines on the tub's front, between the screen and the bottom key row (or the case's bottom edge on a\n"
-    "chinless tub); the idea is @juno_last's. Expand the tub in the object list; its front lines part sits under it. Right-click it\n"
-    "-> Change type -> Negative Volume for lines engraved 0.6 mm deep in the case colour, or\n"
-    "right-click -> Set Filament for selected items -> 2 (and leave it a modifier) for lines in the second colour, flush\n"
-    "with the face. Set filament 2's colour as for the logo.\n")
+    "\n## Three front lines on the tub (engraved by default)\n\n"
+    "Three lines on the tub's front, between the screen and the bottom key row (or the case's bottom edge on a chinless tub); the idea\n"
+    "is @juno_last's. As shipped they are engraved 0.6 mm deep, in the case colour: the tub's front lines part is a Negative Volume.\n"
+    "Expand the tub in the object list; the front lines part sits under it. Right-click it -> Change type -> Modifier for no lines (a\n"
+    "modifier with nothing set changes nothing), then, for lines in a second colour, flush with the face, right-click it again ->\n"
+    "Change Filament -> 2 and set filament 2's colour as for the logo (that needs a printer that changes filament itself: the colour\n"
+    "is on the tub's first three layers).\n")
 LOGO_README += COLOUR_README
 
 

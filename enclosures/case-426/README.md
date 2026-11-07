@@ -786,7 +786,7 @@ main's built parts first and failed there (§8).
   filament 1; no filament-1 line lies inside a glyph; filament-2 lines cover 92 % of the ink in each layer (every glyph 0.82-0.96
   except the i's 1.5 mm dot, 0.74 / 0.68: the limits were set from the first in-lid slice, 80 / 85 % of all the ink and 65 % of
   each piece). ElegooSlicer (the CC2's own slicer) is untested with the clicks; the site does not list the logo yet: Ian's later call.
-- **Three optional front lines on every tub, off (2026-11-06; `enclosures/color_options.py`, checked by `color_check.py`):** the idea is @juno_last's; modifier parts with no setting, like the logo: Negative Volume engraves them, filament 2 colours them. No CAD change, OFF slices as before. `print/README.md`, "Three front lines".
+- **Three front lines on every tub, engraved by default (2026-11-06; engraved as shipped since 2026-11-07; `enclosures/color_options.py`, checked by `color_check.py`):** the idea is @juno_last's; one Negative Volume part on the tub (0.6 mm grooves, one filament). Change type -> Modifier gives no lines, and that modifier with filament 2 gives coloured lines. No CAD change. `print/README.md`, "Three front lines".
 - **Plain pins instead of the snap posts.** The midplate's posts through H1, H2 and H6 are plain Ø1.90 pins, their
   tip edge rounded (`BOARD_SNAP['style'] = 'pole'`; the barb style stays as an option). As printed the slotted post
   laid two fingers 1.42-1.52 wide in X (±0.36 of play in the 2.2 hole) and its barb caught only in Y, 0.09 a side; the

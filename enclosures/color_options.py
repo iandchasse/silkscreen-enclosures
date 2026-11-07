@@ -1,12 +1,13 @@
 """An optional colour switch for the Silkscreen case plates (2026-11-06; make_plates.py puts it in every plate file and project).
-It is OFF as shipped: bodies in the file that print nothing until the user switches them on (the same idea as the two-colour logo,
-print/README.md). Nothing under case-*/src is touched and no tub geometry changes.
+As shipped the lines are ENGRAVED: the body is a Negative Volume of the tub (2026-11-07, Ian: engraved by default; Modifier for no
+lines, Modifier + filament 2 for coloured lines). print/README.md, "Three front lines". Nothing under case-*/src is touched and no tub geometry changes.
 
 Three lines on the tub's front (the idea is @juno_last's case design): three straight horizontal lines with rounded ends, 1.0 wide on a
 2.5 pitch, 48 long, centred on the case's centre line, as ONE modifier volume of the tub (three shells), each 0.6 mm (3 layers) deep from the front face
 (the face prints down, so they are the tub's first three layers). A chin tub (bottom keys) has them between the key openings and the window's
-bottom edge; a chinless tub between the window's bottom edge and the case's bottom edge. Switched ON by changing a body's type to Negative
-Volume (engraved, in the case colour) or by giving it filament 2 (a second colour, flush). 
+bottom edge; a chinless tub between the window's bottom edge and the case's bottom edge. Shipped as a Negative Volume (engraved 0.6 deep,
+in the case colour); Change type -> Modifier gives no lines (a modifier with no setting changes nothing), and that modifier with filament 2
+gives lines in a second colour, flush.
 Bodies: print/4.26/tub-front-lines.stl (chin tubs, standard and light strip), tub-front-lines-chinless.stl (both chinless tubs) and
 print/3.68/tub-front-lines.stl, made by `write` from the built tubs and checked against every tub they go on (tub_lines): inside the solid
 face on all three layers and 1.2 mm or more from the openings, the window and the outline.
@@ -34,7 +35,8 @@ LINE_SIZES = ((1.0, 2.5), (1.0, 2.2), (0.9, 2.0), (0.8, 1.8), (0.8, 1.6))   # (w
 LINE_LENGTH = 48.0                       # mm: the lines' length on a chinless tub (the chin tubs' key row spans 48.0)
 LINE_MARGIN = 1.2                        # mm: the lines' clearance from the key openings and from the window, on all three layers
 LAYER_MIDS = (0.1, 0.3, 0.5)             # the three layers' slicing planes (the openings' first 0.09 is a skin too thin to print)
-LINES_NAME = 'front lines: off (Negative Volume = engrave, filament 2 = colour)'
+LINES_NAME = 'front lines: engraved (Change type -> Modifier = no lines; Modifier + filament 2 = colour)'
+LINES_SUBTYPE = 'negative_part'         # as shipped: engraved (2026-11-07; was an inert modifier_part, 2026-11-06)
 LINE_FILES = {('case-426', False): PRINT / '4.26' / 'tub-front-lines.stl', ('case-426', True): PRINT / '4.26' / 'tub-front-lines-chinless.stl',
               ('case-368', False): PRINT / '3.68' / 'tub-front-lines.stl'}     # (case, chinless)
 
