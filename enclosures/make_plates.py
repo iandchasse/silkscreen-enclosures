@@ -66,7 +66,7 @@ the user switches the logo on with Change type -> Part and Change filament -> 2 
 why the parts carry no filament and why there is no tower). There are no separate two-colour files.
 
 One more optional colour switch (2026-11-06, color_options.py), off in the same way (modifier parts with no setting): three lines on the
-front chin of every tub (not the 3.68 light-strip tub, which is not released), whose bodies are Negative Volume (engraved) or filament 2
+front chin of every tub (one modifier part holding the three lines), whose body is Negative Volume (engraved) or filament 2
 (a second colour) once switched. They come after the lid's logo parts and enforcers, so every existing volume keeps its id.
 
 Reads the print-oriented STLs that each project's src/plates.py writes to out/standard/print/ and
@@ -1584,9 +1584,9 @@ COLOUR_README = (
     "\n## Three front lines on the tub (optional, off by default)\n\n"
     "Like the logo, a body that prints nothing until you switch it on, and it needs a printer that changes filament itself (the colour is on the\n"
     "tub's first three layers). Three lines on the tub's front, between the screen and the bottom key row (or the case's bottom edge on a\n"
-    "chinless tub); the idea is @juno_last's. Expand the tub in the object list; its three front lines parts sit under it. Right-click each\n"
-    "in turn -> Change type -> Negative Volume (one at a time, as with the logo) for lines engraved 0.6 mm deep in the case colour, or select\n"
-    "all three, right-click -> Set Filament for selected items -> 2 (and leave them as modifiers) for lines in the second colour, flush\n"
+    "chinless tub); the idea is @juno_last's. Expand the tub in the object list; its front lines part sits under it. Right-click it\n"
+    "-> Change type -> Negative Volume for lines engraved 0.6 mm deep in the case colour, or\n"
+    "right-click -> Set Filament for selected items -> 2 (and leave it a modifier) for lines in the second colour, flush\n"
     "with the face. Set filament 2's colour as for the logo.\n")
 LOGO_README += COLOUR_README
 

@@ -123,12 +123,14 @@ def main():
     work = HERE / f'case-{o.size}' / 'out' / 'color-check' / o.printer
     objs = {q['name']: q for q in entry['plates'][0]['objects']}
     tub = objs['tub']
-    lines = [LineString([(c['box'][0] + (c['box'][4] - c['box'][1]) / 2, (c['box'][1] + c['box'][4]) / 2),
-                                          (c['box'][3] - (c['box'][4] - c['box'][1]) / 2, (c['box'][1] + c['box'][4]) / 2)])
-             .buffer((c['box'][4] - c['box'][1]) / 2, quad_segs=8) for c in tub['colour']]
+    import trimesh
+    import color_options as CO
+    key = ('case-426' if o.size == '426' else 'case-368', 'chinless' in o.slug)
+    bodies = trimesh.load(CO.LINE_FILES[key], force='mesh').split(only_watertight=False)
+    lines = [shapely.geometry.Polygon(np.array(b.vertices)[:, :2] + np.array(tub['box'][:2])).convex_hull for b in bodies]
     L = unary_union(lines)
     L_in, L_out = L.buffer(-0.15), L.buffer(0.10)
-    print(f'{o.size} {o.printer} {o.slug}: {len(tub["colour"])} lines, area {L.area:.1f} mm2')
+    print(f'{o.size} {o.printer} {o.slug}: {len(lines)} lines, area {L.area:.1f} mm2')
     res = {}
     for how in ('off', 'neg', 'lines'):
         f = work / f'{how}.3mf'

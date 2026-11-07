@@ -3,10 +3,10 @@ It is OFF as shipped: bodies in the file that print nothing until the user switc
 print/README.md). Nothing under case-*/src is touched and no tub geometry changes.
 
 Three lines on the tub's front (the idea is @juno_last's case design): three straight horizontal lines with rounded ends, 1.0 wide on a
-2.5 pitch, 48 long, centred on the case's centre line, as three modifier volumes of the tub, each 0.6 mm (3 layers) deep from the front face
+2.5 pitch, 48 long, centred on the case's centre line, as ONE modifier volume of the tub (three shells), each 0.6 mm (3 layers) deep from the front face
 (the face prints down, so they are the tub's first three layers). A chin tub (bottom keys) has them between the key openings and the window's
 bottom edge; a chinless tub between the window's bottom edge and the case's bottom edge. Switched ON by changing a body's type to Negative
-Volume (engraved, in the case colour) or by giving it filament 2 (a second colour, flush). The 3.68 light-strip tub has none (unreleased).
+Volume (engraved, in the case colour) or by giving it filament 2 (a second colour, flush). 
 Bodies: print/4.26/tub-front-lines.stl (chin tubs, standard and light strip), tub-front-lines-chinless.stl (both chinless tubs) and
 print/3.68/tub-front-lines.stl, made by `write` from the built tubs and checked against every tub they go on (tub_lines): inside the solid
 face on all three layers and 1.2 mm or more from the openings, the window and the outline.
@@ -34,7 +34,7 @@ LINE_SIZES = ((1.0, 2.5), (1.0, 2.2), (0.9, 2.0), (0.8, 1.8), (0.8, 1.6))   # (w
 LINE_LENGTH = 48.0                       # mm: the lines' length on a chinless tub (the chin tubs' key row spans 48.0)
 LINE_MARGIN = 1.2                        # mm: the lines' clearance from the key openings and from the window, on all three layers
 LAYER_MIDS = (0.1, 0.3, 0.5)             # the three layers' slicing planes (the openings' first 0.09 is a skin too thin to print)
-LINES_NAME = 'front lines {i}/3: off (Negative Volume = engrave, filament 2 = colour)'
+LINES_NAME = 'front lines: off (Negative Volume = engrave, filament 2 = colour)'
 LINE_FILES = {('case-426', False): PRINT / '4.26' / 'tub-front-lines.stl', ('case-426', True): PRINT / '4.26' / 'tub-front-lines-chinless.stl',
               ('case-368', False): PRINT / '3.68' / 'tub-front-lines.stl'}     # (case, chinless)
 
@@ -125,7 +125,7 @@ def write():
     """The two line STLs (print/4.26, print/3.68), from the built tubs. The 4.26's standard and light-strip tubs share one file: the lines are
     centred in the narrower of their two gaps."""
     for key, slugs in ((('case-426', False), ('standard', 'light-strip')), (('case-426', True), ('chinless', 'light-strip-chinless')),
-                       (('case-368', False), ('standard',))):
+                       (('case-368', False), ('standard', 'light-strip'))):
         case = key[0]
         chins = []
         for s in slugs:
@@ -148,10 +148,8 @@ _lines_cache = {}
 
 def tub_lines(stl, base, faces):
     """The three line bodies for the tub at stl (built part enclosures/<case>/out/<slug>/print/tub.stl; base, faces: its vertices in the print
-    frame, min corner 0, and its faces) -> [(volume name, mesh)] in that frame, or [] for the 3.68's light-strip tub (not released). The STL in print/ is checked against this very tub."""
+    frame, min corner 0, and its faces) -> [(volume name, mesh)] in that frame, . The STL in print/ is checked against this very tub."""
     case, slug = build_of(stl)
-    if case == 'case-368' and slug != 'standard':
-        return []                       # the 3.68 light-strip tub is not released
     key = (case, hash(np.ascontiguousarray(base).tobytes()))
     if key not in _lines_cache:
         tub = trimesh.Trimesh(base, faces, process=False)
@@ -171,8 +169,8 @@ def tub_lines(stl, base, faces):
                 ok = ok and outer.contains(foot) and all(not h.intersects(foot) for h in holes)
             if not ok:
                 raise SystemExit(f'{f}: line {i} does not fit {stl} (python -B color_options.py write)')
-        _lines_cache[key] = [(LINES_NAME.format(i=i), trimesh.Trimesh(b.vertices.copy(), b.faces.copy(), process=False))
-                             for i, b in enumerate(bodies, start=1)]
+        one = trimesh.util.concatenate(bodies)             # one modifier volume holding the three shells
+        _lines_cache[key] = [(LINES_NAME, trimesh.Trimesh(one.vertices.copy(), one.faces.copy(), process=False))]
     return _lines_cache[key]
 
 
