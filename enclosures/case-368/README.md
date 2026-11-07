@@ -641,6 +641,9 @@ the repo). What reaches the 3.68, all read back by `community.py` (build time, `
   -> Part and Set Filament for selected items -> the second filament on the two parts make the logo two-colour (multi-material printers only; the prime tower is off
   in every project, so the colour change uses the printer's own purge). The separate `-2colour` files of 2026-10-23 are gone. How
   it is built, why, and what was read back: `case-426/README.md`, "Two-colour logo, a switch that is off".
+- **Two optional colour switches, off (2026-11-06; `enclosures/color_options.py`, checked by `color_check.py`):** three lines on the standard tub's front chin
+  (the idea is @juno_last's; Negative Volume engraves them, filament 2 colours them) and the side keys in a second colour (filament 2 on one box over the lid
+  above its middle tab, z 4.6). Modifier parts with no setting, like the logo: no CAD change, OFF slices as before. `print/README.md`, "Two more colour switches".
 
 ## Screen bevel (the standard build, 2026-10-10)
 

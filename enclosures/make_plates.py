@@ -65,6 +65,12 @@ filaments, have the prime tower OFF and give each plate its clearest free tower 
 the user switches the logo on with Change type -> Part and Change filament -> 2 on the two parts (the comment at INLAY_NAMES says
 why the parts carry no filament and why there is no tower). There are no separate two-colour files.
 
+Two more optional colour switches (2026-11-06, color_options.py), off in the same way (modifier parts with no setting): three lines on the
+tub's front chin (the 4.26 with bottom keys, standard and light strip; the 3.68 standard; none on a chinless tub), whose bodies are
+Negative Volume (engraved) or filament 2 (a second colour) once switched, and one box on every lid that gives filament 2 to everything of the
+lid above the middle tab between the side keys (the side keys' pads and the pegs and clips behind them). They come after the lid's
+logo parts and enforcers, so every existing volume keeps its id.
+
 Reads the print-oriented STLs that each project's src/plates.py writes to out/standard/print/ and
 out/light-strip/print/ (and on the 4.26 out/chinless/print/ and out/light-strip-chinless/print/; run it for every
 print build first), the lid and its
@@ -125,6 +131,8 @@ from xml.sax.saxutils import escape, quoteattr
 import numpy as np
 import shapely
 import trimesh
+
+import color_options as CO
 
 HERE = Path(__file__).resolve().parent
 PRINT = HERE.parent / 'print'            # the repo's print/: the plate files and the rod jig
@@ -501,6 +509,8 @@ class Part:
         self.inlay_files = tuple(inlay_files)   # the lid's two-colour logo (2026-10-24): [(volume name, print STL)]; each is
                                          # written as a modifier volume of the lid object (INLAY_SUBTYPE), no settings
         self.inlays = []                 # [(name, mesh)] in the same frame (load_inlays)
+        self.colour = []                 # the optional colour switches (2026-11-06, color_options.py): the tub's three front lines or the lid's
+                                         # side-key box, [(volume name, mesh)] in the same frame, written as modifier parts with no settings
         self.key_zones = []              # [(ref, [x0, y0, x1, y1, top])], the same frame (side_key_zones)
         self.key_bases = {}              # {ref: [x0, y0, x1, y1]}, the same frame (side_key_bases)
 
@@ -966,7 +976,8 @@ def write_3mf(path, title, plates, settings_text, printer='cc2'):
             vols = []
             assert not (p.enforcers and p.turned)
             for j, (ename, em, kind) in enumerate([*((n, m, INLAY_SUBTYPE) for n, m in p.inlays),
-                                                   *((n, m, 'support_enforcer') for n, m in p.enforcers)], start=1):
+                                                   *((n, m, 'support_enforcer') for n, m in p.enforcers),
+                                                   *((n, m, INLAY_SUBTYPE) for n, m in p.colour)], start=1):
                 eid += 1
                 emid = (em.bounds[0] + em.bounds[1]) / 2
                 ec = emid + p.mesh.bounds[0]               # the oriented part's frame (min corner 0) -> the plate
@@ -1104,6 +1115,10 @@ def lay_out(case):
                         errs.append(f'{p.name}: {n} is outside the part')
             if p.inlay_files:
                 p.inlays = load_inlays(p)
+            if p.stl.stem == 'tub' or p.side_keys:
+                assert not (p.turned or p.spin), (p.name, 'a tub or lid with colour switches is neither turned nor spun')
+                p.colour = (CO.tub_lines(p.stl, p.base, p.mesh.faces) if p.stl.stem == 'tub'
+                            else CO.side_key_box(p.side_keys, p.base))
         for p in parts:
             if p.spin and (p.enforcers or p.turned):
                 errs.append(f'{p.name}: spun and turned, or spun with enforcers')
@@ -1113,7 +1128,8 @@ def lay_out(case):
         lo = np.min([p.mesh.bounds[0] for p in parts], axis=0)
         hi = np.max([p.mesh.bounds[1] for p in parts], axis=0)
         sup = [f', supports on the {p.name} only, {len(p.enforcers)} enforcers (its side keys)'
-               for p in parts if p.enforcers]
+               for p in parts if p.enforcers] + [f', {len(p.colour)} colour {"body" if len(p.colour) == 1 else "bodies"} on the {p.name}'
+                                                 for p in parts if p.colour]
         print(f'  {pname}: {len(parts)} objects, x {lo[0]:.1f}-{hi[0]:.1f}, y {lo[1]:.1f}-{hi[1]:.1f}, '
               f'closest {gap:.1f} mm, {sum(p.efc0 for p in parts)} with EFC 0, {sum(p.raft for p in parts)} on a raft'
               + ''.join(sup))
@@ -1361,12 +1377,13 @@ def part_model(p):
     and offset from the part's centre, z from the bed)."""
     role = p.stl.stem
     oid = ROLE_IDS[role]
-    assert len(p.enforcers) + len(p.inlays) < 16, p.name
+    assert len(p.enforcers) + len(p.inlays) + len(p.colour) < 16, p.name
     lo, hi = p.base.min(axis=0), p.base.max(axis=0)
     c0, size = (lo + hi) / 2, hi - lo
     vols = [(oid, 'normal_part', role, trimesh.Trimesh(p.base - c0, p.mesh.faces, process=False), (0.0, 0.0, c0[2]))]
     for j, (ename, em, kind) in enumerate([*((n, m, INLAY_SUBTYPE) for n, m in p.inlays),
-                                           *((n, m, 'support_enforcer') for n, m in p.enforcers)], start=1):
+                                           *((n, m, 'support_enforcer') for n, m in p.enforcers),
+                                           *((n, m, INLAY_SUBTYPE) for n, m in p.colour)], start=1):
         emid = (em.bounds[0] + em.bounds[1]) / 2
         vols.append((oid + j, kind, ename, trimesh.Trimesh(em.vertices - emid, em.faces, process=False),
                      (emid[0] - c0[0], emid[1] - c0[1], emid[2])))
@@ -1566,6 +1583,21 @@ LOGO_README = (
     "plate whose keys and cranks are on rafts), so the colour change uses the printer's own purge; a printer that can only\n"
     "purge into a prime tower should first drag the lid onto an empty plate and switch the prime tower on there.\n")
 
+COLOUR_README = (
+    "\n## Two more colour options (optional, off by default)\n\n"
+    "Like the logo, both are bodies that print nothing until you switch them on, and both need a printer that changes filament\n"
+    "itself: the colour is on the tub's first three layers, or on everything of the lid above a height, so a manual swap would\n"
+    "recolour whatever else prints at that height. Switch one object's bodies at a time.\n\n"
+    "- Three lines on the tub's front chin (a tub with bottom keys; the chinless tub has none; the idea is @juno_last's). Expand the tub\n"
+    "  in the object list; its three front lines parts sit under it. Right-click each in turn -> Change type -> Negative Volume\n"
+    "  (one at a time, as with the logo) for lines engraved 0.6 mm deep in the case colour, or select all three, right-click ->\n"
+    "  Set Filament for selected items -> 2 (and leave them as modifiers) for lines in the second colour, flush with the face.\n"
+    "- The side keys in a second colour. Expand the lid; select its side keys colour part, right-click -> Change filament -> 2. Everything\n"
+    "  of the lid above the tab between the keys turns filament 2: the keys' pads, their pegs, and the lid's inner pegs and clips (hidden\n"
+    "  once the case is assembled). Supports and rafts stay filament 1.\n"
+    "Set filament 2's colour as for the logo.\n")
+LOGO_README += COLOUR_README
+
 
 SIDE_CHOICE = {'all': 'All four', 'leftkeys': 'Left pair', 'rightkeys': 'Right pair', 'upperkeys': 'Upper pair'}
 
@@ -1676,6 +1708,8 @@ def configs(V, slugs, printer='generic', size='426'):
                     h.update(n.encode() + np.ascontiguousarray(m.vertices, dtype='<f8').tobytes())
                 for n, m in p.inlays:                # the logo parts (modifiers) are part of the lid's file
                     h.update(b'I' + n.encode() + np.ascontiguousarray(m.vertices, dtype='<f8').tobytes())
+                for n, m in p.colour:                # so are the colour switches' bodies
+                    h.update(b'C' + n.encode() + np.ascontiguousarray(m.vertices, dtype='<f8').tobytes())
                 if h.digest() not in made:
                     name, text, meta = part_model(p)
                     index['parts'][name] = {**meta, **put(name, text)}
@@ -1694,6 +1728,8 @@ def configs(V, slugs, printer='generic', size='426'):
                              'enforcers': [{'name': n, 'box': [round(float(v), 3)
                                                                for v in (*(m.bounds[0] + lo), *(m.bounds[1] + lo))]}
                                            for n, m in p.enforcers],
+                             **({'colour': [{'name': n, 'box': [round(float(v), 3) for v in (*(m.bounds[0] + lo), *(m.bounds[1] + lo))]}
+                                            for n, m in p.colour]} if p.colour else {}),
                              **({'key_zones': [{'name': n, 'top': round(float(b[4]), 3),
                                                 'box': [round(float(v), 3) for v in
                                                         (b[0] + lo[0], b[1] + lo[1], b[2] + lo[0], b[3] + lo[1])],
