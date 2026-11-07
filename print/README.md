@@ -333,43 +333,28 @@ prime tower on (process settings, **Multimaterial** tab -> **Prime tower** -> **
 On the chinless plate, which has no rafts, you can switch the tower on without moving the lid. The bodies are also single
 files: `4.26/lid-inlay-wordmark`, `lid-inlay-icon` (and `lid-chinless-inlay-*`), `3.68/lid-inlay-*`, in the lid's own print frame.
 
-**Two more colour switches, off by default (2026-11-06; sliced in the OrcaSlicer CLI and read back from the G-code, nothing printed yet):**
-both work like the logo switch above: every plate file and every per-configuration project carries the bodies as parts that do
-nothing until you switch them on, so OFF is the same job as before (same layers and filament, time within a few seconds). Both
-need a printer that changes filament by itself (a multi-material system or a tool changer): the colour sits on the first layers
-or part-way up the lid, and a manual swap at that height would recolour whatever else prints there. The prime tower is off here
-too, for the same reason; the logo section says what to do on a printer that can only purge into a tower. Do one object at a time.
+**Three front lines on every tub, a switch that is off (2026-11-06; sliced in the OrcaSlicer CLI and read back from the G-code, nothing printed yet):**
+the idea is @juno_last's case design. Every plate file and every per-configuration project carries three line bodies on the tub's
+front as parts that do nothing until you switch them on, so OFF is the same job as before (same layers and filament, time within a
+few seconds). The 3.68 light-strip tub (not released) has none. The lines are three straight horizontal lines with rounded ends,
+1.0 mm wide on a 2.5 mm pitch and 48.0 mm long, centred on the case's centre line, 0.6 mm (three layers) deep from the front face.
+With bottom keys they sit between the key openings and the screen window's bottom edge (5.7 mm clear of both on the 4.26, 5.0 on the
+3.68); on a chinless tub between the window's bottom edge and the case's bottom edge (4.0 mm clear of both, the front round included).
+Switching them on needs a printer that changes filament by itself only for the second-colour option (the colour is on the tub's first
+three layers); the engraved option needs none. In OrcaSlicer, on the **Prepare** tab, click the arrow beside the **tub** in the object
+list: under it are three parts named `front lines 1/3: off (...)`, `2/3`, `3/3`. Right-click the parts' rows in this list. Pick one:
 
-- **Three lines on the tub's front chin** (the idea is @juno_last's case design). Tubs with bottom keys only (the 4.26 standard and
-  light strip, the 3.68 standard); the chinless tub has none. Three straight horizontal lines with rounded ends, 1.0 mm wide on a
-  2.5 mm pitch and 48.0 mm long (about the key row's span), centred between the bottom-key openings and the screen window's bottom
-  edge: 5.7 mm clear of both on the 4.26 and 5.0 mm on the 3.68. They are 0.6 mm (three layers) deep from the front face. In the
-  object list click the arrow beside the **tub**: under it are three parts named `front lines 1/3: off (...)`, `2/3`, `3/3`.
-  Pick one of these two:
-  1. **Engraved, in the case colour:** click one line (no Ctrl), right-click its row -> **Change type** -> **Negative Volume**
-     (ElegooSlicer and older OrcaSlicer open a small "Choose part type" dialog: pick Negative Volume, then OK). Do the same to
-     the other two, one at a time, as with the logo.
-  2. **Flush, in a second colour:** Ctrl+click all three lines, right-click -> **Set Filament for selected items** (it reads
-     **Change Filament** when one is selected) -> the second filament, shown by its colour swatch. Leave them as modifiers: they
-     recolour the tub's first three layers inside the line shapes, nothing else.
+1. **Engraved, in the case colour:** click one line (no Ctrl), right-click its row -> **Change type** -> **Negative Volume**
+   (ElegooSlicer and older OrcaSlicer open a small "Choose part type" dialog: pick Negative Volume, then OK). Do the same to the
+   other two, one at a time, as with the logo. The first three layers then have a line-shaped gap; the fourth bridges it.
+2. **Flush, in a second colour:** Ctrl+click all three lines, right-click -> **Set Filament for selected items** (it reads
+   **Change Filament** when one is selected) -> the second filament, shown by its colour swatch. Leave them as modifiers: they recolour
+   the tub's first three layers inside the line shapes, nothing else. Set filament 2's colour. The prime tower is off here, as for the
+   logo (see above for a printer that can only purge into a tower).
 
-  Then set filament 2 to the lines' colour (option 2), and slice.
-- **The side keys in a second colour.** Every lid carries one part named `side keys colour: off (filament 2 = second colour above z
-  3 ...)` (z 4.6 on the 3.68): a box over the lid's footprint from just above the lid's middle tab, the wall between the side keys
-  (it tops out at 2.95 mm of the lid's print height on the 4.26 and 4.685 on the 3.68, so the box starts at the layer boundary 3.0 /
-  4.6), up to the lid's top. Click the arrow beside the **lid**, click that part, right-click -> **Change Filament** -> the second
-  filament, and leave it a modifier. Everything of the lid above that height turns filament 2: the five (4.26) or three (3.68)
-  side keys' pads, their pegs and the lid's inner pegs and clips, which the case hides once assembled; all of those sit 2.3 mm or
-  more inside the case's wall except the pads (the 4.26's lid also has a 0.4 mm-high rib at the USB opening that the box colours too).
-  The lowest part of each pad, its 45-degree underside up to the cut, and each key's bar in the lid's wall stay in the case colour.
-  The lid's supports and rafts stay filament 1. It combines with the logo (the lid's first two layers) and the chin lines.
-  On a plate with other objects OrcaSlicer prints layer by layer, so the printer changes filament on each of the lid's 30 upper layers
-  (29 to 32 changes in the slices with the tub beside the lid); drag the lid onto a plate of its own first and it changes 3 times.
-
-The bodies are also single files in the tub's print frame: `4.26/tub-front-lines.stl` (the standard and light-strip tubs share
-them) and `3.68/tub-front-lines.stl`, made by `enclosures/color_options.py write`; the side-key box is made from each lid's own
-footprint when the files are written. Pictures: `docs/images/color-front-lines.png` (the tub's chin with the lines engraved) and
-`docs/images/color-side-keys.png` (the lid, orange above the cut).
+The bodies are also single files in the tub's print frame: `4.26/tub-front-lines.stl` (the standard and light-strip tubs with bottom
+keys), `4.26/tub-front-lines-chinless.stl` (both chinless tubs) and `3.68/tub-front-lines.stl`, made by `enclosures/color_options.py
+write`. Pictures: `docs/images/color-front-lines.png` and `docs/images/color-front-lines-chinless.png`.
 
 **Slide-on cover, 2026-11-01 (round 2 and 3; coupon A and Ian's phase-2 cover were printed, the phase-3 cover described here was not):** a TI-84 style reversible cover, one printed part, that goes over
 the screen to carry the reader and over the back while you read it. It slides on sideways (along the case's width), gripping the top and
@@ -591,7 +576,7 @@ case's CAD frame (the board's coordinates) for editing. The gate's STEP is in it
 - **Two-colour logo (optional):** `lid-inlay-wordmark`, `lid-inlay-icon` on both sizes, and `lid-chinless-inlay-wordmark`, `lid-chinless-inlay-icon` on the 4.26: the
   bodies that fill the lid's back engravings, in the lid's print frame. The plate files and projects already carry them in the
   lid, switched off ("Two-colour logo" above); the loose files are for other slicers or for editing.
-- **Front lines (optional):** `4.26/tub-front-lines`, `3.68/tub-front-lines`: the three bodies of the chin lines, in the tub's print frame ("Two more colour switches"). The plate files and projects already carry them, switched off.
+- **Front lines (optional):** `4.26/tub-front-lines`, `4.26/tub-front-lines-chinless`, `3.68/tub-front-lines`: the three bodies of the lines on the tub's front, in its print frame ("Three front lines"). The plate files and projects already carry them, switched off.
 - **Tubs:** `tub-standard`. `tub-light-strip` is for the light-strip case, which is in development and not released.
 - **4.26 chinless:** `tub-chinless` and `lid-chinless`, its own tub and lid, with the shared `midplate`. The board
   must not have the bottom-row buttons (SW9/SW8/SW3/SW2) fitted.

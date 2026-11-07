@@ -2,16 +2,13 @@
 
     python -B color_check.py [--size 426|368] [--printer cc2|generic] [--slug standard]
 
-Takes the project make_plates.py wrote (case-<size>/out/configs[-cc2]/<slug>.3mf), keeps only its tub and its lid printable on plate 1
-(every other item printable="0"), and slices five copies with the OrcaSlicer CLI, switching the bodies ON the way a user does in the GUI
-(by editing Metadata/model_settings.config):
-  off     the project as shipped (all switches off)
-  neg     the tub's three front lines: Change type -> Negative Volume
-  lines   the tub's three front lines: filament 2, still modifiers
-  box     the lid's side-key box: filament 2, still a modifier
-  all     lines + box + the lid's two logo parts as Part + filament 2 (the logo switch of print/README.md)
-  lidalone  the box on filament 2, the lid the only printable object (tool changes: one per layer when other objects print beside it)
-and reads the G-code back by tool (filament): where filament 2 lies and how much, what the engraving removed.
+Takes the project make_plates.py wrote (case-<size>/out/configs[-cc2]/<slug>.3mf), keeps only its tub printable on plate 1 (every other item
+printable="0"), and slices three copies with the OrcaSlicer CLI, switching the lines ON the way a user does in the GUI (by editing
+Metadata/model_settings.config):
+  off     the project as shipped
+  neg     the three front lines: Change type -> Negative Volume
+  lines   the three front lines: filament 2, still modifiers
+and reads the G-code back by tool (filament): what the engraving removed, and where filament 2 lies and how much.
 """
 import argparse
 import json
@@ -59,18 +56,14 @@ def variant(src, dst, how):
                     if name == 'tub' and pn.startswith('front lines'):
                         if how == 'neg':
                             s = s.replace('subtype="modifier_part"', 'subtype="negative_part"')
-                        elif how in ('lines', 'all'):
+                        elif how == 'lines':
                             s = s.replace('      <mesh_stat', f2)
-                    elif name == 'lid' and pn.startswith('side keys colour') and how in ('box', 'all', 'lidalone'):
-                        s = s.replace('      <mesh_stat', f2)
-                    elif name == 'lid' and pn.startswith('logo ') and how == 'all':
-                        s = s.replace('subtype="modifier_part"', 'subtype="normal_part"').replace('      <mesh_stat', f2)
                     return s
                 return re.sub(r'    <part id="\d+" subtype="\w+">.*?</part>\n', part, body, flags=re.S)
             t = re.sub(r'  <object id="(\d+)">(.*?)</object>\n', obj, t, flags=re.S)
             data = t.encode('ascii')
         out.append([it, data])
-    keep = {ids['lid']} if how == 'lidalone' else {ids['tub'], ids['lid']}
+    keep = {ids['tub']}
     for o in out:
         if o[0].filename == '3D/3dmodel.model':
             o[1] = re.sub(r'<item objectid="(\d+)"[^>]*/>',
@@ -129,17 +122,15 @@ def main():
     entry = json.loads((root / 'index.json').read_text())[o.slug]
     work = HERE / f'case-{o.size}' / 'out' / 'color-check' / o.printer
     objs = {q['name']: q for q in entry['plates'][0]['objects']}
-    tub, lid = objs['tub'], objs['lid']
+    tub = objs['tub']
     lines = [LineString([(c['box'][0] + (c['box'][4] - c['box'][1]) / 2, (c['box'][1] + c['box'][4]) / 2),
                                           (c['box'][3] - (c['box'][4] - c['box'][1]) / 2, (c['box'][1] + c['box'][4]) / 2)])
              .buffer((c['box'][4] - c['box'][1]) / 2, quad_segs=8) for c in tub['colour']]
     L = unary_union(lines)
     L_in, L_out = L.buffer(-0.15), L.buffer(0.10)
-    box = lid['colour'][0]['box']
-    z0 = round(box[2], 3)
-    print(f'{o.size} {o.printer} {o.slug}: {len(tub["colour"])} lines, area {L.area:.1f} mm2; lid box from z {z0} ({lid["colour"][0]["name"]})')
+    print(f'{o.size} {o.printer} {o.slug}: {len(tub["colour"])} lines, area {L.area:.1f} mm2')
     res = {}
-    for how in ('off', 'neg', 'lines', 'box', 'all', 'lidalone'):
+    for how in ('off', 'neg', 'lines'):
         f = work / f'{how}.3mf'
         variant(root / entry['file'], f, how)
         r, g = CS.slice_plate(f, 1, work / how)
@@ -167,8 +158,6 @@ def main():
     for how, d in res.items():
         d['intub'] = (d['x0'] >= tub['box'][0] - 3) & (d['x1'] <= tub['box'][2] + 3) & (d['y0'] >= tub['box'][1] - 3) & (d['y1'] <= tub['box'][3] + 3) & \
                      (d['x0'] <= tub['box'][2] + 3) & (d['y0'] <= tub['box'][3] + 3) & (d['x1'] >= tub['box'][0] - 3) & (d['y1'] >= tub['box'][1] - 3)
-        d['inlid'] = (np.minimum(d['x0'], d['x1']) >= lid['box'][0] - 3) & (np.maximum(d['x0'], d['x1']) <= lid['box'][2] + 3) & \
-                     (np.minimum(d['y0'], d['y1']) >= lid['box'][1] - 3) & (np.maximum(d['y0'], d['y1']) <= lid['box'][3] + 3)
         d['inL'] = inside(L_out, d)
         d['inLin'] = inside(L_in, d)
     off = res['off']
@@ -192,29 +181,6 @@ def main():
             f'filament 2 {d["grams"][1] if len(d["grams"]) > 1 else 0} g; tool changes {d["changes"]}; supports on filament 2: {int((t1 & d["sup"]).sum())}')
         t0in = length(d, ~t1 & d['intub'] & d['inLin'] & low(d))
         row('(b) the case colour leaves the lines to filament 2', t0in < 0.1 * length(off, off['intub'] & off['inLin'] & low(off)), f'filament-1 length left in the lines: {t0in:.0f} mm')
-    # (c) side keys
-    if 'box' in res:
-        d = res['box']
-        t1 = (d['tool'] == 1)
-        zs = sorted(set(np.round(d['z'][t1], 2).tolist()))
-        rest = ~t1 & d['inlid'] & ~d['sup'] & (d['z'] >= z0 + LAYER - 1e-6)
-        row('(c) side-key box in filament 2: only on the lid, only above z_split', t1.any() and min(zs) >= z0 + LAYER - 1e-6 and not (t1 & ~d['inlid']).any() and not (t1 & d['sup']).any(),
-            f'layers {zs[0]}..{zs[-1]} ({len(zs)}); filament 2 {d["grams"][1] if len(d["grams"]) > 1 else 0} g; non-support filament-1 length still above the split: '
-            f'{length(d, rest):.0f} mm (the rest of the lid is the other filament only below it); supports on filament 2: {int((t1 & d["sup"]).sum())}')
-        above = lambda q: float(q['e'][(q['z'] >= z0 + LAYER - 1e-6) & q['inlid'] & ~q['sup']].sum())
-        row('(c) it moves the lid\'s upper extrusion to filament 2 without changing its amount', abs(above(d) - above(off)) < 0.02 * above(off),
-            f'lid extrusion above the split: {above(off):.0f} mm of filament off, {above(d):.0f} mm on')
-    if 'all' in res:
-        d = res['all']
-        t1 = (d['tool'] == 1)
-        tub_t1, lid_t1 = t1 & d['intub'], t1 & d['inlid']
-        row('(d) lines + side-key box + logo, all in filament 2', t1.any() and tub_t1.any() and lid_t1.any() and d['changes'] > 0,
-            f'filament 2: tub {length(d, tub_t1):.0f} mm, lid {length(d, lid_t1):.0f} mm (logo layers {sorted(set(np.round(d["z"][lid_t1 & (d["z"] < z0)], 2).tolist()))[:3]}); '
-            f'grams {d["grams"]}; tool changes {d["changes"]}')
-    if 'lidalone' in res:
-        d = res['lidalone']
-        row('(c) the lid alone on its plate: one swap instead of one per layer', d['changes'] < 10,
-            f'tool changes {d["changes"]} (with the tub beside it: {res["box"]["changes"] if "box" in res else "?"}); filament 2 {d["grams"][1] if len(d["grams"]) > 1 else 0} g')
     print('ALL OK' if ok else 'PROBLEMS')
     json.dump({k: {'grams': v['grams'], 'changes': v['changes']} for k, v in res.items()}, open(work / 'result.json', 'w'))
     sys.exit(0 if ok else 1)

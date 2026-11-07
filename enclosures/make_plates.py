@@ -65,11 +65,9 @@ filaments, have the prime tower OFF and give each plate its clearest free tower 
 the user switches the logo on with Change type -> Part and Change filament -> 2 on the two parts (the comment at INLAY_NAMES says
 why the parts carry no filament and why there is no tower). There are no separate two-colour files.
 
-Two more optional colour switches (2026-11-06, color_options.py), off in the same way (modifier parts with no setting): three lines on the
-tub's front chin (the 4.26 with bottom keys, standard and light strip; the 3.68 standard; none on a chinless tub), whose bodies are
-Negative Volume (engraved) or filament 2 (a second colour) once switched, and one box on every lid that gives filament 2 to everything of the
-lid above the middle tab between the side keys (the side keys' pads and the pegs and clips behind them). They come after the lid's
-logo parts and enforcers, so every existing volume keeps its id.
+One more optional colour switch (2026-11-06, color_options.py), off in the same way (modifier parts with no setting): three lines on the
+front chin of every tub (not the 3.68 light-strip tub, which is not released), whose bodies are Negative Volume (engraved) or filament 2
+(a second colour) once switched. They come after the lid's logo parts and enforcers, so every existing volume keeps its id.
 
 Reads the print-oriented STLs that each project's src/plates.py writes to out/standard/print/ and
 out/light-strip/print/ (and on the 4.26 out/chinless/print/ and out/light-strip-chinless/print/; run it for every
@@ -509,8 +507,8 @@ class Part:
         self.inlay_files = tuple(inlay_files)   # the lid's two-colour logo (2026-10-24): [(volume name, print STL)]; each is
                                          # written as a modifier volume of the lid object (INLAY_SUBTYPE), no settings
         self.inlays = []                 # [(name, mesh)] in the same frame (load_inlays)
-        self.colour = []                 # the optional colour switches (2026-11-06, color_options.py): the tub's three front lines or the lid's
-                                         # side-key box, [(volume name, mesh)] in the same frame, written as modifier parts with no settings
+        self.colour = []                 # the optional colour switches (2026-11-06, color_options.py): the tub's three front lines,
+                                         # [(volume name, mesh)] in the same frame, written as modifier parts with no settings
         self.key_zones = []              # [(ref, [x0, y0, x1, y1, top])], the same frame (side_key_zones)
         self.key_bases = {}              # {ref: [x0, y0, x1, y1]}, the same frame (side_key_bases)
 
@@ -1115,10 +1113,9 @@ def lay_out(case):
                         errs.append(f'{p.name}: {n} is outside the part')
             if p.inlay_files:
                 p.inlays = load_inlays(p)
-            if p.stl.stem == 'tub' or p.side_keys:
-                assert not (p.turned or p.spin), (p.name, 'a tub or lid with colour switches is neither turned nor spun')
-                p.colour = (CO.tub_lines(p.stl, p.base, p.mesh.faces) if p.stl.stem == 'tub'
-                            else CO.side_key_box(p.side_keys, p.base))
+            if p.stl.stem == 'tub':
+                assert not (p.turned or p.spin), (p.name, 'a tub with colour lines is neither turned nor spun')
+                p.colour = CO.tub_lines(p.stl, p.base, p.mesh.faces)
         for p in parts:
             if p.spin and (p.enforcers or p.turned):
                 errs.append(f'{p.name}: spun and turned, or spun with enforcers')
@@ -1584,18 +1581,13 @@ LOGO_README = (
     "purge into a prime tower should first drag the lid onto an empty plate and switch the prime tower on there.\n")
 
 COLOUR_README = (
-    "\n## Two more colour options (optional, off by default)\n\n"
-    "Like the logo, both are bodies that print nothing until you switch them on, and both need a printer that changes filament\n"
-    "itself: the colour is on the tub's first three layers, or on everything of the lid above a height, so a manual swap would\n"
-    "recolour whatever else prints at that height. Switch one object's bodies at a time.\n\n"
-    "- Three lines on the tub's front chin (a tub with bottom keys; the chinless tub has none; the idea is @juno_last's). Expand the tub\n"
-    "  in the object list; its three front lines parts sit under it. Right-click each in turn -> Change type -> Negative Volume\n"
-    "  (one at a time, as with the logo) for lines engraved 0.6 mm deep in the case colour, or select all three, right-click ->\n"
-    "  Set Filament for selected items -> 2 (and leave them as modifiers) for lines in the second colour, flush with the face.\n"
-    "- The side keys in a second colour. Expand the lid; select its side keys colour part, right-click -> Change filament -> 2. Everything\n"
-    "  of the lid above the tab between the keys turns filament 2: the keys' pads, their pegs, and the lid's inner pegs and clips (hidden\n"
-    "  once the case is assembled). Supports and rafts stay filament 1.\n"
-    "Set filament 2's colour as for the logo.\n")
+    "\n## Three front lines on the tub (optional, off by default)\n\n"
+    "Like the logo, a body that prints nothing until you switch it on, and it needs a printer that changes filament itself (the colour is on the\n"
+    "tub's first three layers). Three lines on the tub's front, between the screen and the bottom key row (or the case's bottom edge on a\n"
+    "chinless tub); the idea is @juno_last's. Expand the tub in the object list; its three front lines parts sit under it. Right-click each\n"
+    "in turn -> Change type -> Negative Volume (one at a time, as with the logo) for lines engraved 0.6 mm deep in the case colour, or select\n"
+    "all three, right-click -> Set Filament for selected items -> 2 (and leave them as modifiers) for lines in the second colour, flush\n"
+    "with the face. Set filament 2's colour as for the logo.\n")
 LOGO_README += COLOUR_README
 
 
