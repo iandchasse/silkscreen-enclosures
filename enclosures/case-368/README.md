@@ -631,7 +631,11 @@ the repo). What reaches the 3.68, all read back by `community.py` (build time, `
   deep** (set here: the light strip's chin wordmark was 0.3, a layer's mid-plane), mirrored, centred on x 30 at y 4.95 (ink
   y 1.40-8.51, 2.6 above the top groove's edge). The back is solid under it (0.6 of floor left: `crank_checks.logo_back_floor`),
   clear of the corner counterbores (x at most 4.1 / at least 55.9, y at most -3.15) and 28 mm below the book icon. `LOGO` is None:
-  the chin is plain (the chin web stays, it also carries the keys' rail).
+  the chin is plain (the chin web stays, it also carries the keys' rail). **Since 2026-11-07 both back logos are heavier where they
+  were thin** (Ian: the two-colour logo's thin strokes did not slice on the CC2's classic walls), the same as the 4.26's: the
+  wordmark's outline moves out 0.12 all round (`weight`; ink 40.34 × 7.36, y 1.27-8.63, 2.48 above the groove, every stroke 0.24
+  wider), and the icon's strokes under 0.7 grow toward 0.7, each edge by 0.15 at most (`min_stroke`; its outline unchanged, y
+  35.32-53.88, 1.82 clear of the battery pocket). `case-426/README.md`, "Edges and logos", has the method and the read-back.
 - **The parting line is square** (`SEAM_CHAMFER` = 0; it was a 0.4 V, left off the tub's half over the key row). The
   key bars lost their V with it (`TAB_BAR_V`).
 - **Two-colour logo, a switch that is off (2026-10-24):** `logo.inlay` bodies for the icon (0.2, one layer) and the wordmark
@@ -1931,8 +1935,8 @@ New in x3:
   plastic under it, until 2026-10-23, when the wordmark moved to the back). Below it (y < 0) are the bottom keys' rail and webs; the wordmark does not reach over the cheek
   slots' roofs.
 - **Back icon:** the site's book icon, 26 mm wide, engraved 0.3 into the back, centred on it (30.0, 44.6; until
-  2026-09-29 it sat low, at y 24.0). The case is 68.18 × 108.0, Y −9.40 to 98.60. The icon (y 35.33–53.87) stays
-  1.83 clear of the battery pocket's thin (0.4) floor, so it lies on the full 0.8 floor with 0.5 of plastic under the
+  2026-09-29 it sat low, at y 24.0). The case is 68.18 × 108.0, Y −9.40 to 98.60. The icon (y 35.33–53.87; 35.32–53.88 since its thin strokes were widened on 2026-11-07) stays
+  1.83 (1.82) clear of the battery pocket's thin (0.4) floor, so it lies on the full 0.8 floor with 0.5 of plastic under the
   engraving (`crank_checks.logo_back_floor`, read off the built lid too). The lid changes only by the icon: an
   already printed lid is fine.
 - **Backstops:** above the trimmed board edge, posts and a rib on the lid hold the midplate from behind.

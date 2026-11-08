@@ -234,9 +234,10 @@ volumes, least distances) and vtk ray casts of the end faces and of the cover's 
   lie where the mesh puts them to 0.04 mm on every layer they stand in (probes: the lip, the tab's free span, the tongue, the taper and the ridge), including the tab's first layer on the CC2 (the foot's rounded
   to 0.3 where a 0.38 round left a first-layer line 0.55 wide that the CC2's classic walls and EFC 0.1 would drop); on the generic preset's Arachne walls two layers of the 1.2 mm taper leave a 0.28 mm gap
   between two lines (the CC2's classic walls fill it); the only bridges are one layer (z 0.6, or 0.4 and 0.6 on the 3.68) over the engravings' 0.2 to 0.4 deep voids (the logos and the border lines), where a line
-  hangs at most 0.76 mm past the layer below (the lid's own logos do the same). Generic presets: 1 h 17 / 1 h 11 / 1 h 11 and 22.6 / 20.8 / 20.5 g; CC2: 40 / 37 / 36 min and 23.7 / 22.0 / 21.4 g (keyed, chinless, 3.68).
-  `inlay_check.py` switches the logo on in a copy of the plate file: filament 2 is laid only inside the two logo boxes on layers 0.2 and 0.4 (0.10 g on the keyed plate) and filament 1 uses 22.42 g against 22.68 g with the switch off
-  (the border lines are not part of the switch).
+  hangs at most 1.0 mm past the layer below (0.76 before the logos' strokes were widened on 2026-11-07; the lid's own logos do the same). Generic presets: 1 h 17 / 1 h 10 / 1 h 11 and 22.6 / 20.8 / 20.5 g; CC2: 40 / 37 / 37 min and 23.7 / 22.0 / 21.4 g (keyed, chinless, 3.68).
+  `inlay_check.py` switches the logo on in a copy of the plate file: filament 2 is laid only inside the two logo boxes on layers 0.2 and 0.4 (0.34 g on the keyed plate, the skirt included) and filament 1 uses 22.12 g against 22.61 g with the switch off
+  (the border lines are not part of the switch). Since the strokes were widened, OrcaSlicer starts this plate file's first layer with filament 2, so the skirt is laid in the
+  logo's colour (a priming loop that is thrown away; `inlay_check` counts it apart). The per-configuration projects still lay it in filament 1.
 
 ### Sharp-edge result
 
@@ -252,7 +253,7 @@ volumes, least distances) and vtk ray casts of the end faces and of the cover's 
 did not mesh closed on the rest), and the 3.68's slot mouths are rounded on 10 of 16 edges (0.12). The ridge edges sit on the tab's inner side, inside the channel, and the slot mouths on the plate's case side. In phase 1 the key slots' roof edges (2 x 4.1 mm on the keyed, 2 x 4.4 on the 3.68, 90 degrees), the 0.5 mm step where the tab's
 foot met the plate's chamfer (5.3 mm of edge on the keyed cover) and the chinless cover's mesher fans were left; phase 2 removed them: the slot cutter is flared at the mouth, the tab's foot grows into the
 plate's chamfer over the taper, and the plate has no relief to leave fans at its seams. What is left, and why:
-- **Engraving rims** (the case's two logos, 0.4 and 0.2 deep with strokes down to 0.36 wide, and the border lines, 0.8 wide, 0.4 deep): the case's own treatment of its logos and grip grooves; a stroke that narrow cannot take a fillet.
+- **Engraving rims** (the case's two logos, 0.4 and 0.2 deep with strokes down to about 0.6 wide since 2026-11-07, 0.36 before, and the border lines, 0.8 wide, 0.4 deep): the case's own treatment of its logos and grip grooves; a stroke that narrow cannot take a fillet.
 - **Mesher facets**: tiny facets the STL writer puts at the slit's round end; zero-width slivers, no geometry.
 
 27bbdaf's cover, the same scan: 275 touchable segments (1437 mm).

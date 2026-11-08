@@ -10,7 +10,8 @@ in the case colour); Change type -> Modifier gives no lines (a modifier with no 
 gives lines in a second colour, flush.
 Bodies: print/4.26/tub-front-lines.stl (chin tubs, standard and light strip), tub-front-lines-chinless.stl (both chinless tubs) and
 print/3.68/tub-front-lines.stl, made by `write` from the built tubs and checked against every tub they go on (tub_lines): inside the solid
-face on all three layers and 1.2 mm or more from the openings, the window and the outline.
+face on all three layers and 1.2 mm or more from the openings, the window and the outline. A full case build deletes them (it sweeps
+print/<size>/ of every file it did not make), so tub_lines makes a missing one again from the built tubs.
 
     python -B color_options.py write     the line STLs into print/4.26 and print/3.68
 """
@@ -123,12 +124,15 @@ def line_meshes(lay):
     return out
 
 
-def write():
-    """The two line STLs (print/4.26, print/3.68), from the built tubs. The 4.26's standard and light-strip tubs share one file: the lines are
+LINE_SLUGS = {('case-426', False): ('standard', 'light-strip'), ('case-426', True): ('chinless', 'light-strip-chinless'),
+              ('case-368', False): ('standard', 'light-strip')}          # the builds whose tubs each line file is laid out on
+
+
+def write(keys=tuple(LINE_SLUGS)):
+    """The line STLs (print/4.26, print/3.68), from the built tubs. The 4.26's standard and light-strip tubs share one file: the lines are
     centred in the narrower of their two gaps."""
-    for key, slugs in ((('case-426', False), ('standard', 'light-strip')), (('case-426', True), ('chinless', 'light-strip-chinless')),
-                       (('case-368', False), ('standard', 'light-strip'))):
-        case = key[0]
+    for key in keys:
+        case, slugs = key[0], LINE_SLUGS[key]
         chins = []
         for s in slugs:
             tub = trimesh.load(HERE / case / 'out' / s / 'print' / 'tub.stl', force='mesh')
@@ -157,6 +161,8 @@ def tub_lines(stl, base, faces):
         tub = trimesh.Trimesh(base, faces, process=False)
         chin = measure_chin(tub)
         f = LINE_FILES[(case, not chin['chin'])]
+        if not f.exists():       # each case's build sweeps print/<size>/ of the files it did not make itself (case-426 build.py
+            write([(case, not chin['chin'])])     # write_print, case-368 build.py), so a full build removes it: made again here (2026-11-07)
         bodies = sorted(trimesh.load(f, force='mesh').split(only_watertight=False), key=lambda b: b.bounds[0][1])
         if len(bodies) != 3:
             raise SystemExit(f'{f}: {len(bodies)} bodies, want 3 (python -B color_options.py write)')

@@ -785,7 +785,11 @@ main's built parts first and failed there (§8).
   filament 2 lays only the two logo layers and only inside the inlays (0.0 mm of line outside); every support and raft line stays
   filament 1; no filament-1 line lies inside a glyph; filament-2 lines cover 92 % of the ink in each layer (every glyph 0.82-0.96
   except the i's 1.5 mm dot, 0.74 / 0.68: the limits were set from the first in-lid slice, 80 / 85 % of all the ink and 65 % of
-  each piece). ElegooSlicer (the CC2's own slicer) is untested with the clicks; the site does not list the logo yet: Ian's later call.
+  each piece). Since the strokes were widened (2026-11-07, section 5.11) the CC2 reads 0.85-0.95 for every wordmark piece and 0.99
+  for the icon. On a plate with a slide cover OFF is held to 1.0 mm per bucket in the cover and 90 s
+  (`configs_slice.COVER_OFF_*`): the cover's logo parts move a little of its sparse infill and change the order the plate's parts
+  print in (the CC2's keyed plate 2: OFF 55 s quicker than the control, all of it travel, the extrusion the same layer by layer).
+  ElegooSlicer (the CC2's own slicer) is untested with the clicks; the site does not list the logo yet: Ian's later call.
 - **Three front lines on every tub, engraved by default (2026-11-06; engraved as shipped since 2026-11-07; `enclosures/color_options.py`, checked by `color_check.py`):** the idea is @juno_last's; one Negative Volume part on the tub (0.6 mm grooves, one filament). Change type -> Modifier gives no lines, and that modifier with filament 2 gives coloured lines. No CAD change. `print/README.md`, "Three front lines".
 - **Plain pins instead of the snap posts.** The midplate's posts through H1, H2 and H6 are plain Ø1.90 pins, their
   tip edge rounded (`BOARD_SNAP['style'] = 'pole'`; the barb style stays as an option). As printed the slotted post
@@ -2350,9 +2354,24 @@ every lead. It backs the whole glass, so neither touches nor the battery load it
   - A 0.055 mm bold keeps the e's crossbar at about 0.38 mm.
   - Features under 0.24 mm are filtered out, because a face-down first layer can't make them.
   - At this size the s and the c just touch.
+  - **A heavier weight since 2026-11-07** (`weight` 0.12, Ian: the two-colour logo's thin strokes did not slice on the CC2's
+    classic walls): the outline moves out 0.12 mm all round, so every stroke is 0.24 wider (the e's crossbar about 0.62, the
+    thinnest strokes about 0.6) and the ink is 40.34 × 7.36 (y 1.27-8.63 on the builds with bottom keys, 2.48 above the top
+    groove's edge), 138 mm² of it (was 108). The letterforms keep their shape and both e's keep their holes.
 - **Book icon:** the site's `silkscreen-icon.svg`, 30 mm wide, engraved 0.4 mm deep in the centre
   of the back and mirrored so it reads from behind.
   - Its line work is thickened 0.10 mm so the screen outline prints; the fine page lines drop out.
+  - **Thin strokes widened since 2026-11-07** (`min_stroke` 0.7, `logo.min_stroke`): every stroke under 0.7 mm grows toward 0.7,
+    each edge by 0.15 at most, so the two diagonal page lines and the screen outline slice whole in a second colour; strokes 0.7
+    or wider, the corners and the gaps between the parallel lines do not move (a uniform offset would have closed those gaps).
+    The outline is unchanged; the ink is 134 mm² (was 126).
+  - **Read back** (2026-11-08, a one-off check outside the repo: the standard project switched ON in the OrcaSlicer CLI, its
+    filament-2 lines laid over the ink; `configs_slice` gives the coverage per piece, CC2 0.85-0.95 for the wordmark's, 0.99 the
+    icon): on the
+    CC2 the first layer's uncovered ink fell from 5.8 to 1.1 mm² (wordmark) and 3.3 to 0 (icon), with no stroke left bare: the
+    rest is three pockets of about 0.35 mm² where the e's crossbar meets its bowl and in the r's ball. On the generic preset
+    (Arachne walls) every stroke is covered too; 7.7 mm² of small pockets (none over 0.5 mm²) stay between the two wall lines
+    of the wider strokes (5.0 before; layer 2 5.2, was 6.6). The engraved (OFF) lid has no filament in its recesses either way.
 - **The logo code:** `src/logo.py` reads SVG paths itself and composites the icon in drawing order
   (black adds, white cuts).
 

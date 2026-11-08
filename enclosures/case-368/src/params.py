@@ -224,9 +224,13 @@ WINDOW_CORNER_R = 0.0 if LIGHT_STRIP else 0.4
 LOGO_CHIN = dict(svg='hardware/logo/silkscreen-logo.svg', part='wordmark', width=40.0, depth=0.3 if LIGHT_STRIP else 0.4,
             x=30.0, y=5.6,
             min_feature=0.24, bold=0.055)
+# min_stroke / weight (2026-11-07, Ian): the two-colour logo's thin strokes did not slice on a classic-wall profile (the CC2's: the
+# icon's two diagonal page lines, the e's crossbar, the thin tops of the s, c and e). The icon's strokes under 0.7 are widened
+# toward 0.7, each edge by 0.15 at most, the wider ones untouched (logo.min_stroke: a uniform offset would close the gaps between
+# its parallel lines); the wordmark gets a weight 0.12 heavier all over (its letterforms stay clean). Sizes unchanged.
 LOGO_BACK = dict(svg='hardware/logo/silkscreen-icon.svg', painter=True, mirror=True, width=26.0, depth=0.2,   # 0.3 was a
                  # layer's mid-plane (2026-10-19): today's lid printed 0.2, a new back printed 0.4; 0.2 keeps the look
-                 x=(X0 + X1) / 2, y=(Y0 + Y1) / 2, min_feature=0.36, bold=0.10)
+                 x=(X0 + X1) / 2, y=(Y0 + Y1) / 2, min_feature=0.36, bold=0.10, min_stroke=0.7)
                                           # centred on the back (30.0, 44.6): the icon (y 35.3..53.9) stays 1.8 clear of
                                           # the battery pocket's thin floor (crank_checks.logo_back_floor)
 KEY_EDGE_CHAMFER = 0.3                    # key openings' front edge (both builds: the caps stand proud of their own
@@ -239,7 +243,7 @@ LOGO = None                              # the chin is plain since 2026-10-23 (t
 # reads right from behind. depth 0.4 set here (two whole layers on the back; the light-strip chin's 0.3 is a mid-plane):
 # the floor there is LID_T 1.0, so 0.6 is left. Ink 7.11 tall, 40.0 wide: y 4.95, ink 1.40..8.51, 2.6 above the top
 # groove's edge, clear of the corner counterbores and 28 mm below the icon.
-LOGO_BACK_WORDMARK = dict(LOGO_CHIN, depth=0.4, mirror=True, x=(X0 + X1) / 2, y=max(GRIP_GROOVES_Y) + 6.55)
+LOGO_BACK_WORDMARK = dict(LOGO_CHIN, depth=0.4, mirror=True, x=(X0 + X1) / 2, y=max(GRIP_GROOVES_Y) + 6.55, weight=0.12)
 
 # ---- display ribbon: see panel.py ----------------------------------------------------------
 FPC_GAP_CLR = 0.5                         # tub clearance round the FPC where it folds past the glass edge

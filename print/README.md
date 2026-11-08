@@ -333,6 +333,15 @@ prime tower on (process settings, **Multimaterial** tab -> **Prime tower** -> **
 On the chinless plate, which has no rafts, you can switch the tower on without moving the lid. The bodies are also single
 files: `4.26/lid-inlay-wordmark`, `lid-inlay-icon` (and `lid-chinless-inlay-*`), `3.68/lid-inlay-*`, in the lid's own print frame.
 
+**The logos' thin strokes widened (2026-11-07; sliced in the OrcaSlicer CLI and read back from the G-code, not printed):** with the
+logo switched on, the CC2's classic walls left the thinnest strokes bare (the icon's two diagonal page lines, the e's crossbar, the
+thin tops of the s, c and e), because a body narrower than the first layer's line prints nothing. The wordmark is now 0.12 mm
+heavier all round (every stroke 0.24 wider, the thinnest about 0.6), and the icon's strokes under 0.7 mm are widened toward 0.7
+(its outline and the gaps between its lines unchanged); same sizes and places. With the logo on, every stroke now gets filament-2
+lines on both printers. This changes every lid and every slide cover, their logo bodies, both plate files, the cover plate file and
+every per-configuration project; tubs, midplates, keys and the rest are the same. For a case you already printed nothing is needed:
+with one colour the engraving just looks a little bolder.
+
 **Three front lines on every tub, engraved by default (2026-11-06, engraved as shipped since 2026-11-07; sliced in the OrcaSlicer CLI and read back from the G-code, nothing printed yet):**
 the idea is @juno_last's case design. Every plate file and every per-configuration project carries the three lines on the tub's
 front as one Negative Volume part, so as shipped they print as grooves in the case colour, with one filament. Every tub has them,

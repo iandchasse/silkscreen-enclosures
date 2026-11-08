@@ -7,7 +7,9 @@ wordmark the shapes are unioned. For the icon (cfg['painter']) they are composit
 order like a renderer does: black adds, white cuts away, so the white page faces and the black
 page lines drawn over them come out as drawn. Features narrower than cfg['min_feature'] are
 removed with a morphological opening, because a gap that narrow cannot print in the first
-layers of a face-down part.
+layers of a face-down part. Then cfg['weight'] moves the whole outline out by that much (a heavier weight), and
+cfg['min_stroke'] widens only the strokes narrower than that (min_stroke), so that the two-colour logo's
+bodies slice whole.
 """
 import re
 import math
@@ -201,7 +203,47 @@ def placed(cfg=None):
     g = g.buffer(-r, join_style=2).buffer(r, join_style=2).buffer(0)
     if cfg.get('bold'):                  # and close any white gap left too thin to print
         g = g.buffer(r, join_style=1).buffer(-r, join_style=1).buffer(0)
+    if cfg.get('weight'):                # a heavier weight all over (2026-11-07): the wordmark
+        g = g.buffer(cfg['weight'], join_style=1).buffer(0)
+    if cfg.get('min_stroke'):            # thin strokes widened toward this, the rest untouched (2026-11-07): the icon
+        g = min_stroke(g, cfg['min_stroke'])
     return g.simplify(0.01)
+
+
+def min_stroke(g, w, grow=0.15):
+    """Thin strokes of g widened toward w, the rest of g untouched (2026-11-07, Ian: the two-colour logo's thin lines did not slice: on a
+    classic-wall profile a body narrower than the first layer's 0.5 line prints nothing). For line art whose parallel strokes run close
+    (the icon), where a uniform offset (`weight`) would close the gaps between them. On a 0.01 mm raster each point of g's edge moves out
+    by min(grow, w/2 - h), h being the widest inscribed radius of g within w/2 of it (a disc): a stroke narrower than w grows on both
+    sides, by up to grow each; a stroke w wide or wider, and its corners, do not move; the growth fades out over w/2 where a thin stroke
+    meets a thick one. (A disc of w/2 on every thin bit of the medial axis, the first try, put a w-wide knob on every tapering end.)"""
+    from PIL import Image, ImageDraw
+    from scipy import ndimage as ndi
+    import contourpy
+    px, r, m = 0.01, w / 2, grow + 0.1
+    x0, y0, x1, y1 = g.bounds
+    x0, y0 = x0 - m, y0 - m
+    nx, ny = int((x1 - x0 + m) / px) + 1, int((y1 - y0 + m) / px) + 1
+    im = Image.new('1', (nx, ny), 0)
+    dr = ImageDraw.Draw(im)
+    for p in getattr(g, 'geoms', [g]):
+        dr.polygon([((x - x0) / px, (y - y0) / px) for x, y in p.exterior.coords], fill=1)
+        for h in p.interiors:
+            dr.polygon([((x - x0) / px, (y - y0) / px) for x, y in h.coords], fill=0)
+    ink = np.array(im, dtype=bool)
+    d = ndi.distance_transform_edt(ink) * px                       # inscribed radius
+    h = np.full(d.shape, r - grow)                                 # only h in [r - grow, r] changes the growth
+    for lv in np.arange(r - grow + px, r + px / 2, px):            # h >= lv where a pixel with d >= lv lies within r
+        h[ndi.distance_transform_edt(d < lv) * px <= r] = lv
+    amt = np.clip(r - h, 0.0, grow)
+    t, idx = ndi.distance_transform_edt(~ink, return_indices=True)
+    paint = ink | ((t > 0) & (t * px <= amt[idx[0], idx[1]]))
+    pts, offs = contourpy.contour_generator(z=np.pad(paint.astype(float), 1), fill_type=contourpy.FillType.OuterOffset).filled(0.5, 1.5)
+    add = []
+    for q, o in zip(pts, offs):
+        rings = [(q[o[i]:o[i + 1]] - 1) * px + (x0, y0) for i in range(len(o) - 1)]
+        add.append(sg.Polygon(rings[0], rings[1:]).buffer(0))
+    return so.unary_union([g, *add])
 
 
 def solid(z0, z1, cfg=None):

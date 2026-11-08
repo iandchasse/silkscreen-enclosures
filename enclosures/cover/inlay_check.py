@@ -5,7 +5,7 @@
 The cover plate files carry the two logo inlays as modifier parts with no filament: they print nothing (the switch is OFF). This copies
 print/silkscreen-cover-plates.3mf to out/slice/inlay-on.3mf with the two inlay volumes switched ON the way a user does it in OrcaSlicer (Change
 type -> Part, Change filament -> 2: here by editing Metadata/model_settings.config), slices the plate and reads the G-code back: filament 2
-must be extruded only inside the logo's footprint, on the first layers, and the body's own filament must not change (the engraving is empty
+must be extruded only inside the logo's footprint (the skirt aside), on the first layers, and the body's own filament must not change (the engraving is empty
 when OFF). The OFF slice is out/slice/generic/plate<N>/ (slice_read.py).
 """
 import argparse
@@ -50,24 +50,32 @@ def switch_on(src, dst):
 
 
 def by_tool(gcode):
-    """-> (grams per filament from the footer, {tool: [(x, y, z)] of its extrusion moves}), absolute coordinates as printed."""
+    """-> (grams per filament from the footer, {tool: [(x, y, z)] of its extrusion moves}, {tool: skirt moves}), absolute coordinates
+    as printed. The skirt is counted apart: it is laid by whichever filament OrcaSlicer starts the first layer with, which for the
+    cover plate file switched ON is filament 2 since the logos' strokes were widened (2026-11-08; the committed file started with
+    filament 1): a priming loop round the plate, thrown away, so it is not part of the logo test."""
     t = Path(gcode).read_text(errors='ignore')
     m = re.search(r'^; filament used \[g\] = (.+)$', t, re.M)
     grams = [float(v) for v in m.group(1).split(',')] if m else []
-    tool, z, x, y = 0, 0.0, 0.0, 0.0
-    pts = {0: [], 1: []}
+    tool, z, x, y, typ = 0, 0.0, 0.0, 0.0, ''
+    pts, skirt = {0: [], 1: []}, {0: 0, 1: 0}
     for line in t.splitlines():
         if re.match(r'T[01]\b', line):
             tool = int(line[1])
         elif line.startswith(';Z:'):
             z = float(line[3:])
+        elif line.startswith(';TYPE:'):
+            typ = line[6:].strip()
         elif line.startswith(('G1 ', 'G0 ')):
             v = {q[0]: float(q[1:]) for q in line.split(';')[0].split()[1:] if q[0] in 'XYE' and len(q) > 1}
             nx, ny = v.get('X', x), v.get('Y', y)
             if line.startswith('G1') and v.get('E', 0.0) > 0 and (nx, ny) != (x, y):
-                pts[tool].append((nx, ny, z))
+                if typ == 'Skirt':
+                    skirt[tool] += 1
+                else:
+                    pts[tool].append((nx, ny, z))
             x, y = nx, ny
-    return grams, pts
+    return grams, pts, skirt
 
 
 def main():
@@ -89,7 +97,7 @@ def main():
     if r.returncode or not gcode.exists():
         print(r.stderr.decode(errors='replace')[-1500:])
         sys.exit(1)
-    grams, pts = by_tool(gcode)
+    grams, pts, skirt = by_tool(gcode)
     off = SR.parse(OUT / 'generic' / f'plate{a.plate}' / f'plate_{a.plate}.gcode')[0]
     print(f'ON grams per filament {grams}; OFF (the plate as shipped) total {off["grams"]} g')
     t1 = np.array(pts[1])
@@ -106,7 +114,8 @@ def main():
     for nm, a0, a1, h in boxes:
         inside |= (t1[:, 0] >= a0[0] - 0.3) & (t1[:, 0] <= a1[0] + 0.3) & (t1[:, 1] >= a0[1] - 0.3) & (t1[:, 1] <= a1[1] + 0.3)
     print(f'filament 2: {len(t1)} extrusion moves, {int(inside.sum())} inside the two logo boxes, layers z {t1[:, 2].min():.2f}..{t1[:, 2].max():.2f} '
-          f'(the inlays are {max(b[3] for b in boxes):.2f} deep); filament 1 moves {len(pts[0])}')
+          f'(the inlays are {max(b[3] for b in boxes):.2f} deep); filament 1 moves {len(pts[0])}; the skirt (not counted): '
+          f'{skirt[0]} moves in filament 1, {skirt[1]} in filament 2')
     for nm, a0, a1, h in boxes:
         print(f'   {nm.split(":")[0]}: box x {a0[0]:.1f}..{a1[0]:.1f}, y {a0[1]:.1f}..{a1[1]:.1f}, {h:.2f} deep')
     ok = int(inside.sum()) == len(t1) and t1[:, 2].max() <= max(b[3] for b in boxes) + 0.25

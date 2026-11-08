@@ -190,7 +190,11 @@ LOGO_CHIN = dict(svg='hardware/logo/silkscreen-logo.svg', part='wordmark', width
 # `bold` so the screen outline (about 0.24 mm at this size) prints; the page lines (0.1 mm) still
 # drop out with the thin-feature filter, as Ian expected.
 LOGO_BACK = dict(svg='hardware/logo/silkscreen-icon.svg', painter=True, mirror=True, width=30.0, depth=0.4,
-                 x=(X0 + X1) / 2, y=(Y0 + Y1) / 2, min_feature=0.36, bold=0.10)
+                 x=(X0 + X1) / 2, y=(Y0 + Y1) / 2, min_feature=0.36, bold=0.10, min_stroke=0.7)
+# min_stroke / weight (2026-11-07, Ian): the two-colour logo's thin strokes did not slice on a classic-wall profile (the CC2's: the
+# icon's two diagonal page lines, the e's crossbar, the thin tops of the s, c and e). The icon's strokes under 0.7 are widened
+# toward 0.7, each edge by 0.15 at most, the wider ones untouched (logo.min_stroke: a uniform offset would close the gaps between
+# its parallel lines); the wordmark gets a weight 0.12 heavier all over (its letterforms stay clean). Sizes unchanged.
 # shallow grooves across the back's lower edge; chinless: the same distances from the bottom edge (Y0 + 3.8 / 5.8 /
 # 7.8), between the H3 / H4 counterbores (x 8-52 stays 2.15 clear of them). Literals, not Y0 + ...: -9.4 + 3.8 is
 # -5.599999999999999 in floats
@@ -201,7 +205,7 @@ LOGO = None                              # the chin is plain since 2026-10-23 (t
 # The wordmark on the back above the grip grooves (2026-10-23, Ian, after Emily B (mixmastermouse)'s edit), mirrored so it
 # reads right from behind. Ink 7.11 tall, 40.0 wide: keyed y 4.95 (ink 1.40..8.51, 2.6 above the top groove's edge),
 # chinless y 12.55 (ink 9.00..16.11; the grooves are at 2 / 4 / 6).
-LOGO_BACK_WORDMARK = dict(LOGO_CHIN, mirror=True, x=(X0 + X1) / 2, y=max(GRIP_GROOVES_Y) + 6.55)
+LOGO_BACK_WORDMARK = dict(LOGO_CHIN, mirror=True, x=(X0 + X1) / 2, y=max(GRIP_GROOVES_Y) + 6.55, weight=0.12)
 
 # ---- display ribbons: see panel.py (drawn 1:1 from the FT01C drawing) ----------------------
 FPC_GAP_CLR = 0.5                         # tub clearance around each ribbon where it folds past the glass edge

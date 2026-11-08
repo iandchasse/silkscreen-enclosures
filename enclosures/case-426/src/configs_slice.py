@@ -524,6 +524,12 @@ OFF_FIL_TOL = 0.1                   # mm of filament in all, and the estimated t
 OFF_TIME_TOL = 10                   # bit-deterministic: the same file sliced twice differs by 0.001 mm jitter and +-2 s. The parts do cost
                                     # a systematic few seconds: on the 3.68 (11636 s) OFF is 6 s quicker than the control, all of it one
                                     # bucket, the lid's first-layer bottom surface (0.035 mm of filament less); 2026-10-24)
+COVER_OFF_E_TOL = 1.0               # the same for a slide cover's buckets, and the time on a plate with a cover (2026-11-07): its logo
+COVER_OFF_TIME_TOL = 90             # parts move a few tenths of a mm of the cover's own sparse infill 0.8-1.0 mm up, every time (the same
+                                    # file sliced twice is identical): keyed 11 s / 0.36 mm, chinless 11 s / none (old covers 14 s / 0.54).
+                                    # They also change the order the plate's parts print in: on the CC2's keyed plate 2 OFF is 55 s QUICKER
+                                    # than the control, all of it travel (300-370 mm less a layer at z 5.6-13.8, 2 fewer retractions), the
+                                    # extrusion the same layer by layer (2026-11-08); the buckets are the check of what prints
 TOWER_BOX = (-4.29, -5.5, 34.29, 16.7)   # make_plates.TOWER_BOX: the tower and its brim from the set point
 TOWER_CLEAR = 10.0                  # the point wipe_tower_x / _y names is at least this far from every object (plate with the lid)
 LOGO_PART = re.compile(r'    <part id="(\d+)" subtype="(modifier_part|normal_part)">\n      <metadata key="name" value="(logo [^"]*)"/>\n'
@@ -809,14 +815,16 @@ def logo_switch(size, slugs=None):
                 continue
             b_off, h_off = buckets(g_off)
             b_ctl, h_ctl = buckets(g_ctl)
+            cover = any(o['role'].startswith('cover') for o in objs)
+            t_tol = COVER_OFF_TIME_TOL if cover else OFF_TIME_TOL
             diff = {k: round(b_off.get(k, 0.0) - b_ctl.get(k, 0.0), 3) for k in set(b_off) | set(b_ctl)
-                    if abs(b_off.get(k, 0.0) - b_ctl.get(k, 0.0)) > OFF_E_TOL}
+                    if abs(b_off.get(k, 0.0) - b_ctl.get(k, 0.0)) > (COVER_OFF_E_TOL if str(k[0]).startswith('slide cover') else OFF_E_TOL)}
             dt = abs(h_off['time'] - h_ctl['time']) if h_off['time'] is not None and h_ctl['time'] is not None else 9e9
             dfil = abs(h_off['filament_mm'] - h_ctl['filament_mm']) if None not in (h_off['filament_mm'], h_ctl['filament_mm']) else 9e9
             same_layers = sorted({k[2] for k in b_off if k[2] != 'z>1'}) == sorted({k[2] for k in b_ctl if k[2] != 'z>1'})
-            verdict(f'{what}: OFF is the no-logo control (time within {OFF_TIME_TOL} s, filament within {OFF_FIL_TOL} mm, the same layers, no '
-                    f'object/role/layer bucket of extrusion {OFF_E_TOL} mm apart)',
-                    dt <= OFF_TIME_TOL and dfil <= OFF_FIL_TOL + 5e-5 * h_ctl['filament_mm'] and same_layers and not diff,
+            verdict(f'{what}: OFF is the no-logo control (time within {t_tol} s, filament within {OFF_FIL_TOL} mm, the same layers, no '
+                    f'object/role/layer bucket of extrusion {OFF_E_TOL} mm apart{f", {COVER_OFF_E_TOL} in the cover" if cover else ""})',
+                    dt <= t_tol and dfil <= OFF_FIL_TOL + 5e-5 * h_ctl['filament_mm'] and same_layers and not diff,
                     {'time_s': [h_off['time'], h_ctl['time']], 'filament_mm': [h_off['filament_mm'], h_ctl['filament_mm']],
                      'same_layers': same_layers, 'buckets_apart': [[list(map(str, k)), v] for k, v in sorted(diff.items(), key=lambda kv: -abs(kv[1]))[:5]]})
             info[key] = {'off_gcode': g_off.relative_to(CONFIGS).as_posix(), 'control_gcode': g_ctl.relative_to(CONFIGS).as_posix(),
@@ -839,7 +847,8 @@ def logo_switch(size, slugs=None):
             onx = g.read_text(errors='ignore')
             verdict(f'{what}: ON has no prime tower (the tower is off; the printer purges)', ';TYPE:Prime tower' not in onx and ';TYPE:Wipe tower' not in onx)
             sup_tools = sorted({t for z, t, ro, a, b, w in tool_lines(g, zmax=1e9)[0] if ro in SUPPORT})
-            verdict(f'{what}: ON keeps every support and raft line in filament 1', sup_tools == [0], sup_tools)
+            verdict(f'{what}: ON keeps every support and raft line in filament 1', sup_tools in ([], [0]), sup_tools)   # []: none on
+            # the plate (the chinless cover's plate 2 holds the cover alone, which needs no support; 2026-11-07)
             t1z = layers_all.get(1, [])
             # the glyphs in the bed frame (every object's inlays: the lid's and the cover's), and how many layers deep each inlay is (the 3.68's icon is
             # one layer: its second layer is the object's own, filament 1)
